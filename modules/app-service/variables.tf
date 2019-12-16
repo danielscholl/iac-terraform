@@ -1,10 +1,10 @@
 variable "name" {
-  description = "String value prepended to the name of each app service"
+  description = "The name of the web app."
   type        = string
 }
 
-variable "resource_group" {
-  description = "The resource group to contain the service plan"
+variable "resource_group_name" {
+  description = "The name of an existing resource group."
   type        = string
 }
 
@@ -29,6 +29,12 @@ variable "resource_tags" {
   description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
   type        = map(string)
   default     = {}
+}
+
+variable "app_settings" {
+  type        = map(string)
+  default     = {}
+  description = "Map of App Settings."
 }
 
 variable "app_service_config" {
@@ -103,4 +109,46 @@ variable "docker_registry_server_password" {
 variable "cosmosdb_name" {
   description = "The comsosdb account name"
   type        = string
+  default     = ""
+}
+
+
+locals {
+  access_restriction_description = "blocking public traffic to app service"
+  access_restriction_name        = "vnet_restriction"
+  acr_webhook_name               = "cdhook"
+  app_names                      = keys(var.app_service_config)
+  app_configs                    = values(var.app_service_config)
+
+  docker_settings = var.docker_registry_server_url != "" ? {
+    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
+    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
+    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
+  } : {}
+
+  cosmosdb_settings = var.cosmosdb_name != "" ? {
+    cosmosdb_database                   = data.azurerm_cosmosdb_account.account.name
+    cosmosdb_account                    = data.azurerm_cosmosdb_account.account.endpoint
+    cosmosdb_key                        = data.azurerm_cosmosdb_account.account.primary_master_key
+  } : {}
+
+  app_settings = merge(
+    var.app_settings,
+    local.docker_settings,
+    local.cosmosdb_settings,
+    {
+      WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
+    },
+  )
+
+
+  app_linux_fx_versions = [
+    for config in values(var.app_service_config) :
+    // Without specifyin a `linux_fx_version` the webapp created by the `azurerm_app_service` resource
+    // will be a non-container webapp.
+    //
+    // The value of "DOCKER" is a stand-in value that can be used to force the webapp created to be
+    // container compatible without explicitly specifying the image that the app should run.
+    config.image == "" ? "DOCKER" : format("DOCKER|%s/%s", var.docker_registry_server_url, config.image)
+  ]
 }

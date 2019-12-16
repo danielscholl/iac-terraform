@@ -1,10 +1,10 @@
 variable "name" {
-  description = "The name of the service plan to be created"
+  description = "The name of the service plan."
   type        = string
 }
 
-variable "resource_group" {
-  description = "The resource group to contain the service plan"
+variable "resource_group_name" {
+  description = "The name of an existing resource group."
   type        = string
 }
 
@@ -19,7 +19,6 @@ variable "kind" {
   type        = string
   default     = "Linux"
 }
-
 
 variable "tier" {
   description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans"

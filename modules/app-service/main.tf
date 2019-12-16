@@ -1,25 +1,11 @@
+##############################################################
+# This module allows the creation of a Web App
+##############################################################
+
 data "azurerm_client_config" "current" {}
 
-locals {
-  access_restriction_description = "blocking public traffic to app service"
-  access_restriction_name        = "vnet_restriction"
-  acr_webhook_name               = "cdhook"
-  app_names                      = keys(var.app_service_config)
-  app_configs                    = values(var.app_service_config)
-
-  app_linux_fx_versions = [
-    for config in values(var.app_service_config) :
-    // Without specifyin a `linux_fx_version` the webapp created by the `azurerm_app_service` resource
-    // will be a non-container webapp.
-    //
-    // The value of "DOCKER" is a stand-in value that can be used to force the webapp created to be
-    // container compatible without explicitly specifying the image that the app should run.
-    config.image == "" ? "DOCKER" : format("DOCKER|%s/%s", var.docker_registry_server_url, config.image)
-  ]
-}
-
 data "azurerm_resource_group" "group" {
-  name = var.resource_group
+  name = var.resource_group_name
 }
 
 data "azurerm_app_service_plan" "plan" {
@@ -40,17 +26,7 @@ resource "azurerm_app_service" "appsvc" {
   tags                = var.resource_tags
   count               = length(local.app_names)
 
-  app_settings = {
-    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
-    APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
-    KEYVAULT_URI                        = var.vault_uri
-    cosmosdb_database                   = data.azurerm_cosmosdb_account.account.name
-    cosmosdb_account                    = data.azurerm_cosmosdb_account.account.endpoint
-    cosmosdb_key                        = data.azurerm_cosmosdb_account.account.primary_master_key
-  }
+  app_settings = local.app_settings
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]
@@ -72,7 +48,7 @@ resource "azurerm_app_service" "appsvc" {
   }
 }
 
-resource "azurerm_app_service_slot" "appsvc_staging_slot" {
+resource "azurerm_app_service_slot" "staging" {
   name                = "staging"
   app_service_name    = format("%s-%s", var.name, lower(local.app_names[count.index]))
   count               = length(local.app_names)

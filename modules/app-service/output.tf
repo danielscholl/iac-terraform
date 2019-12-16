@@ -21,11 +21,11 @@ output "config_data" {
   value = [
     for i in range(length(data.azurerm_app_service.all)) :
     {
-      slot_short_name = azurerm_app_service_slot.appsvc_staging_slot.*.name[i]
-      slot_fqdn       = azurerm_app_service_slot.appsvc_staging_slot.*.default_site_hostname[i]
-      app_name        = azurerm_app_service_slot.appsvc_staging_slot.*.app_service_name[i]
+      slot_short_name = azurerm_app_service_slot.staging.*.name[i]
+      slot_fqdn       = azurerm_app_service_slot.staging.*.default_site_hostname[i]
+      app_name        = azurerm_app_service_slot.staging.*.app_service_name[i]
       app_fqdn = coalesce([for app in data.azurerm_app_service.all :
-      app.name == azurerm_app_service_slot.appsvc_staging_slot.*.app_service_name[i] ? app.default_site_hostname : ""]...)
+      app.name == azurerm_app_service_slot.staging.*.app_service_name[i] ? app.default_site_hostname : ""]...)
     }
   ]
 }
