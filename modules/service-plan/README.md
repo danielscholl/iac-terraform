@@ -1,8 +1,6 @@
-# Module Azure App Service Plan
+# Module service-plan
 
-In App Service, an app runs in an App Service plan. An App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hosting. One or more apps can be configured to run on the same computing resources.
-
-This is a terraform module in Cobalt to provide an App Service Plan with the following characteristics:
+A terraform module that provisions and scales an app service plan with the following characteristics: 
 
 - Ability to specify resource group name in which the App Service Plan is deployed.
 - Ability to specify resource group location in which the App Service Plan is deployed.
@@ -10,7 +8,7 @@ This is a terraform module in Cobalt to provide an App Service Plan with the fol
   - kind : The kind of the App Service Plan to create.
   - tags : A mapping of tags to assign to the resource.
   - reserved : Is this App Service Plan Reserved.
-  - tier : Specifies the plan's pricing tier. Additional details can be found at this [link](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
+  - tier : Specifies the plan's pricing tier.
   - size : Specifies the plan's instance size.
   - capacity : Specifies the number of workers associated with this App Service Plan.
 
@@ -18,31 +16,73 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/app_se
 
 ## Usage
 
-### Module Definition
-
-Service Plan Module : infra/modules/providers/azure/service-plan
-
-```
-variable "resource_group_name" {
-  value = "test-rg"
-}
-
-variable "service_plan_name" {
-  value = "test-svcplan"
+```hcl
+resource "azurerm_resource_group" "example" {
+  name     = "my-resourcegroup"
+  location = "eastus2"
 }
 
 module "service_plan" {
-  source              = "github.com/danielscholl/spring-api-user/iac/modules/providers/azure/service-plan"
-  name                = var.service_plan_name}
-  resource_group      = var.resource_group_name
-}
+  source = "../"
 
-module "service_plan" {
-  source                      = "./modules/providers/azure/service-plan"
-  name                        = local.sp_name
-  resource_group              = module.resourcegroup.name
+  name                        = "my-resourcegroup-plan
+  resource_group_name = azurerm_resource_group.example.name
 }
 ```
+
+## Inputs
+
+| Variable                      | Default                              | Description                          | 
+| ----------------------------- | ------------------------------------ | ------------------------------------ |
+| name                          | _(Required)_                         | The name of the service plan.        |
+| resource_group_name           | _(Required)_                         | The name of an existing resource group. |
+| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
+| kind                          | Linux                                | The kind of service plan to be created. Possible values are Windows/Linux/FunctionApp/App. |
+| tier                          | Standard                             | The tier under which the service plan is created. |
+| size                          | S1                                   | The compute and storage needed for the service plan to be deployed. |
+| capacity                      | 1                                    | The capacity of Service Plan to be created. |
+| isReserved                    | true                                 | Is the Service Plan to be created reserved. Possible values are true/false |
+| app_service_environment_id    | _(Optional)_                         | If specified, the ID of the App Service Environment where this plan should be deployed |
+| autoscale_capacity_minimum    | 1                                    | The minimum number of instances for this resource. Valid values are between 0 and 1000 |
+| scaling_rules                 | _*See Note_                       | The scaling rules for the app service plan. |
+
+> __scaling_rules__
+```json
+{
+      metric_trigger = {
+        metric_name      = "CpuPercentage"
+        time_grain       = "PT1M"
+        statistic        = "Average"
+        time_window      = "PT5M"
+        time_aggregation = "Average"
+        operator         = "GreaterThan"
+        threshold        = 70
+      }
+      scale_action = {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = 1
+        cooldown  = "PT10M"
+      }
+      }, {
+      metric_trigger = {
+        metric_name      = "CpuPercentage"
+        time_grain       = "PT1M"
+        statistic        = "Average"
+        time_window      = "PT5M"
+        time_aggregation = "Average"
+        operator         = "GreaterThan"
+        threshold        = 25
+      }
+      scale_action = {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = 1
+        cooldown  = "PT1M"
+      }
+    }
+```
+
 ## Outputs
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
@@ -50,7 +90,7 @@ Once the deployments are completed successfully, the output for the current modu
 ```
 Outputs:
 
-resource_group_name = test-rg
-service_plan_kind = linux
-service_plan_name = test-svcplan
+name = my-resourcegroup-plan
+kind = linux
+id = test-svcplan
 ```

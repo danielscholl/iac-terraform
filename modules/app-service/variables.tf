@@ -9,32 +9,8 @@ variable "resource_group_name" {
 }
 
 variable "service_plan_name" {
-  description = "The name of the service plan"
+  description = "The name of the service plan."
   type        = string
-}
-
-variable "uses_acr" {
-  description = "Determines whether or not an Azure container registry is being used"
-  type        = bool
-  default     = false
-}
-
-variable "azure_container_registry_name" {
-  description = "The name of the azure container registry resource"
-  type        = string
-  default     = ""
-}
-
-variable "resource_tags" {
-  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
-  type        = map(string)
-  default     = {}
-}
-
-variable "app_settings" {
-  type        = map(string)
-  default     = {}
-  description = "Map of App Settings."
 }
 
 variable "app_service_config" {
@@ -46,10 +22,16 @@ variable "app_service_config" {
   default = {}
 }
 
-variable "enable_storage" {
-  description = "Determines whether or not a storage is attached to the app service."
-  type        = bool
-  default     = false
+variable "app_settings" {
+  description = "Map of App Settings."
+  type        = map(string)
+  default     = {}
+}
+
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
 }
 
 variable "vault_uri" {
@@ -59,55 +41,55 @@ variable "vault_uri" {
 }
 
 variable "app_insights_instrumentation_key" {
-  description = "The Instrumentation Key for the Application Insights component used for app service to be created"
+  description = "The Instrumentation Key for the Application Insights component."
   type        = string
   default     = ""
 }
 
-variable "site_config_always_on" {
-  description = "Should the app be loaded at all times? Defaults to true."
+variable "is_always_on" {
+  description = "Is the app is loaded at all times. Defaults to true."
   type        = string
   default     = true
 }
 
-variable "uses_vnet" {
-  description = "Determines whether or not a virtual network is being used"
-  type        = bool
-  default     = false
-}
-
-variable "vnet_name" {
-  description = "The vnet integration name."
-  type        = string
-  default     = ""
-}
-
-variable "vnet_subnet_id" {
-  description = "The vnet integration subnet gateway identifier."
-  type        = string
-  default     = ""
-}
-
 variable "docker_registry_server_url" {
-  description = "The docker registry server URL for app service to be created"
+  description = "The docker registry server URL for images."
   type        = string
   default     = "docker.io"
 }
 
 variable "docker_registry_server_username" {
-  description = "The docker registry server username for app service to be created"
+  description = "The docker registry server username for images."
   type        = string
   default     = ""
 }
 
 variable "docker_registry_server_password" {
-  description = "The docker registry server password for app service to be created"
+  description = "The docker registry server password for images."
   type        = string
   default     = ""
 }
 
 variable "cosmosdb_name" {
-  description = "The comsosdb account name"
+  description = "The comsosdb account name."
+  type        = string
+  default     = ""
+}
+
+variable "is_vnet_isolated" {
+  description = "Determines whether or not a virtual network is being used."
+  type        = bool
+  default     = false
+}
+
+variable "vnet_name" {
+  description = "The integrated VNet name."
+  type        = string
+  default     = ""
+}
+
+variable "vnet_subnet_id" {
+  description = "The VNet integration subnet gateway identifier."
   type        = string
   default     = ""
 }
@@ -127,9 +109,9 @@ locals {
   } : {}
 
   cosmosdb_settings = var.cosmosdb_name != "" ? {
-    cosmosdb_database                   = data.azurerm_cosmosdb_account.account.name
-    cosmosdb_account                    = data.azurerm_cosmosdb_account.account.endpoint
-    cosmosdb_key                        = data.azurerm_cosmosdb_account.account.primary_master_key
+    cosmosdb_database                   = data.azurerm_cosmosdb_account.account[0].name
+    cosmosdb_account                    = data.azurerm_cosmosdb_account.account[0].endpoint
+    cosmosdb_key                        = data.azurerm_cosmosdb_account.account[0].primary_master_key
   } : {}
 
   app_settings = merge(

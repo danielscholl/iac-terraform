@@ -7,6 +7,9 @@
 
 terraform {
   required_version = ">= 0.12"
+  backend "azurerm" {
+    key = "terraform.tfstate"
+  }
 }
 
 #-------------------------------
@@ -58,7 +61,7 @@ locals {
   base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
 
   // Resolved resource names
-  name             = "${local.base_name}-api"
+  name             = "${local.base_name}"
   service_plan_name     = "${local.base_name}-plan"
   app_service_name     = "${local.base_name}"
 

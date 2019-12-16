@@ -1,42 +1,80 @@
-## app-service
+# Module app-service
 
-A terraform module that provisions and scales enterprise-grade azure managed app service Linux-based containers. Meet rigorous performance, scalability, security and compliance requirements while using a fully managed platform to perform infrastructure maintenance.
+A terraform module that provisions and scales azure managed app service using Linux-based containers with the following characteristics: 
 
-More information for Azure App Services can be found [here](https://azure.microsoft.com/en-us/services/app-service/)
-
-Cobalt provides the ability to provision a fleet of app service resources including the following characteristics:
-
-- Provisions a fleet of app service linux containers through the `app_service_name` `map(string)`. The key resolves to the name of the app service resource while the value is the source image for the resource. We provision one app service resource(s) for each map entry.
-
-- Supports continuous deployment through the `DOCKER_ENABLE_CI` setting(defaults to true). If this is set then a deployment webhook is generated.
-
-- MSI keyvault integration.
-
-- VNET access isolation.
+- Provisions multiple app service web apps with linux containers through the `app_service_name` `map(string)`. The key resolves to the name of the app service resource while the value is the source image for the resource. One app service resource(s) per mapped entry is provisioned.
 
 - Canary deployments through an auto-provisioned staging slot.
 
+
+
 ## Usage
 
-Key Vault certificate usage example:
-
 ```hcl
-app_service_name = {
-    cobalt-backend-api = "msftcse/az-service-single-region:release"
+resource "azurerm_resource_group" "example" {
+  name     = "my-resourcegroup"
+  location = "eastus2"
 }
 
-module "service_plan" {
-  source              = "../../modules/providers/azure/service-plan"
-  resource_group_name = azurerm_resource_group.main.name
-  service_plan_name   = "${azurerm_resource_group.main.name}-sp"
+resource "azurerm_app_service_plan" "example" {
+  name                = "my-resourcegroup-plan"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  kind = "linux"
+  reserved = true
+
+  sku {
+    tier = "Standard"
+    size = "S1"
+  }
 }
 
 module "app_service" {
-  source                           = "../../modules/providers/azure/app-service"
-  app_service_name                 = var.app_service_name
-  service_plan_name                = module.service_plan.service_plan_name
-  service_plan_resource_group_name = azurerm_resource_group.main.name
-  docker_registry_server_url       = "docker.io"
+  source = "../"
+
+  name                       = "sampleapp"
+  resource_group_name        = azurerm_resource_group.example.name
+  service_plan_name          = azurerm_app_service_plan.example.name
+  docker_registry_server_url = "mcr.microsoft.com"
+  app_service_config = {
+     web = {
+        image = "azuredocs/aci-helloworld:latest"
+     }
+   }
+}
+```
+
+## Inputs
+
+| Variable                      | Default                              | Description                          | 
+| ----------------------------- | ------------------------------------ | ------------------------------------ |
+| name                          | _(Required)_                         | The name of the web app..        |
+| resource_group_name           | _(Required)_                         | The name of an existing resource group. |
+| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
+| service_plan_name             | _(Required)_                         | The name of the service plan. |
+| app_service_config            | _*See Note_                          | Metadata about the app services to be created. |
+| app_settings                  | _(Optional)_                         | Custom App Web App Settings. |
+| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
+| vault_uri                     | _(Optional)_                         | Specifies the URI of the Key Vault resource. |
+| app_insights_instrumentation_key | _(Optional)_                      | The Instrumentation Key for the Application Insights component. |
+| is_always_on                  | true                                 | Is the app is loaded at all times. |
+| docker_registry_server_url    | docker.io                            | The docker registry server URL for images. |
+| docker_registry_server_username | _(Optional)_                       | The docker registry server username for images. |
+| docker_registry_server_password | _(Optional)_                       | The docker register server password for images. |
+| cosmosdb_name                 | _(Optional)_                         | The comsosdb account name. If submited will apply cosmos values to app settings. |
+| is_vnet_isolated              | false                                | Is VNet restriction enabled. |
+| vnet_name                     | _(Optional)_                         | The integrated VNet name. |
+| vnet_subnet_id                | _(Optional)_                         | The VNet integration subnet gateway identifier. |
+
+
+> __app_service_config__
+```hcl
+Each entry produces an instance of a web app with the desired container image
+
+
+{
+  web1 = { image = "azuredocs/aci-helloworld:latest" },
+  web2 = { image = "azuredocs/aci-helloworld:latest" }
 }
 ```
 
@@ -47,21 +85,8 @@ Once the deployments are completed successfully, the output for the current modu
 ```hcl
 Outputs:
 
-app_service_uri = [
-    "appservice1.azurewebsites.net",
-    "appservice2.azurewebsites.net"
-]
-
-app_service_ids = [
-    "/resource/subscriptions/00000/resourceGroups/cobalt-az-simple-erik/providers/Microsoft.Web/sites/cobalt-backend-api-erik/appServices", ...
-]
-
-app_service_identity_tenant_id = [
-    "0000000"
-]
-
-app_service_identity_object_ids = [
-  "00000"
+uri = [
+    "sampleapp-web.azurewebsites.net"
 ]
 ```
 
@@ -69,10 +94,10 @@ app_service_identity_object_ids = [
 
 The following attributes are exported:
 
-- `app_service_uri`: The URL of the app service created
-- `app_service_ids`: The resource ids of the app service created
-- `app_service_identity_tenant_id`: The Tenant ID for the Service Principal associated with the Managed Service Identity of this App Service
-- `app_service_identity_object_ids`: The Principal IDs for the Service Principal associated with the Managed Service Identity for all App Services
+- `uri`: The URL of the app service created
+- `ids`: The resource ids of the app service created
+- `identity_tenant_id`: The Tenant ID for the Service Principal associated with the Managed Service Identity of this App Service
+- `identity_object_ids`: The Principal IDs for the Service Principal associated with the Managed Service Identity for all App Services
 
 ## Argument Reference
 

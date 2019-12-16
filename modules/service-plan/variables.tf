@@ -15,7 +15,7 @@ variable "resource_tags" {
 }
 
 variable "kind" {
-  description = "The kind of service plan to be created. Possible values are Windows/Linux/FunctionApp/App"
+  description = "The kind of service plan to be created. Possible values are Windows/Linux/FunctionApp/App."
   type        = string
   default     = "Linux"
 }

@@ -10,21 +10,22 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var workspace = fmt.Sprintf("simple-web-%s", random.UniqueId())
-var name = fmt.Sprintf("iac-terraform-simple-web-test-%s", random.UniqueId())
+var workspace = fmt.Sprintf("simpleweb-%s", random.UniqueId())
+var name = fmt.Sprintf("iac-terraform-test-simpleweb-%s", random.UniqueId())
 var location = "eastus"
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
-		"name":                name,
-		"location":            location,
-		"randomization_level": 3,
+		"name":                       name,
+		"location":                   location,
+		"randomization_level":        3,
+		"docker_registry_server_url": "mcr.microsoft.com",
 		"deployment_targets": []interface{}{
 			map[string]interface{}{
-				"app_name":                 "web",
-				"image_name":               "mcr.microsoft.com/azuredocs/aci-helloworld",
+				"app_name":                 "test",
+				"image_name":               "azuredocs/aci-helloworld",
 				"image_release_tag_prefix": "latest",
 			},
 		},
@@ -69,11 +70,11 @@ func TestTemplate(t *testing.T) {
 		"https_only": false,
 		"app_settings": {
 			"WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
-			"DOCKER_REGISTRY_SERVER_URL": "https://docker.io"
+			"DOCKER_REGISTRY_SERVER_URL": "https://mcr.microsoft.com"
 		},
 		"site_config": [{
 			"always_on": true,
-			"linux_fx_version": "DOCKER|docker.io/mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+			"linux_fx_version": "DOCKER|mcr.microsoft.com/azuredocs/aci-helloworld:latest"
 		}]
 	}`)
 
@@ -82,11 +83,11 @@ func TestTemplate(t *testing.T) {
 		"https_only": false,
 		"app_settings": {
 			"WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
-			"DOCKER_REGISTRY_SERVER_URL": "https://docker.io"
+			"DOCKER_REGISTRY_SERVER_URL": "https://mcr.microsoft.com"
 		},
 		"site_config": [{
 			"always_on": true,
-			"linux_fx_version": "DOCKER|docker.io/mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+			"linux_fx_version": "DOCKER|mcr.microsoft.com/azuredocs/aci-helloworld:latest"
 		}]
 	}`)
 
@@ -95,7 +96,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 11,
+		ExpectedResourceCount: 10,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.rg":                                                    expectedResourceGroup,
 			"module.service_plan.azurerm_app_service_plan.svcplan":                         expectedServicePlan,

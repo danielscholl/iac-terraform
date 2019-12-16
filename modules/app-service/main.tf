@@ -16,6 +16,7 @@ data "azurerm_app_service_plan" "plan" {
 data "azurerm_cosmosdb_account" "account" {
   name                = var.cosmosdb_name
   resource_group_name = data.azurerm_resource_group.group.name
+  count               =  var.cosmosdb_name == "" ? 0 : 1
 }
 
 resource "azurerm_app_service" "appsvc" {
@@ -30,7 +31,7 @@ resource "azurerm_app_service" "appsvc" {
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]
-    always_on            = var.site_config_always_on
+    always_on            = var.is_always_on
     virtual_network_name = var.vnet_name
   }
 
@@ -68,7 +69,7 @@ resource "azurerm_app_service_slot" "staging" {
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]
-    always_on            = var.site_config_always_on
+    always_on            = var.is_always_on
     virtual_network_name = var.vnet_name
   }
 
@@ -95,7 +96,7 @@ data "azurerm_app_service" "all" {
 
 resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
-  count               = var.uses_vnet ? length(local.app_names) : 0
+  count               = var.is_vnet_isolated ? length(local.app_names) : 0
   resource_group_name = data.azurerm_resource_group.group.name
 
   parameters = {
