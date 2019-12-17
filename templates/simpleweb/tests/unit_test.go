@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -11,12 +12,16 @@ import (
 )
 
 var workspace = fmt.Sprintf("simpleweb-%s", random.UniqueId())
-var name = fmt.Sprintf("iac-terraform-test-simpleweb-%s", random.UniqueId())
+var name = fmt.Sprintf("simpleweb-test-%s", random.UniqueId())
 var location = "eastus"
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../",
 	Upgrade:      true,
+	BackendConfig: map[string]interface{}{
+		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
+		"container_name":       os.Getenv("TF_VAR_remote_state_container"),
+	},
 	Vars: map[string]interface{}{
 		"name":                       name,
 		"location":                   location,

@@ -43,7 +43,7 @@ variable "deployment_targets" {
 variable "docker_registry_server_url" {
   description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
   type        = string
-  default     = "docker.io"
+  default     = "mcr.microsoft.com"
 }
 
 
