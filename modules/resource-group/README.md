@@ -6,7 +6,7 @@ Module for creating and managing Azure Resource Groups.
 
 ```hcl
 module "resource-group" {
-  source = "github.com/danielscholl/iac-terraform/modules/providers/azure/resource-group"
+  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
 
   name          = "test-resourcegroup"
   location      = "test-azure-region"

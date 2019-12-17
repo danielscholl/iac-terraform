@@ -23,7 +23,7 @@ resource "azurerm_resource_group" "example" {
 }
 
 module "service_plan" {
-  source = "../"
+  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
 
   name                        = "my-resourcegroup-plan
   resource_group_name = azurerm_resource_group.example.name

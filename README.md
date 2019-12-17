@@ -101,7 +101,27 @@ terraform init \
 ```
 
 
+
 ## Getting Started
+
+1. Deploying Sample Templates
+
+- simpleweb  - This template deploys a simple Web App with Containers
+- webdata    - This template deploys a Web App with Containers with Cosmos DB Integration
+
+```bash
+# Change directory to Template
+cd <desiredTemplate>
+
+# Initialize the Modules
+terraform init
+
+# Test the plan
+terraform plan
+
+# Apply the Plan
+terraform apply
+```
 
 1. Run Terraform process
 

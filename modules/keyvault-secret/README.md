@@ -17,7 +17,7 @@ secrets = {
 kv_id = "234222"
 
 module "keyvault-secret" {
-  source               = "../../modules/providers/azure/keyvault-secret"
+  source               = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
   keyvault_id          = kv_id
   secrets              = secrets
 }

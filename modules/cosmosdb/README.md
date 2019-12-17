@@ -18,13 +18,13 @@ resource "azurerm_resource_group" "example" {
 }
 
 module "cosmosdb" {
-  source                    = "github.com/danielscholl/iac-terraform/tree/master/modules/cosmosdb"
+  source                    = "github.com/danielscholl/iac-terraform/modules/cosmosdb"
 
   name                      = "test-cosmosdb-instance"
   resource_group_name       = azurerm_resource_group.example.name
   kind                      = "GlobalDocumentDB"
-  automatic_failover        = true | false
-  consistency_level         = "BoundedStaleness" | "Eventual" | "Session" | "Strong" | "ConsistentPrefix"
+  automatic_failover        = false
+  consistency_level         = "Session"
   primary_replica_location  = azurerm_resource_group.example.location
   database_name             = "test-cosmosdb-database"
   container_name            = "test-cosmosdb-container"

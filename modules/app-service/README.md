@@ -32,7 +32,7 @@ resource "azurerm_app_service_plan" "example" {
 }
 
 module "app_service" {
-  source = "github.com/danielscholl/iac-terraform/tree/master/modules/app-service"
+  source = "github.com/danielscholl/iac-terraform/modules/app-service"
 
   name                       = "sampleapp"
   resource_group_name        = azurerm_resource_group.example.name

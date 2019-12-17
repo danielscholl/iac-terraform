@@ -20,7 +20,7 @@ resource "azurerm_resource_group" "example" {
 
 module "keyvault" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/tree/master/modules/keyvault"
+  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
 
   # Module variable
   name           = "mykeyvault"
