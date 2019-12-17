@@ -52,18 +52,18 @@ variable "docker_registry_server_url" {
 #-------------------------------
 locals {
   // Sanitized Names
-  app_id  = random_string.workspace_scope.keepers.app_id
+  app_id    = random_string.workspace_scope.keepers.app_id
   location  = replace(trimspace(lower(var.location)), "_", "-")
-  ws_name = random_string.workspace_scope.keepers.ws_name
-  suffix  = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
+  ws_name   = random_string.workspace_scope.keepers.ws_name
+  suffix    = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // Base Names
-  base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
+  base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
 
   // Resolved resource names
-  name             = "${local.base_name}"
-  service_plan_name     = "${local.base_name}-plan"
-  app_service_name     = "${local.base_name}"
+  name              = "${local.base_name}"
+  service_plan_name = "${local.base_name}-plan"
+  app_service_name  = "${local.base_name}"
 
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url
