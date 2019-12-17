@@ -4,20 +4,20 @@
 
 output "name" {
   description = "Then name of the Resource Group."
-  value = "${azurerm_resource_group.module_resourcegroup.name}"
+  value = "${azurerm_resource_group.main.name}"
 }
 
 output "location" {
   description = "Then location of the Resource Group."
-  value = "${azurerm_resource_group.module_resourcegroup.location}"
+  value = "${azurerm_resource_group.main.location}"
 }
 
 output "id" {
   description = "Then id of the Resource Group."
-  value = "${azurerm_resource_group.module_resourcegroup.id}"
+  value = "${azurerm_resource_group.main.id}"
 }
 
 output "random" {
   description = "A random string derived from the Resource Group."
-  value = "${random_id.randomId.hex}"
+  value = "${random_id.main.hex}"
 }

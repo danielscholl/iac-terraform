@@ -1,21 +1,29 @@
 # Module Azure Resource Group
 
-Simple Module for creating and managing Azure Resource Groups.
+Module for creating and managing Azure Resource Groups.
 
 ## Usage
 
-### Module Definitions
+```hcl
+module "resource-group" {
+  source = "github.com/danielscholl/iac-terraform/modules/providers/azure/resource-group"
 
-- Resource Group Module        : iac/modules/providers/azure/resource-group
-
-```
-module "resourcegroup" {
-  source                      = "github.com/danielscholl/spring-api-user/iac/modules/providers/azure/resource-group"
-  resource_group_name         = "test-resourcegroup"
-  location                    = "test-azure-region"
-  environment                 = "test-environment"
+  name          = "test-resourcegroup"
+  location      = "test-azure-region"
+  tags          = {
+    environment = "test-environment"
+  } 
 }
 ```
+
+## Inputs
+
+| Variable                      | Default                              | Description                          | 
+| ----------------------------- | ------------------------------------ | ------------------------------------ |
+| name                          | _(Required)_                         | The name of the resource group.      |
+| location                      | _(Required)_                         | The location of the resource group.  |
+| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
+
 
 ## Outputs
 
@@ -24,8 +32,8 @@ Once the deployments are completed successfully, the output for the current modu
 ```
 Outputs:
 
-resource_group_name = <resourcegroupname>
-resource_group_location = <resourcegrouplocation>
-resource_group_id = <resourcegroupid>
-resource_group_random = <resourcegrouprandom>
+name = <resourcegroupname>
+location = <resourcegrouplocation>
+id = <resourcegroupid>
+random = <resourcegrouprandom>
 ```
