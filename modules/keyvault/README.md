@@ -1,35 +1,52 @@
-# keyvault
+# Module keyvault
 
-A terraform module to provide key vaults in Azure with the following characteristics:
+A terraform module that provisions key vaults in Azure with the following characteristics:
 
-- Generates or updates a target key vault resource in azure: `keyvault_name`.
-- The key vault is created in a specified resource group: `resource_group_name`.
-- An access policy is created in the vault based on the deployment's service principal and tenant: environment variables `ARM_TENANT_ID` `ARM_CLIENT_SECRET` `ARM_CLIENT_ID`.
-- Key Vault SKU is configurable: `keyvault_sku`. Defaults to `standard`.
-- Access policy permissions for the deployment's service principal are configurable: `keyvault_key_permissions`, `keyvault_secret_permissions` and `keyvault_certificate_permissions`.
-- Specified resource tags are updated to the targeted vault: `resource_tags`.
+- Provisions key vaults in the specified resource group.
+
+- Access policy permissions for the deployment's service principal are configurable: `key_permissions`, `secret_permissions` and `certificate_permissions`.
+
+- Allows for IP and Subnet Whitelisting for access restrictions.
 
 ## Usage
 
-Key Vault usage example:
+### Basic
 
-```hcl
+```
+resource "azurerm_resource_group" "example" {
+  name     = "my-resourcegroup"
+  location = "eastus2"
+}
 
 module "keyvault" {
-  source              = "../../modules/providers/azure/keyvault"
-  keyvault_name       = "${local.kv_name}"
-  resource_group_name = "${azurerm_resource_group.svcplan.name}"
+  # Module Path
+  source = "github.com/danielscholl/iac-terraform/tree/master/modules/keyvault"
+
+  # Module variable
+  name           = "mykeyvault"
+  resource_group = azurerm_resource_group.example.name
 }
 ```
 
-## Attributes Reference
+## Inputs
 
-The following attributes are exported:
+| Variable                      | Default                              | Description                          | 
+| ----------------------------- | ------------------------------------ | ------------------------------------ |
+| name                          | _(Required)_                         | The name of the web app..        |
+| resource_group_name           | _(Required)_                         | The name of an existing resource group. |
+| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
+| sku                           | standard                             |
+| key_permissions               | ["create", "delete", "get"]          |
+| secret_permissions            | ["set", "delete", "get", "list"]     |
+| certificate_permissions       | ["create", "delete", "get", "list"]  |
+| subnet_id_whitelist           | _(Optional)_                         |
+| resource_ip_whitelist         | _(Optional)_                         |
 
-- `keyvault_id`: The id of the Keyvault.
-- `keyvault_uri`: The uri of the keyvault.
-- `keyvault_name`: The name of the Keyvault.
 
-## Argument Reference
+## Outputs
 
-Supported arguments for this module are available in [variables.tf](./variables.tf).
+Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
+
+- `id`: The id of the Keyvault.
+- `uri`: The uri of the keyvault.
+- `name`: The name of the Keyvault.

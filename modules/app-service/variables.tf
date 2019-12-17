@@ -40,7 +40,7 @@ variable "vault_uri" {
   default     = ""
 }
 
-variable "app_insights_instrumentation_key" {
+variable "instrumentation_key" {
   description = "The Instrumentation Key for the Application Insights component."
   type        = string
   default     = ""
@@ -68,12 +68,6 @@ variable "docker_registry_server_password" {
   description = "The docker registry server password for images."
   type        = string
   default     = ""
-}
-
-variable "is_db_enabled" {
-  description = "Is the app using comsosdb. Defaults to false."
-  type        = string
-  default     = false
 }
 
 variable "cosmosdb_name" {
@@ -107,6 +101,7 @@ locals {
   acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
+  
 
   docker_settings = var.docker_registry_server_url != "" ? {
     DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
@@ -114,7 +109,16 @@ locals {
     DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
   } : {}
 
-  cosmosdb_settings = var.is_db_enabled == true ? {
+  keyvault_settings = var.vault_uri != "" ? {
+    KEYVAULT_URI                        = var.vault_uri
+  } : {}
+
+  insights_settings = var.instrumentation_key != "" ? {
+    APPINSIGHTS_INSTRUMENTATIONKEY      = var.instrumentation_key
+  } : {}
+
+  db_enabled = var.cosmosdb_name == "" ? 0 : 1
+  cosmosdb_settings = var.cosmosdb_name != "" ? {
     cosmosdb_database                   = data.azurerm_cosmosdb_account.main[0].name
     cosmosdb_account                    = data.azurerm_cosmosdb_account.main[0].endpoint
     cosmosdb_key                        = data.azurerm_cosmosdb_account.main[0].primary_master_key
@@ -124,6 +128,8 @@ locals {
     var.app_settings,
     local.docker_settings,
     local.cosmosdb_settings,
+    local.keyvault_settings,
+    local.insights_settings,
     {
       WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     },

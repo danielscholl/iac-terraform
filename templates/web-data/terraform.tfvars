@@ -7,7 +7,7 @@
 
 name                    = "webdata"
 location                = "eastus"
-randomization_level     = 3
+randomization_level     = 8
 cosmosdb_container_name = "user"
 deployment_targets = [{
   app_name                 = "user",

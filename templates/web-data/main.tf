@@ -43,7 +43,7 @@ variable "deployment_targets" {
 variable "docker_registry_server_url" {
   description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
   type        = string
-  default     = "mcr.microsoft.com"
+  default     = "docker.io"
 }
 
 variable "cosmosdb_container_name" {
@@ -65,15 +65,16 @@ locals {
 
   // Base Names
   base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
+  base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
+  base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name                  = "${local.base_name}"
-  keyvault_name         = "${local.base_name}-kv"
-  cosmosdb_account_name = "${local.base_name}-db"
-  cosmosdb_database_name = "${local.base_name}"
-  cosmosdb_container_name = "example"
-  service_plan_name     = "${local.base_name}-plan"
-  app_service_name      = "${local.base_name}"
+  name                  = "${local.base_name_83}"
+  keyvault_name         = "${local.base_name_21}-kv"
+  cosmosdb_account_name = "${local.base_name_83}-db"
+  cosmosdb_database_name = "${local.base_name_83}"
+  service_plan_name     = "${local.base_name_83}-plan"
+  app_service_name      = "${local.base_name_83}"
 
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url
@@ -128,7 +129,7 @@ module "keyvault" {
 
   # Module variable
   name           = local.keyvault_name
-  resource_group = azurerm_resource_group.rg.name
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
 
@@ -141,13 +142,13 @@ module "cosmosdb" {
 
   # Module variable
   name                     = local.cosmosdb_account_name
-  resource_group           = azurerm_resource_group.rg.name
+  resource_group_name      = azurerm_resource_group.rg.name
   kind                     = "GlobalDocumentDB"
   automatic_failover       = false
   consistency_level        = "Session"
   primary_replica_location = local.location
   database_name            = local.cosmosdb_database_name
-  container_name           = local.cosmosdb_container_name
+  container_name           = var.cosmosdb_container_name
 }
 
 #-------------------------------

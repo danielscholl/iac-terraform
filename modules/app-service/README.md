@@ -10,7 +10,9 @@ A terraform module that provisions and scales azure managed app service using Li
 
 ## Usage
 
-```hcl
+### Basic
+
+```
 resource "azurerm_resource_group" "example" {
   name     = "my-resourcegroup"
   location = "eastus2"
@@ -30,7 +32,7 @@ resource "azurerm_app_service_plan" "example" {
 }
 
 module "app_service" {
-  source = "../"
+  source = "github.com/danielscholl/iac-terraform/tree/master/modules/app-service"
 
   name                       = "sampleapp"
   resource_group_name        = azurerm_resource_group.example.name
@@ -40,7 +42,48 @@ module "app_service" {
      web = {
         image = "azuredocs/aci-helloworld:latest"
      }
-   }
+  }
+}
+```
+
+### Advanced
+
+```
+resource "azurerm_resource_group" "example" {
+  name     = "my-resourcegroup"
+  location = "eastus2"
+}
+
+resource "azurerm_app_service_plan" "example" {
+  name                = "my-resourcegroup-plan"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  kind = "linux"
+  reserved = true
+
+  sku {
+    tier = "Standard"
+    size = "S1"
+  }
+}
+
+module "app_service" {
+  # Module Path
+  source = "github.com/danielscholl/iac-terraform/tree/master/modules/app-service"
+
+  # Module Variables
+  name                       = "sampleapp"
+  resource_group_name        = azurerm_resource_group.example.name
+  service_plan_name          = azurerm_app_service_plan.example.name
+  docker_registry_server_url = "mcr.microsoft.com"
+  app_service_config = {
+     web = {
+        image = "azuredocs/aci-helloworld:latest"
+     }
+  }
+  vault_uri                  = azurerm_key_vault.example.id
+  is_db_enabled              = true
+  cosmosdb_name              = azurerm_cosmosdb_account.example.name
 }
 ```
 
@@ -56,7 +99,7 @@ module "app_service" {
 | app_settings                  | _(Optional)_                         | Custom App Web App Settings. |
 | resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
 | vault_uri                     | _(Optional)_                         | Specifies the URI of the Key Vault resource. |
-| app_insights_instrumentation_key | _(Optional)_                      | The Instrumentation Key for the Application Insights component. |
+| instrumentation_key           | _(Optional)_                         | The Instrumentation Key for the Application Insights component. |
 | is_always_on                  | true                                 | Is the app is loaded at all times. |
 | docker_registry_server_url    | docker.io                            | The docker registry server URL for images. |
 | docker_registry_server_username | _(Optional)_                       | The docker registry server username for images. |
@@ -68,9 +111,11 @@ module "app_service" {
 | vnet_subnet_id                | _(Optional)_                         | The VNet integration subnet gateway identifier. |
 
 
+The app_service_config object accepts the following keys:
+
 > __app_service_config__
 ```
-Each entry produces an instance of a web app with the desired container image
+The app_service_config object produces an instance of a web app with the desired container image.
 
 {
   web1 = { image = "azuredocs/aci-helloworld:latest" },
@@ -81,17 +126,6 @@ Each entry produces an instance of a web app with the desired container image
 ## Outputs
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
-
-```
-Outputs:
-
-uris = [ "sampleapp-web.azurewebsites.net" ]
-ids = [ <resource_id> ]
-```
-
-### Attributes Reference
-
-The following attributes are exported:
 
 - `uris`: The URL of the app service created
 - `ids`: The resource ids of the app service created

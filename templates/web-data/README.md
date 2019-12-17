@@ -79,5 +79,5 @@ terraform workspace new $USER || terraform workspace select $USER
 go test -v unit_test.go
 
 # This executes the integration tests
-go test -v integration_test.go
+go test -v -timeout 7200s integration_test.go
 ```

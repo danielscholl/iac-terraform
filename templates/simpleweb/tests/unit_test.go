@@ -101,7 +101,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 11,
+		ExpectedResourceCount: 10,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.rg":                                  expectedResourceGroup,
 			"module.service_plan.azurerm_app_service_plan.main":          expectedServicePlan,

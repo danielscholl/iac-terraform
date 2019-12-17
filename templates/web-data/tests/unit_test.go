@@ -23,13 +23,14 @@ var tfOptions = &terraform.Options{
 		"container_name":       os.Getenv("TF_VAR_remote_state_container"),
 	},
 	Vars: map[string]interface{}{
-		"name":                name,
-		"location":            location,
-		"randomization_level": 3,
+		"name":                       name,
+		"location":                   location,
+		"randomization_level":        3,
+		"docker_registry_server_url": "mcr.microsoft.com",
 		"deployment_targets": []interface{}{
 			map[string]interface{}{
-				"app_name":                 "user",
-				"image_name":               "danielscholl/spring-user-api",
+				"app_name":                 "test",
+				"image_name":               "azuredocs/aci-helloworld",
 				"image_release_tag_prefix": "latest",
 			},
 		},
@@ -99,6 +100,7 @@ func TestTemplate(t *testing.T) {
 	expectedWebApp := asMap(t, `{
 		"enabled": true,
 		"https_only": false,
+		
 		"site_config": [{
 			"always_on": true,
 			"linux_fx_version": "DOCKER|mcr.microsoft.com/azuredocs/aci-helloworld:latest"
@@ -108,10 +110,6 @@ func TestTemplate(t *testing.T) {
 	expectedWebSlot := asMap(t, `{
 		"enabled": true,
 		"https_only": false,
-		"app_settings": {
-			"WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
-			"DOCKER_REGISTRY_SERVER_URL": "https://mcr.microsoft.com"
-		},
 		"site_config": [{
 			"always_on": true,
 			"linux_fx_version": "DOCKER|mcr.microsoft.com/azuredocs/aci-helloworld:latest"
@@ -123,7 +121,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 20,
+		ExpectedResourceCount: 19,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.rg":                  expectedResourceGroup,
 			"module.keyvault.azurerm_key_vault.keyvault": expectedKeyVault,

@@ -14,7 +14,7 @@ data "azurerm_app_service_plan" "main" {
 data "azurerm_cosmosdb_account" "main" {
   name                = var.cosmosdb_name
   resource_group_name = data.azurerm_resource_group.main.name
-  count               =  var.is_db_enabled == true ? 0 : 1
+  count               = "${local.db_enabled == "true" ? 1 : 0}"
 }
 
 resource "azurerm_app_service" "main" {
@@ -56,14 +56,7 @@ resource "azurerm_app_service_slot" "staging" {
   app_service_plan_id = data.azurerm_app_service_plan.main.id
   depends_on          = [azurerm_app_service.main]
 
-  app_settings = {
-    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
-    APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
-    KEYVAULT_URI                        = var.vault_uri
-  }
+  app_settings        = local.app_settings
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]

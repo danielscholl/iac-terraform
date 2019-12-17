@@ -7,7 +7,7 @@ variable "name" {
   type        = string
 }
 
-variable "resource_group" {
+variable "resource_group_name" {
   description = "The Resource group to contain the CosmosDB Account"
   type        = string
 }

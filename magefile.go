@@ -25,7 +25,7 @@ func RunAllTargets() {
 	mg.Deps(LintCheckGo)
 	mg.Deps(LintCheckTerraform)
 	// mg.Deps(RunTestHarnessUnitTests)
-	mg.Deps(RunUnitTests)
+	// mg.Deps(RunUnitTests)
 	// mg.Deps(RunIntegrationTests)
 }
 
