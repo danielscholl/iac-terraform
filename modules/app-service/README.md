@@ -62,6 +62,7 @@ module "app_service" {
 | docker_registry_server_username | _(Optional)_                       | The docker registry server username for images. |
 | docker_registry_server_password | _(Optional)_                       | The docker register server password for images. |
 | cosmosdb_name                 | _(Optional)_                         | The comsosdb account name. If submited will apply cosmos values to app settings. |
+| is_db_enabled                 | true                                 | Is the app using cosmosdb. |
 | is_vnet_isolated              | false                                | Is VNet restriction enabled. |
 | vnet_name                     | _(Optional)_                         | The integrated VNet name. |
 | vnet_subnet_id                | _(Optional)_                         | The VNet integration subnet gateway identifier. |

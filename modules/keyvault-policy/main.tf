@@ -2,7 +2,7 @@
 # This module allows the creation of a Key Vault Policy
 ##############################################################
 
-resource "azurerm_key_vault_access_policy" "keyvault" {
+resource "azurerm_key_vault_access_policy" "main" {
   count        = length(var.object_ids)
   key_vault_id = var.vault_id
 

@@ -2,28 +2,26 @@
 # This module allows the creation of a Web App
 ##############################################################
 
-data "azurerm_client_config" "current" {}
-
-data "azurerm_resource_group" "group" {
+data "azurerm_resource_group" "main" {
   name = var.resource_group_name
 }
 
-data "azurerm_app_service_plan" "plan" {
+data "azurerm_app_service_plan" "main" {
   name                = var.service_plan_name
-  resource_group_name = data.azurerm_resource_group.group.name
+  resource_group_name = data.azurerm_resource_group.main.name
 }
 
-data "azurerm_cosmosdb_account" "account" {
+data "azurerm_cosmosdb_account" "main" {
   name                = var.cosmosdb_name
-  resource_group_name = data.azurerm_resource_group.group.name
-  count               =  var.cosmosdb_name == "" ? 0 : 1
+  resource_group_name = data.azurerm_resource_group.main.name
+  count               =  var.is_db_enabled == true ? 0 : 1
 }
 
-resource "azurerm_app_service" "appsvc" {
+resource "azurerm_app_service" "main" {
   name                = format("%s-%s", var.name, lower(local.app_names[count.index]))
-  resource_group_name = data.azurerm_resource_group.group.name
-  location            = data.azurerm_resource_group.group.location
-  app_service_plan_id = data.azurerm_app_service_plan.plan.id
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  app_service_plan_id = data.azurerm_app_service_plan.main.id
   tags                = var.resource_tags
   count               = length(local.app_names)
 
@@ -53,10 +51,10 @@ resource "azurerm_app_service_slot" "staging" {
   name                = "staging"
   app_service_name    = format("%s-%s", var.name, lower(local.app_names[count.index]))
   count               = length(local.app_names)
-  location            = data.azurerm_resource_group.group.location
-  resource_group_name = data.azurerm_resource_group.group.name
-  app_service_plan_id = data.azurerm_app_service_plan.plan.id
-  depends_on          = [azurerm_app_service.appsvc]
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  app_service_plan_id = data.azurerm_app_service_plan.main.id
+  depends_on          = [azurerm_app_service.main]
 
   app_settings = {
     DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
@@ -88,16 +86,16 @@ resource "azurerm_app_service_slot" "staging" {
 }
 
 data "azurerm_app_service" "all" {
-  count               = length(azurerm_app_service.appsvc)
-  name                = azurerm_app_service.appsvc[count.index].name
-  resource_group_name = data.azurerm_resource_group.group.name
-  depends_on          = [azurerm_app_service.appsvc]
+  count               = length(azurerm_app_service.main)
+  name                = azurerm_app_service.main[count.index].name
+  resource_group_name = data.azurerm_resource_group.main.name
+  depends_on          = [azurerm_app_service.main]
 }
 
-resource "azurerm_template_deployment" "access_restriction" {
+resource "azurerm_template_deployment" "main" {
   name                = "access_restriction"
   count               = var.is_vnet_isolated ? length(local.app_names) : 0
-  resource_group_name = data.azurerm_resource_group.group.name
+  resource_group_name = data.azurerm_resource_group.main.name
 
   parameters = {
     service_name                   = format("%s-%s", var.name, lower(local.app_names[count.index]))

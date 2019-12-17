@@ -70,6 +70,12 @@ variable "docker_registry_server_password" {
   default     = ""
 }
 
+variable "is_db_enabled" {
+  description = "Is the app using comsosdb. Defaults to false."
+  type        = string
+  default     = false
+}
+
 variable "cosmosdb_name" {
   description = "The comsosdb account name."
   type        = string
@@ -108,10 +114,10 @@ locals {
     DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
   } : {}
 
-  cosmosdb_settings = var.cosmosdb_name != "" ? {
-    cosmosdb_database                   = data.azurerm_cosmosdb_account.account[0].name
-    cosmosdb_account                    = data.azurerm_cosmosdb_account.account[0].endpoint
-    cosmosdb_key                        = data.azurerm_cosmosdb_account.account[0].primary_master_key
+  cosmosdb_settings = var.is_db_enabled == true ? {
+    cosmosdb_database                   = data.azurerm_cosmosdb_account.main[0].name
+    cosmosdb_account                    = data.azurerm_cosmosdb_account.main[0].endpoint
+    cosmosdb_key                        = data.azurerm_cosmosdb_account.main[0].primary_master_key
   } : {}
 
   app_settings = merge(

@@ -1,6 +1,6 @@
-# Simple Web Template
+# Web Database Template
 
-The `simpleweb` template runs a single public Linux Container within an Azure Application Service Plan.
+The `web-db` template runs a single public Linux Container within an Azure Application Service Plan that connects to CosmosDB and uses a key from Key Vault.
 
 
 ## Provisioned Resources
@@ -8,11 +8,13 @@ The `simpleweb` template runs a single public Linux Container within an Azure Ap
 This deployment creates the following:
 
  1. Azure Resource Group
- 2. Linux App Service Plan
- 3. App Service and Container with a public IP.
- 4. App Service Staging Slot
+ 2. Key Vault
+ 3. Cosmos DB
+ 4. Linux App Service Plan
+ 5. App Service and Container with a public IP
+ 6. App Service Staging Slot
 
-> ![AZ-HW-CIT-Architecture](../../images/simpleweb-arch.png)
+> ![AZ-HW-CIT-Architecture](../../images/webdb-arch.png)
 
 
 ## Example Usage
@@ -51,8 +53,7 @@ terraform destroy
  1. `name`: An identifier used to construct the names of all resources in this template.
  2. `location`: The deployment location of resource group container for all your Azure resources.
  3. `docker_registry_server_url`: The docker registry where images reside.
- 3. `deployment_targets`: The name key value pair where the key is representative to the app service name and value is the source container.
-
+ 4. `deployment_targets`: The name key value pair where the key is representative to the app service name and value is the source container.
 
 ## Testing
 

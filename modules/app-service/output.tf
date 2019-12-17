@@ -1,11 +1,11 @@
 output "uris" {
   description = "The URLs of the app services created"
-  value       = azurerm_app_service.appsvc.*.default_site_hostname
+  value       = azurerm_app_service.main.*.default_site_hostname
 }
 
 output "ids" {
   description = "The resource ids of the app services created"
-  value       = azurerm_app_service.appsvc.*.id
+  value       = azurerm_app_service.main.*.id
 }
 
 output "names" {
@@ -32,10 +32,10 @@ output "config_data" {
 
 output "identity_tenant_id" {
   description = "The Tenant ID for the Service Principal associated with the Managed Service Identity of this App Service."
-  value       = azurerm_app_service.appsvc[0].identity[0].tenant_id
+  value       = azurerm_app_service.main[0].identity[0].tenant_id
 }
 
 output "identity_object_ids" {
   description = "The Principal IDs for the Service Principal associated with the Managed Service Identity for all App Services."
-  value       = azurerm_app_service.appsvc.*.identity.0.principal_id
+  value       = azurerm_app_service.main.*.identity.0.principal_id
 }

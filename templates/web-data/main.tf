@@ -2,7 +2,7 @@
 .Synopsis
    Terraform Main Control
 .DESCRIPTION
-   This file holds the main control and resoures for the iac-terraform simpleweb application.
+   This file holds the main control and resoures for the iac-terraform web-data application.
 */
 
 terraform {
@@ -46,6 +46,12 @@ variable "docker_registry_server_url" {
   default     = "mcr.microsoft.com"
 }
 
+variable "cosmosdb_container_name" {
+  description = "The cosmosdb container name."
+  type        = string
+  default     = "example"
+}
+
 
 #-------------------------------
 # Private Variables  (common.tf)
@@ -61,9 +67,13 @@ locals {
   base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
 
   // Resolved resource names
-  name              = "${local.base_name}"
-  service_plan_name = "${local.base_name}-plan"
-  app_service_name  = "${local.base_name}"
+  name                  = "${local.base_name}"
+  keyvault_name         = "${local.base_name}-kv"
+  cosmosdb_account_name = "${local.base_name}-db"
+  cosmosdb_database_name = "${local.base_name}"
+  cosmosdb_container_name = "example"
+  service_plan_name     = "${local.base_name}-plan"
+  app_service_name      = "${local.base_name}"
 
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url
@@ -74,8 +84,6 @@ locals {
     }
   }
 }
-
-
 
 
 #-------------------------------
@@ -103,8 +111,6 @@ resource "azurerm_resource_group" "rg" {
 }
 
 
-
-
 #-------------------------------
 # Azure Required Providers
 #-------------------------------
@@ -112,6 +118,51 @@ module "provider" {
   source = "../../modules/provider"
 }
 
+
+#-------------------------------
+# Azure Key Vault
+#-------------------------------
+module "keyvault" {
+  # Module Path
+  source = "../../modules/keyvault"
+
+  # Module variable
+  name           = local.keyvault_name
+  resource_group = azurerm_resource_group.rg.name
+}
+
+
+#-------------------------------
+# Cosmos Database
+#-------------------------------
+module "cosmosdb" {
+  # Module Path
+  source = "../../modules/cosmosdb"
+
+  # Module variable
+  name                     = local.cosmosdb_account_name
+  resource_group           = azurerm_resource_group.rg.name
+  kind                     = "GlobalDocumentDB"
+  automatic_failover       = false
+  consistency_level        = "Session"
+  primary_replica_location = local.location
+  database_name            = local.cosmosdb_database_name
+  container_name           = local.cosmosdb_container_name
+}
+
+#-------------------------------
+# Azure Key Vault Secret
+#-------------------------------
+module "keyvault-secret" {
+  # Module Path
+  source = "../../modules/keyvault-secret"
+
+  # Module variable
+  keyvault_id          = module.keyvault.id
+  secrets              = {
+    "cosmosdb-key" = module.cosmosdb.primary_master_key
+  }
+}
 
 #-------------------------------
 # Web Site
@@ -135,6 +186,8 @@ module "app_service" {
   service_plan_name          = module.service_plan.name
   app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
+  vault_uri                  = module.keyvault.uri
+  cosmosdb_name              = module.cosmosdb.name
 }
 
 

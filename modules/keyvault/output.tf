@@ -11,7 +11,15 @@
 # More documentation on this stanza can be found here:
 #   https://www.terraform.io/docs/configuration/outputs.html#depends_on-explicit-output-dependencies
 
-output "keyvault_id" {
+output "name" {
+  description = "The name of the Keyvault"
+  value       = azurerm_key_vault.keyvault.name
+  depends_on = [
+    module.deployment_service_principal_keyvault_access_policies
+  ]
+}
+
+output "id" {
   description = "The id of the Keyvault"
   value       = azurerm_key_vault.keyvault.id
   depends_on = [
@@ -19,17 +27,9 @@ output "keyvault_id" {
   ]
 }
 
-output "keyvault_uri" {
+output "uri" {
   description = "The uri of the keyvault"
   value       = azurerm_key_vault.keyvault.vault_uri
-  depends_on = [
-    module.deployment_service_principal_keyvault_access_policies
-  ]
-}
-
-output "keyvault_name" {
-  description = "The name of the Keyvault"
-  value       = azurerm_key_vault.keyvault.name
   depends_on = [
     module.deployment_service_principal_keyvault_access_policies
   ]

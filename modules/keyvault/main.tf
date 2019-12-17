@@ -2,24 +2,20 @@
 # This module allows the creation of a Key Vault
 ##############################################################
 
-module "azure-provider" {
-  source = "../provider"
-}
+data "azurerm_client_config" "current" {}
 
-data "azurerm_resource_group" "kv" {
+data "azurerm_resource_group" "main" {
   name = var.resource_group
 }
 
-data "azurerm_client_config" "current" {
-}
 
 # Note: Any access policies needed for the keyvault should be created using
 # the `keyvault-policy` module. More information on why can be found here:
 #   https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#access_policy
 resource "azurerm_key_vault" "keyvault" {
   name                = var.name
-  location            = data.azurerm_resource_group.kv.location
-  resource_group_name = data.azurerm_resource_group.kv.name
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   sku_name = var.sku
