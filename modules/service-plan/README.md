@@ -91,6 +91,12 @@ Once the deployments are completed successfully, the output for the current modu
 Outputs:
 
 name = my-resourcegroup-plan
-kind = linux
-id = test-svcplan
+id = <resource_id>
 ```
+
+### Attributes Reference
+
+The following attributes are exported:
+
+- `name`: The URL of the service plan created
+- `ids`: The resource id of the service plan created

@@ -68,9 +68,8 @@ module "app_service" {
 
 
 > __app_service_config__
-```hcl
+```
 Each entry produces an instance of a web app with the desired container image
-
 
 {
   web1 = { image = "azuredocs/aci-helloworld:latest" },
@@ -82,23 +81,19 @@ Each entry produces an instance of a web app with the desired container image
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
-```hcl
+```
 Outputs:
 
-uri = [
-    "sampleapp-web.azurewebsites.net"
-]
+uris = [ "sampleapp-web.azurewebsites.net" ]
+ids = [ <resource_id> ]
 ```
 
-## Attributes Reference
+### Attributes Reference
 
 The following attributes are exported:
 
-- `uri`: The URL of the app service created
+- `uris`: The URL of the app service created
 - `ids`: The resource ids of the app service created
 - `identity_tenant_id`: The Tenant ID for the Service Principal associated with the Managed Service Identity of this App Service
 - `identity_object_ids`: The Principal IDs for the Service Principal associated with the Managed Service Identity for all App Services
 
-## Argument Reference
-
-Supported arguments for this module are available in [variables.tf](./variables.tf).
