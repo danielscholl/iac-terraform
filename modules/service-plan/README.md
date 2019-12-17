@@ -47,7 +47,7 @@ module "service_plan" {
 | scaling_rules                 | _*See Note_                       | The scaling rules for the app service plan. |
 
 > __scaling_rules__
-```json
+```
 {
       metric_trigger = {
         metric_name      = "CpuPercentage"
