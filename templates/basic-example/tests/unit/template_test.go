@@ -17,11 +17,12 @@ func TestTerraformBasicExample(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
-		TerraformDir: "../",
+		TerraformDir: "../../",
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"example": expectedText,
+			"example":  expectedText,
+			"example2": expectedText,
 
 			// We also can see how lists and maps translate between terratest and terraform.
 			"example_list": expectedList,
@@ -29,7 +30,7 @@ func TestTerraformBasicExample(t *testing.T) {
 		},
 
 		// Variables to pass to our Terraform code using -var-file options
-		VarFiles: []string{"varfile.tfvars"},
+		// VarFiles: []string{"../../varfile.tfvars"},
 
 		// Disable colors in Terraform commands so its easier to parse stdout/stderr
 		NoColor: true,

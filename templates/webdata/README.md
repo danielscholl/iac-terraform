@@ -1,6 +1,6 @@
 # Web Database Template
 
-The `web-db` template runs a single public Linux Container within an Azure Application Service Plan that connects to CosmosDB and uses a key from Key Vault.
+The `webdata` template runs a single public Linux Container within an Azure Application Service Plan that connects to CosmosDB and uses a key from Key Vault.
 
 
 ## Provisioned Resources
@@ -14,7 +14,7 @@ This deployment creates the following:
  5. App Service and Container with a public IP
  6. App Service Staging Slot
 
-> ![AZ-HW-CIT-Architecture](../../images/webdb-arch.png)
+> ![AZ-HW-CIT-Architecture](../../images/webdata-arch.png)
 
 
 ## Example Usage

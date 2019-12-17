@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -18,7 +19,7 @@ func TestTerraformHttpExample(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
-		TerraformDir: "../",
+		TerraformDir: "../../",
 		Upgrade:      true,
 
 		BackendConfig: map[string]interface{}{
@@ -27,14 +28,14 @@ func TestTerraformHttpExample(t *testing.T) {
 		},
 
 		Vars: map[string]interface{}{
-			"name":                    "webdata",
-			"location":                "eastus2",
-			"randomization_level":     8,
-			"cosmosdb_container_name": "user",
+			"name":                       "simpleweb",
+			"location":                   "eastus2",
+			"randomization_level":        8,
+			"docker_registry_server_url": "mcr.microsoft.com",
 			"deployment_targets": []interface{}{
 				map[string]interface{}{
-					"app_name":                 "test",
-					"image_name":               "danielscholl/spring-user-api",
+					"app_name":                 "app",
+					"image_name":               "azuredocs/aci-helloworld",
 					"image_release_tag_prefix": "latest",
 				},
 			},
@@ -54,13 +55,10 @@ func TestTerraformHttpExample(t *testing.T) {
 	terraform.Plan(t, terraformOptions)
 	terraform.Apply(t, terraformOptions)
 
-	homepage := terraform.Output(t, terraformOptions, "app_service_default_hostname/api/user")
+	homepage := terraform.Output(t, terraformOptions, "app_service_default_hostname")
 
-	// Verify that we get back a 200 OK with the expected instanceText
-	http_helper.HttpGetWithRetry(t, homepage, &tlsConfig, 200, "[]", maxRetries, timeBetweenRetries)
-
-	// http_helper.HttpGetWithRetryWithCustomValidation(t, homepage, &tlsConfig, maxRetries, timeBetweenRetries, func(status int, content string) bool {
-	// 	return status == 200 &&
-	// 		strings.Contains(content, "Welcome to Azure Container Instances!")
-	// })
+	http_helper.HttpGetWithRetryWithCustomValidation(t, homepage, &tlsConfig, maxRetries, timeBetweenRetries, func(status int, content string) bool {
+		return status == 200 &&
+			strings.Contains(content, "Welcome to Azure Container Instances!")
+	})
 }

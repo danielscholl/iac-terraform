@@ -16,7 +16,7 @@ var name = fmt.Sprintf("simpleweb-test-%s", random.UniqueId())
 var location = "eastus"
 
 var tfOptions = &terraform.Options{
-	TerraformDir: "../",
+	TerraformDir: "../../",
 	Upgrade:      true,
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
