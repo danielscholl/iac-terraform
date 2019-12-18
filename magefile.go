@@ -35,6 +35,14 @@ func Unit() error {
 	return FindAndRunTests("unit")
 }
 
+// Execute Module Unit Tests and fail if a unit test fails. Only executes tests in 'test' directory
+func Test() error {
+	mg.Deps(Clean)
+	mg.Deps(Format)
+	fmt.Println("INFO: Running unit tests...")
+	return FindAndRunTests("test")
+}
+
 // Lint Check both Terraform code and Go code.
 func Format() {
 	mg.Deps(LintTF)
