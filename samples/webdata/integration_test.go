@@ -14,9 +14,11 @@ import (
 func TestTerraformHttpExample(t *testing.T) {
 	t.Parallel()
 
+	workspace := fmt.Sprintf("iac")
+
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
-		TerraformDir: "../../",
+		TerraformDir: ".",
 		Upgrade:      true,
 
 		BackendConfig: map[string]interface{}{
@@ -47,17 +49,13 @@ func TestTerraformHttpExample(t *testing.T) {
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
 
-	terraform.InitAndApply(t, terraformOptions)
-
-	// workspace := fmt.Sprintf("iac")
-	// terraform.Init(t, terraformOptions)
-	// terraform.WorkspaceSelectOrNew(t, terraformOptions, workspace)
-	// terraform.Plan(t, terraformOptions)
-	// terraform.Apply(t, terraformOptions)
+	terraform.Init(t, terraformOptions)
+	terraform.WorkspaceSelectOrNew(t, terraformOptions, workspace)
+	terraform.Plan(t, terraformOptions)
+	terraform.Apply(t, terraformOptions)
 
 	instanceURL := terraform.Output(t, terraformOptions, "app_service_default_hostname")
 
-	// Verify that we get back a 200 OK with the expected instanceText
 	http_helper.HttpGetWithRetry(
 		t,
 		fmt.Sprintf(instanceURL, "/api/user"),
@@ -66,5 +64,4 @@ func TestTerraformHttpExample(t *testing.T) {
 		"[]",
 		maxRetries,
 		timeBetweenRetries)
-
 }
