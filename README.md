@@ -104,22 +104,22 @@ terraform init \
 
 ## Getting Started
 
-1. Task Runner (mage)
+1. Testing with Task Runner (mage)
 
 ```
 iac-terraform task runner.
 
 Targets:
-  clean      Remove temporary build and test files.
-  format     Lint Check both Terraform code and Go code.
-  full       A build step that runs Clean, Format, Unit and Integration in sequence
-  lintGO     Lint Check Go and fail if files are not not formatted properly.
-  lintTF     Lint Check Terraform and fail if files are not formatted properly.
-  samples    Execute Sample Tests and fail if a test fails.
-  test       Execute Module Unit Tests and fail if a unit test fails.
+  clean          Remove temporary build and test files.
+  format         Lint check both Terraform code and Go code.
+  full           A build step that runs both Module tests and Sample tests
+  lintGO         Lint check Go and fail if files are not not formatted properly.
+  lintTF         Lint check Terraform and fail if files are not formatted properly.
+  testModules    Execute Module Unit Tests and fail if a unit test fails.
+  testSamples    Execute Sample Tests and fail if a test fails.
 ```
 
-1. Deploying Sample Templates
+2. Deploying Sample Templates
 
 - simpleweb  - This template deploys a simple Web App with Containers
 - webdata    - This template deploys a Web App with Containers with Cosmos DB Integration

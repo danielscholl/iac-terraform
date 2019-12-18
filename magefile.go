@@ -13,41 +13,41 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
-// A build step that runs Clean, Format, Unit and Integration in sequence
+// A build step that runs both Module tests and Sample tests
 func Full() {
-	mg.Deps(Test)
-	mg.Deps(Samples)
+	mg.Deps(TestModules)
+	mg.Deps(TestSamples)
 }
 
-// Execute Sample Tests and fail if a test fails. Only executes tests in 'unit' directory
-func Samples() error {
+// Execute Sample Tests and fail if a test fails. Only executes tests in 'test' directory
+func TestSamples() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
 	fmt.Println("INFO: Running sample tests...")
 	return FindAndRunTests("tests")
 }
 
-// Execute Module Unit Tests and fail if a unit test fails. Only executes tests in 'test' directory
-func Test() error {
+// Execute Module Unit Tests and fail if a unit test fails. Only executes tests in 'tests' directory
+func TestModules() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
 	fmt.Println("INFO: Running unit tests...")
 	return FindAndRunTests("test")
 }
 
-// Lint Check both Terraform code and Go code.
+// Lint check both Terraform code and Go code.
 func Format() {
 	mg.Deps(LintTF)
 	mg.Deps(LintGO)
 }
 
-// Lint Check Go and fail if files are not not formatted properly.
+// Lint check Go and fail if files are not not formatted properly.
 func LintGO() error {
 	fmt.Println("INFO: Checking format for Go files...")
 	return verifyRunsQuietly("Run `go fmt ./...` to fix", "go", "fmt", "./...")
 }
 
-// Lint Check Terraform and fail if files are not formatted properly.
+// Lint check Terraform and fail if files are not formatted properly.
 func LintTF() error {
 	fmt.Println("INFO: Checking format for Terraform files...")
 	return verifyRunsQuietly("Run `terraform fmt --check --recursive` to fix the offending files", "terraform", "fmt")
