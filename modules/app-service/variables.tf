@@ -121,7 +121,7 @@ locals {
   app_settings = merge(
     var.app_settings,
     local.docker_settings,
-    local.secure_app_settings,
+    var.secure_app_settings,
     local.insights_settings,
     {
       WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
