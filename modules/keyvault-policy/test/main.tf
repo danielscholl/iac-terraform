@@ -1,25 +1,19 @@
-resource "azurerm_resource_group" "example" {
+module "resource_group" {
+  source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }
 
-resource "random_id" "example" {
-  keepers = {
-    resource_group = azurerm_resource_group.example.name
-  }
-  byte_length = 3
-}
-
 module "service_plan" {
-  source              = "../../service-plan"
-  name                = "iac-terraform-plan-${random_id.example.hex}"
-  resource_group_name = azurerm_resource_group.example.name
+  source              = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  name                = "iac-terraform-plan-${module.resource-group.random}"
+  resource_group_name = module.resource_group.name
 }
 
 module "app_service" {
-  source                     = "../../app-service"
-  name                       = "iac-terraform-web-${random_id.example.hex}"
-  resource_group_name        = azurerm_resource_group.example.name
+  source                     = "github.com/danielscholl/iac-terraform/modules/app-service"
+  name                       = "iac-terraform-web-${module.resource_group.random}"
+  resource_group_name        = module.resource_group.name
   service_plan_name          = module.service_plan.name
   docker_registry_server_url = "mcr.microsoft.com"
 
@@ -31,12 +25,12 @@ module "app_service" {
 }
 
 module "keyvault" {
-  source              = "../../keyvault"
-  name                = "iac-terraform-kv-${random_id.example.hex}"
-  resource_group_name = azurerm_resource_group.example.name
+  source              = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  name                = "iac-terraform-kv-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
 }
 
-module "keyvault-policy" {
+module "keyvault_policy" {
   source                  = "../"
   vault_id                = module.keyvault.id
   tenant_id               = module.app_service.identity_tenant_id

@@ -11,46 +11,36 @@ A terraform module that provisions and scales azure managed app service using Li
 ## Usage
 
 ```
-resource "azurerm_resource_group" "example" {
+module "resource_group" {
+  source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }
 
-resource "random_id" "example" {
-  keepers = {
-    resource_group = azurerm_resource_group.example.name
-  }
-  byte_length = 3
-}
-
-resource "azurerm_app_service_plan" "example" {
-  name                = "iac-terraform-plan"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  kind = "linux"
-  reserved = true
-
-  sku {
-    tier = "Standard"
-    size = "S1"
-  }
+module "service_plan" {
+  source              = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  name                = "iac-terraform-plan-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
 }
 
 module "app_service" {
-  source = "github.com/danielscholl/iac-terraform/modules/app-service"
-
-  name                       = "iac-terraform-web"
-  resource_group_name        = azurerm_resource_group.example.name
+  source                     = "github.com/danielscholl/iac-terraform/modules/app-service"
+  name                       = "iac-terraform-web-${module.resource_group.random}"
+  resource_group_name        = module.resource_group.name
   service_plan_name          = azurerm_app_service_plan.example.name
   docker_registry_server_url = "mcr.microsoft.com"
+  instrumentation_key        = "secret_key"
+
   app_settings = {
     iac = "terraform"
   }
+
   app_service_config = {
      web = {
         image = "azuredocs/aci-helloworld:latest"
      }
   }
+
   resource_tags = {
     iac = "terraform"
   }

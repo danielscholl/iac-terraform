@@ -9,23 +9,42 @@ A terraform module to provide Key Vaults secrets for existing Key Vaults in Azur
 
 Key Vault secret usage example:
 
-```hcl
-secrets = {
-    "secret-sauce" = "chunky marinara"
+```
+module "resource_group" {
+  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+
+  name     = "iac-terraform"
+  location = "eastus2"
 }
 
-kv_id = "234222"
+module "keyvault" {
+  source              = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  name                = "iac-terraform-kv-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
+}
 
-module "keyvault-secret" {
+module "keyvault_secret" {
   source               = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
-  keyvault_id          = kv_id
-  secrets              = secrets
+  keyvault_id          = module.keyvault.id
+  secrets              = {
+    "iac": "terraform"
+  }
 }
+```
 
-data "key-vault-secret-output" {
-  depends_on   = [keyvault-secret]
-  name         = keys(local.secrets)[0]
-  key_vault_id = kv_id
+## Inputs
+
+| Variable                      | Default                              | Description                          | 
+| ----------------------------- | ------------------------------------ | ------------------------------------ |
+| keyvault_id                   | _(Required)_                         | Id of the Key Vault to store the secret in.  |
+| secrets                       | __(Object)__                         | Key/value pair of keyvault secret names and corresponding secret value. |
+
+> __secrets__
+```
+The secrets object produces a list of secrets to be added.
+
+{
+  jedi = "master"
 }
 ```
 
@@ -40,4 +59,5 @@ The following variables are used:
 
 The following attributes are exported:
 
-- `keyvault_secret_attributes`: The properties of a Key Vault secret.
+- `secrets`: A mapping of secret names and URIs.
+- `references`: A mapping of Key Vault references for App Service and Azure Functions.
