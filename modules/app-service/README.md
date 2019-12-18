@@ -10,16 +10,21 @@ A terraform module that provisions and scales azure managed app service using Li
 
 ## Usage
 
-### Basic
-
 ```
 resource "azurerm_resource_group" "example" {
-  name     = "my-resourcegroup"
+  name     = "iac-terraform"
   location = "eastus2"
 }
 
+resource "random_id" "example" {
+  keepers = {
+    resource_group = azurerm_resource_group.example.name
+  }
+  byte_length = 3
+}
+
 resource "azurerm_app_service_plan" "example" {
-  name                = "my-resourcegroup-plan"
+  name                = "iac-terraform-plan"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
   kind = "linux"
@@ -34,57 +39,24 @@ resource "azurerm_app_service_plan" "example" {
 module "app_service" {
   source = "github.com/danielscholl/iac-terraform/modules/app-service"
 
-  name                       = "sampleapp"
+  name                       = "iac-terraform-web"
   resource_group_name        = azurerm_resource_group.example.name
   service_plan_name          = azurerm_app_service_plan.example.name
   docker_registry_server_url = "mcr.microsoft.com"
+  app_settings = {
+    iac = "terraform"
+  }
   app_service_config = {
      web = {
         image = "azuredocs/aci-helloworld:latest"
      }
   }
-}
-```
-
-### Advanced
-
-```
-resource "azurerm_resource_group" "example" {
-  name     = "my-resourcegroup"
-  location = "eastus2"
-}
-
-resource "azurerm_app_service_plan" "example" {
-  name                = "my-resourcegroup-plan"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  kind = "linux"
-  reserved = true
-
-  sku {
-    tier = "Standard"
-    size = "S1"
+  resource_tags = {
+    iac = "terraform"
   }
 }
-
-module "app_service" {
-  # Module Path
-  source = "github.com/danielscholl/iac-terraform/tree/master/modules/app-service"
-
-  # Module Variables
-  name                       = "sampleapp"
-  resource_group_name        = azurerm_resource_group.example.name
-  service_plan_name          = azurerm_app_service_plan.example.name
-  docker_registry_server_url = "mcr.microsoft.com"
-  app_service_config = {
-     web = {
-        image = "azuredocs/aci-helloworld:latest"
-     }
-  }
-  vault_uri                  = azurerm_key_vault.example.id
-  cosmosdb_name              = azurerm_cosmosdb_account.example.name
-}
 ```
+
 
 ## Inputs
 

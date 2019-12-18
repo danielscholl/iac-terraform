@@ -16,17 +16,28 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/app_se
 
 ## Usage
 
-```hcl
+```
 resource "azurerm_resource_group" "example" {
-  name     = "my-resourcegroup"
+  name     = "iac-terraform"
   location = "eastus2"
+}
+
+resource "random_id" "example" {
+  keepers = {
+    resource_group = azurerm_resource_group.example.name
+  }
+  byte_length = 3
 }
 
 module "service_plan" {
   source = "github.com/danielscholl/iac-terraform/modules/service-plan"
 
-  name                        = "my-resourcegroup-plan
-  resource_group_name = azurerm_resource_group.example.name
+  name                       = "iac-terraform-plan-${random_id.example.hex}"
+  resource_group_name        = azurerm_resource_group.example.name
+
+  resource_tags = {
+    iac = "terraform"
+  }
 }
 ```
 

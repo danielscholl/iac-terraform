@@ -14,17 +14,21 @@ A terraform module that provisions key vaults in Azure with the following charac
 
 ```
 resource "azurerm_resource_group" "example" {
-  name     = "my-resourcegroup"
+  name     = "iac-terraform"
   location = "eastus2"
 }
 
-module "keyvault" {
-  # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
+resource "random_id" "example" {
+  keepers = {
+    resource_group = azurerm_resource_group.example.name
+  }
+  byte_length = 3
+}
 
-  # Module variable
-  name           = "mykeyvault"
-  resource_group = azurerm_resource_group.example.name
+module "keyvault" {
+  source              = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  name                = "iac-terraform-kv-${random_id.example.hex}"
+  resource_group_name = azurerm_resource_group.example.name
 }
 ```
 

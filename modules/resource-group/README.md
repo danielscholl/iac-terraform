@@ -4,13 +4,14 @@ Module for creating and managing Azure Resource Groups.
 
 ## Usage
 
-```hcl
+```
 module "resource-group" {
   source = "github.com/danielscholl/iac-terraform/modules/resource-group"
 
-  name          = "test-resourcegroup"
-  location      = "test-azure-region"
-  tags          = {
+  name     = "iac-terraform"
+  location = "eastus2"
+
+  resource_tags          = {
     environment = "test-environment"
   } 
 }
