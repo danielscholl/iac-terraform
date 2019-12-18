@@ -45,7 +45,7 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: count,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"module.keyvault.azurerm_key_vault.keyvault": expectedResult,
+			"module.keyvault.azurerm_key_vault.main": expectedResult,
 			"module.keyvault.module.deployment_service_principal_keyvault_access_policies.azurerm_key_vault_access_policy.main[0]": expectedPolicies,
 		},
 	}

@@ -35,6 +35,7 @@ module "keyvault" {
 | `key_permissions`                 | _list_     | Permissions that the service principal has for accessing keys from keyvault. Default: `["create", "delete", "get"]` |
 | `secret_permissions`              | _list_     | Permissions that the service principal has for accessing secrets from keyvault. Default: `["set", "delete", "get", "list"]` |
 | `certificate_permissions`         | _list_     | Permissions that the service principal has for accessing certificates from keyvault. Default: `["create", "delete", "get", "list"]` |
+| `secrets`                         | _list_     | A map of secrets for the Key Vault. |
 | `subnet_id_whitelist`             | _list_     | If supplied this represents the subnet IDs that should be allowed to access this resource |
 | `resource_ip_whitelist`           | _list_     | A list of IPs and/or IP ranges that should have access to the provisioned keyvault |
 
@@ -44,5 +45,7 @@ module "keyvault" {
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
 - `id`: The id of the Keyvault.
-- `uri`: The uri of the keyvault.
 - `name`: The name of the Keyvault.
+- `uri`: The uri of the Keyvault.
+- `secrets`: A mapping of secret names and URIs
+- `references`: A mapping of Key Vault references for App Service and Azure Functions.

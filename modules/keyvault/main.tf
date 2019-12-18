@@ -12,7 +12,7 @@ data "azurerm_resource_group" "main" {
 # Note: Any access policies needed for the keyvault should be created using
 # the `keyvault-policy` module. More information on why can be found here:
 #   https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#access_policy
-resource "azurerm_key_vault" "keyvault" {
+resource "azurerm_key_vault" "main" {
   name                = var.name
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
@@ -35,9 +35,16 @@ resource "azurerm_key_vault" "keyvault" {
   tags = var.resource_tags
 }
 
+resource "azurerm_key_vault_secret" "main" {
+  for_each     = var.secrets
+  name         = each.key
+  value        = each.value
+  key_vault_id = azurerm_key_vault.main.id
+}
+
 module "deployment_service_principal_keyvault_access_policies" {
   source                  = "../keyvault-policy"
-  vault_id                = azurerm_key_vault.keyvault.id
+  vault_id                = azurerm_key_vault.main.id
   tenant_id               = data.azurerm_client_config.current.tenant_id
   object_ids              = [data.azurerm_client_config.current.service_principal_object_id]
   key_permissions         = var.key_permissions

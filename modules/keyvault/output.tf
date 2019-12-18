@@ -13,7 +13,7 @@
 
 output "name" {
   description = "The name of the Keyvault"
-  value       = azurerm_key_vault.keyvault.name
+  value       = azurerm_key_vault.main.name
   depends_on = [
     module.deployment_service_principal_keyvault_access_policies
   ]
@@ -21,7 +21,7 @@ output "name" {
 
 output "id" {
   description = "The id of the Keyvault"
-  value       = azurerm_key_vault.keyvault.id
+  value       = azurerm_key_vault.main.id
   depends_on = [
     module.deployment_service_principal_keyvault_access_policies
   ]
@@ -29,8 +29,21 @@ output "id" {
 
 output "uri" {
   description = "The uri of the keyvault"
-  value       = azurerm_key_vault.keyvault.vault_uri
+  value       = azurerm_key_vault.main.vault_uri
   depends_on = [
     module.deployment_service_principal_keyvault_access_policies
   ]
+}
+
+output "secrets" {
+  value       = { for k, v in azurerm_key_vault_secret.main : v.name => v.id }
+  description = "A mapping of secret names and URIs."
+}
+
+output "references" {
+  value = {
+    for k, v in azurerm_key_vault_secret.main :
+    v.name => format("@Microsoft.KeyVault(SecretUri=%s)", v.id)
+  }
+  description = "A mapping of Key Vault references for App Service and Azure Functions."
 }

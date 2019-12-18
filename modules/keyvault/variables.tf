@@ -43,6 +43,12 @@ variable "certificate_permissions" {
   default     = ["create", "delete", "get", "list"]
 }
 
+variable "secrets" {
+  type        = map(string)
+  description = "A map of secrets for the Key Vault."
+  default     = {}
+}
+
 variable "subnet_id_whitelist" {
   description = "If supplied this represents the subnet IDs that should be allowed to access this resource"
   type        = list(string)
