@@ -14,7 +14,7 @@ module "app_service" {
   source                     = "../"
   name                       = "iac-terraform-web-${module.resource_group.random}"
   resource_group_name        = module.resource_group.name
-  service_plan_name          = azurerm_app_service_plan.example.name
+  service_plan_name          = module.service_plan.name
   docker_registry_server_url = "mcr.microsoft.com"
   instrumentation_key        = "secret_key"
 
