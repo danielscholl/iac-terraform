@@ -216,10 +216,24 @@ module "app_service" {
     cosmosdb_account         = module.cosmosdb.endpoint
     cosmosdb_key             = module.cosmosdb.primary_master_key
   }
+  secure_app_settings        = module.keyvault.references
 
   resource_tags          = {
     environment = local.ws_name
   }
+}
+
+#-------------------------------
+# Access Policies
+#-------------------------------
+module "keyvault_policy" {
+  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  vault_id                = module.keyvault.id
+  tenant_id               = module.app_service.identity_tenant_id
+  object_ids              = module.app_service.identity_object_ids
+  key_permissions         = ["get"]
+  secret_permissions      = ["get"]
+  certificate_permissions = ["get"]
 }
 
 
