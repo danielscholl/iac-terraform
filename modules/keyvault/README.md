@@ -26,17 +26,17 @@ module "keyvault" {
 
 ## Inputs
 
-| Variable                      | Default                              | Description                          | 
-| ----------------------------- | ------------------------------------ | ------------------------------------ |
-| name                          | _(Required)_                         | The name of the web app..        |
-| resource_group_name           | _(Required)_                         | The name of an existing resource group. |
-| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
-| sku                           | standard                             |
-| key_permissions               | ["create", "delete", "get"]          |
-| secret_permissions            | ["set", "delete", "get", "list"]     |
-| certificate_permissions       | ["create", "delete", "get", "list"]  |
-| subnet_id_whitelist           | _(Optional)_                         |
-| resource_ip_whitelist         | _(Optional)_                         |
+| Variable Name                     | Type       | Description                          | 
+| --------------------------------- | ---------- | ------------------------------------ |
+| `name`                            | _string_   | The name of the web app service.     |
+| `resource_group_name`             | _string_   | The name of an existing resource group. |
+| `resource_tags`                   | _list_     | Map of tags to apply to taggable resources in this module. |
+| `sku`                             | _string_   | SKU of the keyvault to create. Default: `standard` |
+| `key_permissions`                 | _list_     | Permissions that the service principal has for accessing keys from keyvault. Default: `["create", "delete", "get"]` |
+| `secret_permissions`              | _list_     | Permissions that the service principal has for accessing secrets from keyvault. Default: `["set", "delete", "get", "list"]` |
+| `certificate_permissions`         | _list_     | Permissions that the service principal has for accessing certificates from keyvault. Default: `["create", "delete", "get", "list"]` |
+| `subnet_id_whitelist`             | _list_     | If supplied this represents the subnet IDs that should be allowed to access this resource |
+| `resource_ip_whitelist`           | _list_     | A list of IPs and/or IP ranges that should have access to the provisioned keyvault |
 
 
 ## Outputs

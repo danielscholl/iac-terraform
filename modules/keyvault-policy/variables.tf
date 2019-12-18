@@ -3,7 +3,7 @@
 ##############################################################
 
 variable "vault_id" {
-  description = "Specifies the name of the Key Vault resource."
+  description = "Specifies the Id of the Key Vault resource."
   type        = string
 }
 

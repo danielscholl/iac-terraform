@@ -48,7 +48,7 @@ terraform destroy
 
 #### Required Variables
 
- 1. `name`: An identifier used to construct the names of all resources in this template.
+ 1. `name`: An identifier used to construct the names of all resources in this sample.
  2. `location`: The deployment location of resource group container for all your Azure resources.
  3. `docker_registry_server_url`: The docker registry where images reside.
  3. `deployment_targets`: The name key value pair where the key is representative to the app service name and value is the source container.
@@ -56,27 +56,9 @@ terraform destroy
 
 ## Testing
 
-1. Execute the following commands to set up your terraform workspace.
+Execute the following commands to test the sample.
 
 ```bash
-# Change to the testing directory
-cd test
-
-# This configures terraform to leverage a remote backend that will help you and your
-# team keep consistent state
-terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
-
-# This command configures terraform to use a workspace unique to you. This allows you to work
-# without stepping over your teammate's deployments
-terraform workspace new $USER || terraform workspace select $USER
-```
-
-2. Execute the following commands to test the template.
-
-```bash
-# This executes the unit tests
-go test -v unit_test.go
-
-# This executes the integration tests
-go test -v integration_test.go
+# This executes the test
+go test -v -timeout 7200s integration_test.go
 ```

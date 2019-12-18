@@ -34,19 +34,11 @@ module "keyvault_secret" {
 
 ## Inputs
 
-| Variable                      | Default                              | Description                          | 
-| ----------------------------- | ------------------------------------ | ------------------------------------ |
-| keyvault_id                   | _(Required)_                         | Id of the Key Vault to store the secret in.  |
-| secrets                       | __(Object)__                         | Key/value pair of keyvault secret names and corresponding secret value. |
+| Variable Name             | Type       | Description                          | 
+| ------------------------- | ---------- | ------------------------------------ |
+| `vault_id`                | _string_   | Id of the Key Vault to store the secret in. |
+| `secrets`                 | _list_     | Key/value pair of keyvault secret names and corresponding secret value. |
 
-> __secrets__
-```
-The secrets object produces a list of secrets to be added.
-
-{
-  jedi = "master"
-}
-```
 
 ## Variables Reference
 

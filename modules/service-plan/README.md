@@ -37,21 +37,22 @@ module "service_plan" {
 
 ## Inputs
 
-| Variable                      | Default                              | Description                          | 
-| ----------------------------- | ------------------------------------ | ------------------------------------ |
-| name                          | _(Required)_                         | The name of the service plan.        |
-| resource_group_name           | _(Required)_                         | The name of an existing resource group. |
-| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
-| kind                          | Linux                                | The kind of service plan to be created. Possible values are Windows/Linux/FunctionApp/App. |
-| tier                          | Standard                             | The tier under which the service plan is created. |
-| size                          | S1                                   | The compute and storage needed for the service plan to be deployed. |
-| capacity                      | 1                                    | The capacity of Service Plan to be created. |
-| isReserved                    | true                                 | Is the Service Plan to be created reserved. Possible values are true/false |
-| app_service_environment_id    | _(Optional)_                         | If specified, the ID of the App Service Environment where this plan should be deployed |
-| autoscale_capacity_minimum    | 1                                    | The minimum number of instances for this resource. Valid values are between 0 and 1000 |
-| scaling_rules                 | _*See Note_                       | The scaling rules for the app service plan. |
+| Variable Name                     | Type       | Description                          | 
+| --------------------------------- | ---------- | ------------------------------------ |
+| `name`                            | _string_   | The name of the web app service.     |
+| `resource_group_name`             | _string_   | The name of an existing resource group. |
+| `resource_tags`                   | _list_     | Map of tags to apply to taggable resources in this module. |
+| `kind`                            | _string_   | The kind of service plan to be created. Possible values are Windows/Linux/FunctionApp/App. Default: `Linux` |
+| `tier`                            | _string_   | The tier under which the service plan is created. Default: `Standard` |
+| `size`                            | _string_   | The compute and storage needed for the service plan to be deployed. Default: `S1`|
+| `capacity`                        | _int_      | The capacity of Service Plan to be created. Default: `1` |
+| `isReserved`                      | _bool_     | Is the Service Plan to be created reserved. Possible values are true/false Default: `true` |
+| `app_service_environment_id`      | _string_   | If specified, the ID of the App Service Environment where this plan should be deployed |
+| `autoscale_capacity_minimum`      | _int_      | The minimum number of instances for this resource. Valid values are between 0 and 1000 Default: `1` |
+| `scaling_rules`                   | __object__ | The scaling rules for the app service plan. |
 
-> __scaling_rules__
+
+The __scaling_rules__ object
 ```
 {
       metric_trigger = {

@@ -13,22 +13,30 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
-// A build step that runs both Module tests and Sample tests
+// A build step that runs all tests.
 func Full() {
-	mg.Deps(TestModules)
-	mg.Deps(TestSamples)
+	mg.Deps(Test)
+	mg.Deps(Samples)
 }
 
-// Execute Sample Tests and fail if a test fails. Only executes tests in 'test' directory
-func TestSamples() error {
+// Execute Sample Tests and fail if a test fails. Only executes tests in 'testing' directories.
+func Samples() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
 	fmt.Println("INFO: Running sample tests...")
-	return FindAndRunTests("tests")
+	return FindAndRunTests("testing")
 }
 
-// Execute Module Unit Tests and fail if a unit test fails. Only executes tests in 'tests' directory
-func TestModules() error {
+// Execute Integration Tests for the simpleweb sample. Only executes tests in 'simpleweb' directories.
+func SimpleWeb() error {
+	mg.Deps(Clean)
+	mg.Deps(Format)
+	fmt.Println("INFO: Running sample tests...")
+	return FindAndRunTests("simpleweb")
+}
+
+// Execute Module Tests and fail if a test fails. Only executes tests in 'test' directories.
+func Test() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
 	fmt.Println("INFO: Running unit tests...")

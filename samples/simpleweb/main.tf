@@ -93,23 +93,27 @@ resource "random_string" "workspace_scope" {
   upper   = false
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = local.name
-  location = local.location
-
-  tags = {
-    environment = local.ws_name
-  }
-}
-
-
-
 
 #-------------------------------
 # Azure Required Providers
 #-------------------------------
 module "provider" {
-  source = "../../modules/provider"
+  source = "github.com/danielscholl/iac-terraform/modules/provider"
+}
+
+
+#-------------------------------
+# Resource Group
+#-------------------------------
+module "resource_group" {
+  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+
+  name     = local.name
+  location = local.location
+
+  resource_tags          = {
+    environment = local.ws_name
+  } 
 }
 
 
@@ -118,23 +122,31 @@ module "provider" {
 #-------------------------------
 module "service_plan" {
   # Module Path
-  source = "../../modules/service-plan"
+  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
 
   # Module Variables
   name                = local.service_plan_name
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = module.resource_group.name
+
+  resource_tags          = {
+    environment = local.ws_name
+  } 
 }
 
 module "app_service" {
   # Module Path
-  source = "../../modules/app-service"
+  source = "github.com/danielscholl/iac-terraform/modules/app-service"
 
   # Module Variables
   name                       = local.app_service_name
-  resource_group_name        = azurerm_resource_group.rg.name
+  resource_group_name        = module.resource_group.name
   service_plan_name          = module.service_plan.name
   app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
+
+  resource_tags          = {
+    environment = local.ws_name
+  } 
 }
 
 

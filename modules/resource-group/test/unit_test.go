@@ -39,7 +39,7 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: count,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"module.resource-group.azurerm_resource_group.main": expectedResult,
+			"module.resource_group.azurerm_resource_group.main": expectedResult,
 		},
 	}
 

@@ -10,7 +10,7 @@ A terraform module that provisions and scales azure managed app service using Li
 
 ## Usage
 
-```
+```hcl
 module "resource_group" {
   source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
   name     = "iac-terraform"
@@ -50,31 +50,27 @@ module "app_service" {
 
 ## Inputs
 
-| Variable                      | Default                              | Description                          | 
-| ----------------------------- | ------------------------------------ | ------------------------------------ |
-| name                          | _(Required)_                         | The name of the web app..        |
-| resource_group_name           | _(Required)_                         | The name of an existing resource group. |
-| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
-| service_plan_name             | _(Required)_                         | The name of the service plan. |
-| app_service_config            | _*See Note_                          | Metadata about the app services to be created. |
-| app_settings                  | _(Optional)_                         | Custom App Web App Settings. |
-| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
-| vault_uri                     | _(Optional)_                         | Specifies the URI of the Key Vault resource. |
-| instrumentation_key           | _(Optional)_                         | The Instrumentation Key for the Application Insights component. |
-| is_always_on                  | true                                 | Is the app is loaded at all times. |
-| docker_registry_server_url    | docker.io                            | The docker registry server URL for images. |
-| docker_registry_server_username | _(Optional)_                       | The docker registry server username for images. |
-| docker_registry_server_password | _(Optional)_                       | The docker register server password for images. |
-| cosmosdb_name                 | _(Optional)_                         | The comsosdb account name. If submited will apply cosmos values to app settings. |
-| is_db_enabled                 | true                                 | Is the app using cosmosdb. |
-| is_vnet_isolated              | false                                | Is VNet restriction enabled. |
-| vnet_name                     | _(Optional)_                         | The integrated VNet name. |
-| vnet_subnet_id                | _(Optional)_                         | The VNet integration subnet gateway identifier. |
+| Variable Name                     | Type       | Description                          | 
+| --------------------------------- | ---------- | ------------------------------------ |
+| `name`                            | _string_   | The name of the web app service.     |
+| `resource_group_name`             | _string_   | The name of an existing resource group. |
+| `resource_tags`                   | _list_     | Map of tags to apply to taggable resources in this module. |
+| `service_plan_name`               | _string_   | The name of the app service plan.    |
+| `app_service_config`              | __Object__ | Metadata about the app services to be created. |
+| `app_settings`                    | _list_     | Custom App Web App Settings.       |
+| `vault_uri`                       | _string_   | Specifies the URI of the Key Vault resource. |
+| `instrumentation_key`             | _string_   | The Instrumentation Key for the Application Insights component. |
+| `is_always_on`                    | _bool_     | Is the app is loaded at all times. Default: `true` |
+| `docker_registry_server_url`      | _string_   | The docker registry server URL for images. Default: `docker.io`|
+| `docker_registry_server_username` | _string_   | The docker registry server username for images. |
+| `docker_registry_server_password` | _string_   | The docker register server password for images. |
+| `is_vnet_isolated`                | _bool_     | Is VNet restriction enabled.  Default: `false`     |
+| `vnet_name`                       | _string_   | The integrated VNet name.          |
+| `vnet_subnet_id`                  | _string_   | The VNet integration subnet gateway identifier. |
 
 
-The app_service_config object accepts the following keys:
+The __app_service_config__ object accepts the following keys:
 
-> __app_service_config__
 ```
 The app_service_config object produces an instance of a web app with the desired container image.
 

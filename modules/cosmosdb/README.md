@@ -32,16 +32,16 @@ module "cosmosdb" {
 
 ## Inputs
 
-| Variable                      | Default                              | Description                          | 
-| ----------------------------- | ------------------------------------ | ------------------------------------ |
-| name                          | _(Required)_                         | The name of the cosmosdb account.    |
-| resource_group_name           | _(Required)_                         | The name of an existing resource group. |
-| kind                          | GlobalDocumentDB                     | Determines the kind of CosmosDB to create. |
-| automatic_failover            | false                                | Determines if automatic failover is enabled. |
-| consitency_level              | Session                              | The consistancy level to use.        |
-| primary_replica_location      | _(Required)_                         | The location to host replicated data.|
-| database_name                 | _(Optional)_                         | The name of the cosmosdb database.   |
-| container_name                | _(Optional)_                         | The name of the cosmosdb container.  |
+| Variable Name                     | Type       | Description                          | 
+| --------------------------------- | ---------- | ------------------------------------ |
+| `name`                            | _string_   | The name of the web app service.     |
+| `resource_group_name`             | _string_   | The name of an existing resource group. |
+| `kind`                            | _string_   | Determines the kind of CosmosDB to create. Default: `GlobalDocumentDB` |
+| `automatic_failover`              | _bool_     | Determines if automatic failover is enabled. Default: `true` |
+| `consitency_level`                | _string_   | The consistancy level to use. Default: `true`       |
+| `primary_replica_location`        | _string_   | The location to host replicated data.|
+| `database_name`                   | _string_   | The name of the cosmosdb database.   |
+| `container_name`                  | _string_   | The name of the cosmosdb container.  |
 
 
 ## Outputs

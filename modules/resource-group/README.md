@@ -19,11 +19,11 @@ module "resource_group" {
 
 ## Inputs
 
-| Variable                      | Default                              | Description                          | 
-| ----------------------------- | ------------------------------------ | ------------------------------------ |
-| name                          | _(Required)_                         | The name of the resource group.      |
-| location                      | _(Required)_                         | The location of the resource group.  |
-| resource_tags                 | _(Optional)_                         | Map of tags to apply to taggable resources in this module. |
+| Variable Name                     | Type       | Description                          | 
+| --------------------------------- | ---------- | ------------------------------------ |
+| `name`                            | _string_   | The name of the web app service.     |
+| `location`                        | _string_   | The location of the resource group.  |
+| `resource_tags`                   | _list_     | Map of tags to apply to taggable resources in this module. |
 
 
 ## Outputs

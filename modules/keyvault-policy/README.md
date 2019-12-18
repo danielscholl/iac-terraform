@@ -55,14 +55,14 @@ module "keyvault_policy" {
 
 ## Inputs
 
-| Variable                      | Default                              | Description                          | 
-| ----------------------------- | ------------------------------------ | ------------------------------------ |
-| vault_id                      | _(Required)_                         | Specifies the name of the Key Vault. |
-| tenant_id                     | _(Required)_                         | The tenant ID used for authenticating. |
-| object_ids                    | _(Required)_                         | The object IDs used for authenticating. |
-| key_permissions               | ["create", "delete", "get", "list"]  | List of key permissions.             |
-| secret_permissions            | ["delete", "get", "set", "list"]     | List of secret permissions.          |
-| certificate_permissions       | ["create", "delete", "get", "list"]  | List of certificate permissions.     |
+| Variable Name             | Type       | Description                          | 
+| ------------------------- | ---------- | ------------------------------------ |
+| `vault_id`                | _string_   | Id of the Key Vault to store the secret in. |
+| `tenant_id`               | _string_   | The tenant ID used for authenticating. |
+| `object_ids`              | _list_     | The object IDs used for authenticating. |
+| `key_permissions`         | _list_     | Permissions that the service principal has for accessing keys from keyvault. Default: `["create", "delete", "get"]` |
+| `secret_permissions`      | _list_     | Permissions that the service principal has for accessing secrets from keyvault. Default: `["set", "delete", "get", "list"]` |
+| `certificate_permissions` | _list_     | Permissions that the service principal has for accessing certificates from keyvault. Default: `["create", "delete", "get", "list"]` |
 
 
 ## Outputs
