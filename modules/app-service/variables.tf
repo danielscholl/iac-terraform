@@ -28,6 +28,12 @@ variable "app_settings" {
   default     = {}
 }
 
+variable "secure_app_settings" {
+  type        = map(string)
+  default     = {}
+  description = "Map of sensitive app settings. Uses Key Vault references as values for app settings."
+}
+
 variable "resource_tags" {
   description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
   type        = map(string)
@@ -115,7 +121,7 @@ locals {
   app_settings = merge(
     var.app_settings,
     local.docker_settings,
-    local.keyvault_settings,
+    local.secure_app_settings,
     local.insights_settings,
     {
       WEBSITES_ENABLE_APP_SERVICE_STORAGE = false

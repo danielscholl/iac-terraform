@@ -58,6 +58,7 @@ module "app_service" {
 | `service_plan_name`               | _string_   | The name of the app service plan.    |
 | `app_service_config`              | __Object__ | Metadata about the app services to be created. |
 | `app_settings`                    | _list_     | Custom App Web App Settings.       |
+| `secure_app_settings`             | _list_     | Map of sensitive app settings. Uses Key Vault references as values for app settings. |
 | `vault_uri`                       | _string_   | Specifies the URI of the Key Vault resource. |
 | `instrumentation_key`             | _string_   | The Instrumentation Key for the Application Insights component. |
 | `is_always_on`                    | _bool_     | Is the app is loaded at all times. Default: `true` |
