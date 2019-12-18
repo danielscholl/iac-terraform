@@ -15,24 +15,16 @@ import (
 
 // A build step that runs Clean, Format, Unit and Integration in sequence
 func Full() {
-	mg.Deps(Unit)
-	mg.Deps(Integration)
+	mg.Deps(Test)
+	mg.Deps(Samples)
 }
 
-// Execute Template Integration Tests and fail if a integration test fails. Only executes tests in 'integration' directory
-func Integration() error {
+// Execute Sample Tests and fail if a test fails. Only executes tests in 'unit' directory
+func Samples() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
-	fmt.Println("INFO: Running integration tests...")
-	return FindAndRunTests("integration")
-}
-
-// Execute Template Unit Tests and fail if a unit test fails. Only executes tests in 'unit' directory
-func Unit() error {
-	mg.Deps(Clean)
-	mg.Deps(Format)
-	fmt.Println("INFO: Running unit tests...")
-	return FindAndRunTests("unit")
+	fmt.Println("INFO: Running sample tests...")
+	return FindAndRunTests("tests")
 }
 
 // Execute Module Unit Tests and fail if a unit test fails. Only executes tests in 'test' directory

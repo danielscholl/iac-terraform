@@ -110,38 +110,24 @@ terraform init \
 iac-terraform task runner.
 
 Targets:
-  clean          Remove temporary build and test files.
-  format         Lint Check both Terraform code and Go code.
-  full           A build step that runs Clean, Format, Unit and Integration in sequence
-  integration    Execute Template Integration Tests and fail if a integration test fails.
-  lintGO         Lint Check Go and fail if files are not not formatted properly.
-  lintTF         Lint Check Terraform and fail if files are not formatted properly.
-  test           Execute Module Unit Tests and fail if a unit test fails.
-  unit           Execute Template Unit Tests and fail if a unit test fails.
+  clean      Remove temporary build and test files.
+  format     Lint Check both Terraform code and Go code.
+  full       A build step that runs Clean, Format, Unit and Integration in sequence
+  lintGO     Lint Check Go and fail if files are not not formatted properly.
+  lintTF     Lint Check Terraform and fail if files are not formatted properly.
+  samples    Execute Sample Tests and fail if a test fails.
+  test       Execute Module Unit Tests and fail if a unit test fails.
 ```
 
-1. Deploying Example Templates
+1. Deploying Sample Templates
 
 - simpleweb  - This template deploys a simple Web App with Containers
 - webdata    - This template deploys a Web App with Containers with Cosmos DB Integration
 
 ```bash
-# Change directory to Template
-cd <desiredTemplate>
+# Change directory to Samples
+cd samples/{sample}
 
-# Initialize the Modules
-terraform init
-
-# Test the plan
-terraform plan
-
-# Apply the Plan
-terraform apply
-```
-
-1. Run Terraform process
-
-```bash
 # Initialize the Modules
 terraform init
 
