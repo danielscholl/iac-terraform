@@ -48,6 +48,7 @@ resource "azurerm_app_service_slot" "staging" {
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
   app_service_plan_id = data.azurerm_app_service_plan.main.id
+  tags                = var.resource_tags
   depends_on          = [azurerm_app_service.main]
 
   app_settings        = local.app_settings

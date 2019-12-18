@@ -10,6 +10,7 @@ resource "azurerm_cosmosdb_account" "account" {
   name                = var.name
   location            = data.azurerm_resource_group.group.location
   resource_group_name = data.azurerm_resource_group.group.name
+  tags                = var.resource_tags
 
   offer_type          = "Standard"
   kind                = var.kind

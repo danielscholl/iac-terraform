@@ -12,6 +12,12 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
+}
+
 variable "kind" {
   description = "Determines the kind of CosmosDB to create. Can either be 'GlobalDocumentDB' or 'MongoDB'."
   type        = string

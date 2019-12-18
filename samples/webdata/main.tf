@@ -102,15 +102,6 @@ resource "random_string" "workspace_scope" {
   upper   = false
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = local.name
-  location = local.location
-
-  tags = {
-    environment = local.ws_name
-  }
-}
-
 
 #-------------------------------
 # Azure Required Providers
@@ -121,15 +112,36 @@ module "provider" {
 
 
 #-------------------------------
+# Resource Group
+#-------------------------------
+module "resource_group" {
+  # Module Path
+  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+
+  # Module variable
+  name     = local.name
+  location = local.location
+
+  resource_tags          = {
+    environment = local.ws_name
+  } 
+}
+
+
+#-------------------------------
 # Azure Key Vault
 #-------------------------------
 module "keyvault" {
   # Module Path
-  source = "../../modules/keyvault"
+  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
 
   # Module variable
   name           = local.keyvault_name
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = module.resource_group.name
+
+  resource_tags          = {
+    environment = local.ws_name
+  }
 }
 
 
@@ -138,17 +150,21 @@ module "keyvault" {
 #-------------------------------
 module "cosmosdb" {
   # Module Path
-  source = "../../modules/cosmosdb"
+  source = "github.com/danielscholl/iac-terraform/modules/cosmosdb"
 
   # Module variable
   name                     = local.cosmosdb_account_name
-  resource_group_name      = azurerm_resource_group.rg.name
+  resource_group_name      = module.resource_group.name
   kind                     = "GlobalDocumentDB"
   automatic_failover       = false
   consistency_level        = "Session"
   primary_replica_location = local.location
   database_name            = local.cosmosdb_database_name
   container_name           = var.cosmosdb_container_name
+
+  resource_tags          = {
+    environment = local.ws_name
+  }
 }
 
 #-------------------------------
@@ -156,7 +172,7 @@ module "cosmosdb" {
 #-------------------------------
 module "keyvault-secret" {
   # Module Path
-  source = "../../modules/keyvault-secret"
+  source = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
 
   # Module variable
   keyvault_id          = module.keyvault.id
@@ -170,28 +186,36 @@ module "keyvault-secret" {
 #-------------------------------
 module "service_plan" {
   # Module Path
-  source = "../../modules/service-plan"
+  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
 
   # Module Variables
   name                = local.service_plan_name
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = module.resource_group.name
+
+  resource_tags          = {
+    environment = local.ws_name
+  }
 }
 
 module "app_service" {
   # Module Path
-  source = "../../modules/app-service"
+  source = "github.com/danielscholl/iac-terraform/modules/app-service"
 
   # Module Variables
   name                       = local.app_service_name
-  resource_group_name        = azurerm_resource_group.rg.name
+  resource_group_name        = module.resource_group.name
   service_plan_name          = module.service_plan.name
   app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
   vault_uri                  = module.keyvault.uri
   app_settings               = {
-    cosmosdb_database                   = module.cosmosdb.name
-    cosmosdb_account                    = module.cosmosdb.endpoint
-    cosmosdb_key                        = module.cosmosdb.primary_master_key
+    cosmosdb_database        = module.cosmosdb.name
+    cosmosdb_account         = module.cosmosdb.endpoint
+    cosmosdb_key             = module.cosmosdb.primary_master_key
+  }
+
+  resource_tags          = {
+    environment = local.ws_name
   }
 }
 
