@@ -82,7 +82,6 @@ module "app_service" {
      }
   }
   vault_uri                  = azurerm_key_vault.example.id
-  is_db_enabled              = true
   cosmosdb_name              = azurerm_cosmosdb_account.example.name
 }
 ```

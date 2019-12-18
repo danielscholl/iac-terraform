@@ -188,7 +188,11 @@ module "app_service" {
   app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
   vault_uri                  = module.keyvault.uri
-  cosmosdb_name              = module.cosmosdb.name
+  app_settings               = {
+    cosmosdb_database                   = module.cosmosdb.name
+    cosmosdb_account                    = module.cosmosdb.endpoint
+    cosmosdb_key                        = module.cosmosdb.primary_master_key
+  }
 }
 
 

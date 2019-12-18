@@ -70,12 +70,6 @@ variable "docker_registry_server_password" {
   default     = ""
 }
 
-variable "cosmosdb_name" {
-  description = "The comsosdb account name."
-  type        = string
-  default     = ""
-}
-
 variable "is_vnet_isolated" {
   description = "Determines whether or not a virtual network is being used."
   type        = bool
@@ -117,17 +111,10 @@ locals {
     APPINSIGHTS_INSTRUMENTATIONKEY      = var.instrumentation_key
   } : {}
 
-  db_enabled = var.cosmosdb_name == "" ? 0 : 1
-  cosmosdb_settings = var.cosmosdb_name != "" ? {
-    cosmosdb_database                   = data.azurerm_cosmosdb_account.main[0].name
-    cosmosdb_account                    = data.azurerm_cosmosdb_account.main[0].endpoint
-    cosmosdb_key                        = data.azurerm_cosmosdb_account.main[0].primary_master_key
-  } : {}
 
   app_settings = merge(
     var.app_settings,
     local.docker_settings,
-    local.cosmosdb_settings,
     local.keyvault_settings,
     local.insights_settings,
     {

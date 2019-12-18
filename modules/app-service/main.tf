@@ -11,12 +11,6 @@ data "azurerm_app_service_plan" "main" {
   resource_group_name = data.azurerm_resource_group.main.name
 }
 
-data "azurerm_cosmosdb_account" "main" {
-  name                = var.cosmosdb_name
-  resource_group_name = data.azurerm_resource_group.main.name
-  count               = "${local.db_enabled == "true" ? 1 : 0}"
-}
-
 resource "azurerm_app_service" "main" {
   name                = format("%s-%s", var.name, lower(local.app_names[count.index]))
   resource_group_name = data.azurerm_resource_group.main.name
