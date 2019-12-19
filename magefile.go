@@ -16,22 +16,22 @@ import (
 // A build step that runs all tests.
 func All() {
 	mg.Deps(Test)
-	mg.Deps(SampleSimpleWeb)
-	mg.Deps(SampleWebData)
+	mg.Deps(TestSimpleWeb)
+	mg.Deps(TestWebData)
 }
 
 // Execute Integration Tests for the simpleweb sample. Only executes tests in 'simpleweb' directories.
-func SampleSimpleWeb() error {
+func TestSimpleWeb() error {
 	mg.Deps(Clean)
-	mg.Deps(Format)
+	mg.Deps(Check)
 	fmt.Println("INFO: Running sample tests...")
 	return FindAndRunTests("simpleweb")
 }
 
 // Execute Integration Tests for the webdata sample. Only executes tests in 'webdata' directories.
-func SampleWebData() error {
+func TestWebData() error {
 	mg.Deps(Clean)
-	mg.Deps(Format)
+	mg.Deps(Check)
 	fmt.Println("INFO: Running sample tests...")
 	return FindAndRunTests("webdata")
 }
@@ -39,13 +39,13 @@ func SampleWebData() error {
 // Execute Module Tests and fail if a test fails. Only executes tests in 'test' directories.
 func Test() error {
 	mg.Deps(Clean)
-	mg.Deps(Format)
+	mg.Deps(Check)
 	fmt.Println("INFO: Running unit tests...")
 	return FindAndRunTests("test")
 }
 
-// Lint check both Terraform code and Go code.
-func Format() {
+// Validate both Terraform code and Go code.
+func Check() {
 	mg.Deps(LintTF)
 	mg.Deps(LintGO)
 }

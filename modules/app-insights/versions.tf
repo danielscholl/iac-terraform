@@ -1,5 +1,5 @@
 ##############################################################
-# This module allows the creation of a Web App
+# This module allows the creation of Application Insights
 ##############################################################
 
 terraform {

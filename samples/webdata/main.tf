@@ -185,6 +185,22 @@ module "keyvault-secret" {
 }
 
 #-------------------------------
+# Application Insights
+#-------------------------------
+module "app_insights" {
+  # Module Path
+  source              = "github.com/danielscholl/iac-terraform/modules/app-insights"
+
+  # Module variable
+  name                = "iac-terraform-insights-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
+
+  resource_tags = {
+    iac = "terraform"
+  }
+}
+
+#-------------------------------
 # Web Site
 #-------------------------------
 module "service_plan" {
@@ -211,6 +227,7 @@ module "app_service" {
   app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
   vault_uri                  = module.keyvault.uri
+  instrumentation_key        = module.app_insights.instrumentation_key
   app_settings               = {
     cosmosdb_database        = module.cosmosdb.name
     cosmosdb_account         = module.cosmosdb.endpoint
