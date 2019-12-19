@@ -78,6 +78,7 @@ locals {
   cosmosdb_database_name = "${local.base_name_83}"
   service_plan_name     = "${local.base_name_83}-plan"
   app_service_name      = "${local.base_name_83}"
+  insights_name         = "${local.base_name_83}-insights"
 
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url
@@ -192,7 +193,7 @@ module "app_insights" {
   source              = "github.com/danielscholl/iac-terraform/modules/app-insights"
 
   # Module variable
-  name                = "iac-terraform-insights-${module.resource_group.random}"
+  name                = local.insights_name
   resource_group_name = module.resource_group.name
 
   resource_tags = {
