@@ -6,8 +6,6 @@ A terraform module that provisions and scales an storage account with the follow
 - Create multiple containers with access levels.
 
 
-
-
 ## Usage
 
 ```
@@ -58,4 +56,4 @@ Once the deployments are completed successfully, the output for the current modu
 - `primary_access_key`: The primary access key for the storage account.
 - `tenant_id`: The tenant ID for the Service Principal of this storage account.
 - `managed_identities_id`: The principal ID generated from enabling a Managed Identity with this storage account.
-- `containers`: Map of containers..
+- `containers`: Map of containers.
