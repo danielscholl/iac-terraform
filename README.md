@@ -110,13 +110,14 @@ terraform init \
 iac-terraform task runner.
 
 Targets:
-  clean      Remove temporary build and test files.
-  format     Lint check both Terraform code and Go code.
-  full       A build step that runs all tests.
-  lintGO     Lint check Go and fail if files are not not formatted properly.
-  lintTF     Lint check Terraform and fail if files are not formatted properly.
-  samples    Execute Sample Tests and fail if a test fails.
-  test       Execute Module Tests and fail if a test fails.
+  all                A build step that runs all tests.
+  clean              Remove temporary build and test files.
+  format             Lint check both Terraform code and Go code.
+  lintGO             Lint check Go and fail if files are not not formatted properly.
+  lintTF             Lint check Terraform and fail if files are not formatted properly.
+  sampleSimpleWeb    Execute Integration Tests for the simpleweb sample.
+  sampleWebData      Execute Integration Tests for the webdata sample.
+  test               Execute Module Tests and fail if a test fails.
 ```
 
 2. Deploying Sample Templates

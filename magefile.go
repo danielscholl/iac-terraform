@@ -14,7 +14,7 @@ import (
 )
 
 // A build step that runs all tests.
-func Full() {
+func All() {
 	mg.Deps(Test)
 	mg.Deps(SampleSimpleWeb)
 	mg.Deps(SampleWebData)
