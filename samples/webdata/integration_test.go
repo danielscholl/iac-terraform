@@ -44,7 +44,7 @@ func TestTerraformHttpExample(t *testing.T) {
 	// Setup a TLS configuration to submit with the helper, a blank struct is acceptable
 	tlsConfig := tls.Config{}
 	maxRetries := 30
-	timeBetweenRetries := 5 * time.Second
+	timeBetweenRetries := 10 * time.Second
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
@@ -58,7 +58,7 @@ func TestTerraformHttpExample(t *testing.T) {
 
 	http_helper.HttpGetWithRetry(
 		t,
-		fmt.Sprintf(instanceURL, "/api/user"),
+		fmt.Sprintf("%s/api/user", instanceURL),
 		&tlsConfig,
 		200,
 		"[]",

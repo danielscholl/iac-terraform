@@ -14,7 +14,7 @@ This deployment creates the following:
  5. App Service and Container with a public IP
  6. App Service Staging Slot
 
-> ![AZ-HW-CIT-Architecture](../../images/webdata-arch.png)
+![Architecture](../../images/webdata_arch.png)
 
 
 ## Example Usage

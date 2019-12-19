@@ -16,23 +16,24 @@ import (
 // A build step that runs all tests.
 func Full() {
 	mg.Deps(Test)
-	mg.Deps(Samples)
-}
-
-// Execute Sample Tests and fail if a test fails. Only executes tests in 'testing' directories.
-func Samples() error {
-	mg.Deps(Clean)
-	mg.Deps(Format)
-	fmt.Println("INFO: Running sample tests...")
-	return FindAndRunTests("testing")
+	mg.Deps(SampleSimpleWeb)
+	mg.Deps(SampleWebData)
 }
 
 // Execute Integration Tests for the simpleweb sample. Only executes tests in 'simpleweb' directories.
-func SimpleWeb() error {
+func SampleSimpleWeb() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
 	fmt.Println("INFO: Running sample tests...")
 	return FindAndRunTests("simpleweb")
+}
+
+// Execute Integration Tests for the webdata sample. Only executes tests in 'webdata' directories.
+func SampleWebData() error {
+	mg.Deps(Clean)
+	mg.Deps(Format)
+	fmt.Println("INFO: Running sample tests...")
+	return FindAndRunTests("webdata")
 }
 
 // Execute Module Tests and fail if a test fails. Only executes tests in 'test' directories.

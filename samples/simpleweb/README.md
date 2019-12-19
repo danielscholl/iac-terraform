@@ -12,7 +12,7 @@ This deployment creates the following:
  3. App Service and Container with a public IP.
  4. App Service Staging Slot
 
-> ![AZ-HW-CIT-Architecture](../../images/simpleweb-arch.png)
+![Architecture](../../images/simpleweb_arch.png)
 
 
 ## Example Usage
