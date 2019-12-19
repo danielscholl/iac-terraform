@@ -31,6 +31,12 @@ variable "scopes" {
   default     = []
 }
 
+variable "object_id" {
+  description = "Object Id of an existing service principle to be assigned to a role."
+  type        = string
+  default     = ""
+}
+
 locals {
   scopes = length(var.scopes) > 0 ? var.scopes : [data.azurerm_subscription.main.id]
 

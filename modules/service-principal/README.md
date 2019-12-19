@@ -1,6 +1,8 @@
 # Module service-principal
 
-Module for managing a service principal within Azure Active Directory.
+Module for managing a service principal for Azure Active Directory with the following characteristics:
+
+- Create a Principal and Assign to a role or use an existing principal.
 
 > __This module requires the Terraform Principal to have Azure Active Directory Graph - `Application.ReadWrite.OwnedBy` Permissions.__
 
@@ -38,6 +40,7 @@ module "service_principal" {
 | `end_date`    | _string_   | The relative duration or RFC3339 date after which the password expire.|
 | `role`        | _string_   | The name of a role for the service principal. |
 | `scopes`      | _list_     | List of scopes the role assignment applies to. |
+| `object_id`   | string     | Object Id of an existing service principle to be assigned to a role. |
 
 
 ## Outputs
