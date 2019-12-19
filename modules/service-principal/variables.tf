@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a service-principal
+##############################################################
+
 variable "name" {
   type        = string
   description = "The name of the service principal."

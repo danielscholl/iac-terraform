@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a service-principal
+##############################################################
+
 output "name" {
   value       = azuread_service_principal.main.display_name
   description = "The Service Principal Display Name."

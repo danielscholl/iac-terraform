@@ -1,4 +1,4 @@
-# keyvault-secret
+# Module keyvault-secret
 
 A terraform module to provide Key Vaults secrets for existing Key Vaults in Azure with the following characteristics:
 
@@ -40,16 +40,9 @@ module "keyvault_secret" {
 | `secrets`                 | _list_     | Key/value pair of keyvault secret names and corresponding secret value. |
 
 
-## Variables Reference
+## Outputs
 
-The following variables are used:
+Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
 - `secrets`: A map of Key Vault Secrets. The Key/Value association is the KeyVault secret name and value.
 - `keyvault_id`: The id of the Key Vault.
-
-## Attributes Reference
-
-The following attributes are exported:
-
-- `secrets`: A mapping of secret names and URIs.
-- `references`: A mapping of Key Vault references for App Service and Azure Functions.

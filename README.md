@@ -1,6 +1,8 @@
 # Introduction
 Infrastructure as Code using Terraform - Module Development
 
+This repo was for learning and uses concepts extracted from [Project Cobalt](https://github.com/microsoft/cobalt) and [Innovation Norway](https://github.com/innovationnorway) which are 2 of the best terraform resources and projects I've found.
+
 __Prerequisites__
 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) installed.

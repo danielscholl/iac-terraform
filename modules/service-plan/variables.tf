@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a service-plan
+##############################################################
+
 variable "name" {
   description = "The name of the service plan."
   type        = string
