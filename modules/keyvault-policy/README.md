@@ -1,4 +1,4 @@
-# Module keyvault
+# Module keyvault-policy
 
 A terraform module that manage key vault permissions and policies for a specified list of resource identifiers in Azure with the following characteristics:
 

@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a service-principal
+##############################################################
+
 data "azurerm_client_config" "main" {}
 
 data "azurerm_subscription" "main" {}

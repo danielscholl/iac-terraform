@@ -30,11 +30,7 @@ module "resource_group" {
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
-```
-Outputs:
-
-name = <resourcegroupname>
-location = <resourcegrouplocation>
-id = <resourcegroupid>
-random = <resourcegrouprandom>
-```
+- `name`: The name of the Resource Group.
+- `location`: The location of the Resource Group.
+- `id`: The id of the Resource Group.
+- `random`: A random string derived from the Resource Group.

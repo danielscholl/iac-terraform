@@ -93,16 +93,5 @@ The __scaling_rules__ object
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
-```
-Outputs:
-
-name = my-resourcegroup-plan
-id = <resource_id>
-```
-
-### Attributes Reference
-
-The following attributes are exported:
-
 - `name`: The URL of the service plan created
-- `ids`: The resource id of the service plan created
+- `id`: The resource id of the service plan created

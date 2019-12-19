@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a service-plan
+##############################################################
+
 output "name" {
   description = "The name of the service plan created."
   value       = azurerm_app_service_plan.main.name

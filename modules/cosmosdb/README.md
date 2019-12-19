@@ -1,4 +1,4 @@
-# Module Azure Cosmos DB
+# Module cosmosdb
 
 A terraform module that provides a Cosmos DB with the following characteristics:
 
