@@ -25,7 +25,7 @@ module "resource_group" {
 }
 
 module "service_plan" {
-  source              = "github.com/danielscholl/iac-terraform/modules/service_plan"
+  source              = "github.com/danielscholl/iac-terraform/modules/service-plan"
   name                = "iac-terraform-plan-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 
