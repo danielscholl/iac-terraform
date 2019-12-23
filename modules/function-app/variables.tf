@@ -98,7 +98,8 @@ locals {
     local.insights_settings,
     local.java_settings,
     {
-      "FUNCTIONS_EXTENSION_VERSION" = "~2"
+      "FUNCTIONS_EXTENSION_VERSION" = "~2",
+      "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
     },
   )
 
