@@ -23,6 +23,10 @@ module "service_plan" {
   name                = "iac-terraform-plan-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 
+  // Container Based Function Apps must be Premium Plan  :-(
+  tier                = "Premium"
+  size                = "P1V2"
+
   resource_tags = {
     iac = "terraform"
   }
@@ -34,12 +38,11 @@ module "function_app" {
   resource_group_name     = module.resource_group.name
   storage_account_name    = module.storage_account.name
   service_plan_name       = module.service_plan.name
-  docker_registry_server_url = "mcr.microsoft.com"
-  is_java = false
+  is_java = true
 
   function_app_config = {
      func1 = {
-        image = "azure-functions/dotnet:2.0-appservice"
+        image = "danielscholl/spring-function-app:latest"
      }
   }
 
