@@ -67,10 +67,11 @@ module "function_app" {
 
 | Variable Name                     | Type       | Description                          | 
 | --------------------------------- | ---------- | ------------------------------------ |
-| `name`                            | _string_   | The name of the function app.     |
+| `name`                            | _string_   | The name of the function app.        |
 | `resource_group_name`             | _string_   | The name of an existing resource group. |
 | `resource_tags`                   | _list_     | Map of tags to apply to taggable resources in this module. |
 | `service_plan_name`               | _string_   | The name of the app service plan.    |
+| `storage_account_name`            | _string_   | The name of the storage account.     |
 | `function_app_config`             | __Object__ | Metadata about the function apps to be created. |
 | `app_settings`                    | _list_     | Custom App Web App Settings.       |
 | `instrumentation_key`             | _string_   | The Instrumentation Key for the Application Insights component. |
@@ -78,6 +79,11 @@ module "function_app" {
 | `docker_registry_server_url`      | _string_   | The docker registry server URL for images. Default: `docker.io`|
 | `docker_registry_server_username` | _string_   | The docker registry server username for images. |
 | `docker_registry_server_password` | _string_   | The docker register server password for images. |
+| `is_java`                         | _string_   | Is the Function a Java App.                     |
+| `app_settings`                    | __Object__ |Application settings to insert on creating the app. |            
+| `is_vnet_isolated`                | _bool_     | Determines whether or not a virtual network is being used. |
+| `vnet_name`                       | _string_   | The integrated VNet name. |
+| `vnet_subnet_id`                  | _string_   | The VNet integration subnet gateway identifier. |
 
 
 The __function_app_config__ object accepts the following keys:

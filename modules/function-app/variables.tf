@@ -18,13 +18,13 @@ variable "resource_tags" {
   default     = {}
 }
 
-variable "storage_account_name" {
-  description = "The name of the storage account."
+variable "service_plan_name" {
+  description = "The name of the service plan."
   type        = string
 }
 
-variable "service_plan_name" {
-  description = "The name of the service plan."
+variable "storage_account_name" {
+  description = "The name of the storage account."
   type        = string
 }
 
