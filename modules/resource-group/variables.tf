@@ -23,3 +23,9 @@ variable "environment" {
   type    = string
   default = "dev"
 }
+
+variable "isLocked" {
+  description = "Does the Resource Group prevent deletion?"
+  type    = bool
+  default = false
+}

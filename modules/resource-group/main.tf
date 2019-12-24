@@ -5,7 +5,7 @@
 resource "azurerm_resource_group" "main" {
   name     = var.name
   location = var.location
-  tags                       = var.resource_tags
+  tags     = var.resource_tags
 }
 
 resource "random_id" "main" {
@@ -15,4 +15,15 @@ resource "random_id" "main" {
   }
 
   byte_length = 8
+}
+
+resource "azurerm_management_lock" "main" {
+  count = var.isLocked ? 1 : 0
+  name       = "${azurerm_resource_group.main}-delete-lock"
+  scope      = azurerm_resource_group.main.id
+  lock_level = "CanNotDelete"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
