@@ -19,7 +19,7 @@ resource "random_id" "main" {
 
 resource "azurerm_management_lock" "main" {
   count = var.isLocked ? 1 : 0
-  name       = "${azurerm_resource_group.main}-delete-lock"
+  name       = "${azurerm_resource_group.main.name}-delete-lock"
   scope      = azurerm_resource_group.main.id
   lock_level = "CanNotDelete"
 
