@@ -5,10 +5,10 @@
    This file holds the variables to be used with the application.
 */
 
-name                    = "services"
+name                    = "authweb"
 location                = "centralus"
 randomization_level     = 4
-lock                    = false
+lock                    = true
 docker_registry_server_url = "mcr.microsoft.com"
 deployment_targets = [{
   app_name                 = "web"

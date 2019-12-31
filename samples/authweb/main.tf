@@ -114,12 +114,6 @@ variable "service_plan_size" {
   default     = "S1"
 }
 
-variable "auth_suffix" {
-  description = "A name to be appended to all azure ad applications."
-  type        = string
-  default     = "easy-auth"
-}
-
 variable "lock" {
   description = "Should the resource group be locked"
   default     = true
@@ -152,8 +146,8 @@ locals {
   insights_name         = "${local.base_name_83}-ai"
   service_plan_name     = "${local.base_name_83}-sp"
   app_service_name      = local.base_name_21
-  ad_app_name           = "${local.base_name}-auth"
-  ad_sp_name           = "${local.base_name}-mi"
+  ad_app_name           = "${local.base_name}-easyauth"
+  ad_principal_name     = "${local.base_name}-principal"
   
 
   // Resolved TF Vars
@@ -161,7 +155,7 @@ locals {
   app_services = {
     for target in var.deployment_targets :
     target.app_name => {
-      image = target.image_name == "" ? "${target.image_name}:${target.image_release_tag_prefix}" : ""
+      image = "${target.image_name}:${target.image_release_tag_prefix}"
     }
   }
 }
@@ -269,7 +263,7 @@ module "app_service" {
 module "service_principal" {
   source = "github.com/danielscholl/iac-terraform/modules/service-principal"
 
-  name = local.ad_sp_name
+  name = local.ad_principal_name
   role = "Contributor"
   scopes = concat(
     # Scope in App Services and Slots for deployments.
