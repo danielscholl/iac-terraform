@@ -1,4 +1,4 @@
-# Module storage-account
+# Module service-bus
 
 A terraform module that provisions a service namespace with the following characteristics: 
 
