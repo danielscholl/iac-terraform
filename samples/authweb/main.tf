@@ -114,6 +114,18 @@ variable "service_plan_size" {
   default     = "S1"
 }
 
+variable "service_plan_tier" {
+   description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans"
+  type        = string
+  default     = "Standard"
+}
+
+variable "cosmosdb_container_name" {
+  description = "The cosmosdb container name."
+  type        = string
+  default     = "example"
+}
+
 variable "lock" {
   description = "Should the resource group be locked"
   default     = true
@@ -144,8 +156,13 @@ locals {
   // Resolved resource names
   name                  = local.base_name
   insights_name         = "${local.base_name_83}-ai"
+  keyvault_name         = "${local.base_name_21}-kv"
+  cosmosdb_account_name = "${local.base_name_83}-db"
+  cosmosdb_database_name = "${local.base_name_83}"
+  storage_name          = "${replace(local.base_name_21, "-", "")}" 
   service_plan_name     = "${local.base_name_83}-sp"
   app_service_name      = local.base_name_21
+  func_app_name         = local.base_name_21
   ad_app_name           = "${local.base_name}-easyauth"
   ad_principal_name     = "${local.base_name}-principal"
   
@@ -221,6 +238,88 @@ module "app_insights" {
   }
 }
 
+#-------------------------------
+# Cosmos Database
+#-------------------------------
+module "cosmosdb" {
+  # Module Path
+  source = "github.com/danielscholl/iac-terraform/modules/cosmosdb"
+
+  # Module variable
+  name                     = local.cosmosdb_account_name
+  resource_group_name      = module.resource_group.name
+  kind                     = "GlobalDocumentDB"
+  automatic_failover       = false
+  consistency_level        = "Session"
+  primary_replica_location = local.location
+  database_name            = local.cosmosdb_database_name
+  container_name           = var.cosmosdb_container_name
+
+  resource_tags          = {
+    environment = local.ws_name
+  }
+}
+
+#-------------------------------
+# Azure Key Vault
+#-------------------------------
+module "keyvault" {
+  # Module Path
+  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
+
+  # Module variable
+  name           = local.keyvault_name
+  resource_group_name = module.resource_group.name
+
+  secrets              = {
+    "cosmosdbName"        = module.cosmosdb.name
+    "cosmosdbAccount"         = module.cosmosdb.endpoint
+    "cosmosdbKey"             = module.cosmosdb.primary_master_key
+  }
+
+  resource_tags          = {
+    environment = local.ws_name
+  }
+}
+
+module "web_keyvault_policy" {
+  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  vault_id                = module.keyvault.id
+  tenant_id               = module.app_service.identity_tenant_id
+  object_ids              = module.app_service.identity_object_ids
+  key_permissions         = ["get", "list"]
+  secret_permissions      = ["get", "list"]
+  certificate_permissions = ["get", "list"]
+}
+
+module "func_keyvault_policy" {
+  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  vault_id                = module.keyvault.id
+  tenant_id               = module.function_app.identity_tenant_id
+  object_ids              = module.function_app.identity_object_ids
+  key_permissions         = ["get", "list"]
+  secret_permissions      = ["get", "list"]
+  certificate_permissions = ["get", "list"]
+}
+
+
+#-------------------------------
+# Storage Account
+#-------------------------------
+
+module "storage_account" {
+  source                    = "github.com/danielscholl/iac-terraform/modules/storage-account"
+  resource_group_name       = module.resource_group.name
+  name                      = substr(local.storage_name, 0, 23)
+  containers = [
+    {
+      name  = "function-releases",
+      access_type = "private"
+    }
+  ]
+  encryption_source         = "Microsoft.Storage"
+}
+
 
 #-------------------------------
 # Web Site
@@ -233,7 +332,9 @@ module "service_plan" {
   name                = local.service_plan_name
   resource_group_name = module.resource_group.name
   size                = var.service_plan_size
+  tier                = var.service_plan_tier
   scaling_rules       = var.scaling_rules
+
 
   resource_tags          = {
     environment = local.ws_name
@@ -248,9 +349,40 @@ module "app_service" {
   name                       = local.app_service_name
   resource_group_name        = module.resource_group.name
   service_plan_name          = module.service_plan.name
-  app_settings               = var.app_service_settings
   instrumentation_key        = module.app_insights.instrumentation_key
+
   app_service_config         = local.app_services
+  docker_registry_server_url = local.reg_url
+  app_settings               = {
+    cosmosdb_database        = module.cosmosdb.name
+    cosmosdb_account         = module.cosmosdb.endpoint
+    cosmosdb_key             = module.cosmosdb.primary_master_key
+  }
+  secure_app_settings        = module.keyvault.references
+  
+  resource_tags          = {
+    environment = local.ws_name
+  }
+}
+
+module "function_app" {
+  source = "github.com/danielscholl/iac-terraform/modules/function-app"
+  name                    = local.func_app_name
+  resource_group_name     = module.resource_group.name
+  service_plan_name       = module.service_plan.name
+  instrumentation_key     = module.app_insights.instrumentation_key
+  storage_account_name    = module.storage_account.name
+
+  app_settings               = var.app_service_settings
+  # secure_app_settings        = module.keyvault.references
+  
+  is_java = true
+
+  function_app_config = {
+     func1 = {
+        image = "danielscholl/spring-function-app:latest"
+     }
+  }
 
   resource_tags          = {
     environment = local.ws_name
