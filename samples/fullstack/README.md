@@ -1,6 +1,6 @@
-# Authenticated Web Template
+# Full Stack Template
 
-The `authweb` template runs a single public Linux Container within an Azure Application Service Plan and has configured easy auth AD protection requiring a valid user in AD to be able to access the application. A service principal with contributor rights to be able to manage the App Service Plan and both the Web App and Staging slot is also available. Finally the resource group is locked on deployment to protect it from accidental changes and deletion.
+The `fullstack` template runs a single public Linux Container within an Azure Application Service Plan and has configured easy auth AD protection requiring a valid user in AD to be able to access the application. A service principal with contributor rights to be able to manage the App Service Plan and both the Web App and Staging slot is also available. Finally the resource group is locked on deployment to protect it from accidental changes and deletion.
 
 
 ## Provisioned Resources
