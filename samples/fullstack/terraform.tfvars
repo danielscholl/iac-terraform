@@ -5,7 +5,7 @@
    This file holds the variables to be used with the application.
 */
 
-name                    = "authweb"
+name                    = "fullstack"
 location                = "centralus"
 randomization_level     = 4
 lock                    = false
