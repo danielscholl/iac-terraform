@@ -31,13 +31,21 @@ variable "randomization_level" {
   default     = 8
 }
 
-variable "deployment_targets" {
+variable "web_apps" {
   description = "Metadata about apps to deploy, such as image metadata."
   type = list(object({
     app_name                 = string
     image_name               = string
     image_release_tag_prefix = string
   }))
+}
+
+variable "function_apps" {
+  description = "Metadata about the function apps to be created."
+  type = map(object({
+    image = string
+  }))
+  default = {}
 }
 
 variable "docker_registry_server_url" {
@@ -170,7 +178,7 @@ locals {
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url
   app_services = {
-    for target in var.deployment_targets :
+    for target in var.web_apps :
     target.app_name => {
       image = "${target.image_name}:${target.image_release_tag_prefix}"
     }
