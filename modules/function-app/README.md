@@ -52,7 +52,10 @@ module "function_app" {
 
   function_app_config = {
      func1 = {
-        image = "danielscholl/spring-function-app:latest"
+        image = "danielscholl/spring-function-app:latest",
+        app_settings = {
+          "Hello"         = "World",
+        }
      }
   }
 
@@ -89,11 +92,12 @@ module "function_app" {
 The __function_app_config__ object accepts the following keys:
 
 ```
-The function_app_config object produces an instance of a function app with the desired container image.
+The function_app_config object produces an instance of a function app with the desired container image and settings.
 
 {
-  func1 = { image = "azure-functions/dotnet:2.0-appservice" }
+  func1 = { image = "azure-functions/dotnet:2.0-appservice", app_settings = { "Hello" = "World" } }
 }
+
 ```
 
 ## Outputs

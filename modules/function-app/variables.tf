@@ -31,8 +31,8 @@ variable "storage_account_name" {
 variable "function_app_config" {
   description = "Metadata about the function apps to be created."
   type = map(object({
-    // If "", no container configuration will be set. Otherwise, this will be used to set the container configuration for the app service.
     image = string
+    app_settings = map(string)
   }))
   default = {}
 }
@@ -113,9 +113,16 @@ locals {
     "FUNCTIONS_WORKER_RUNTIME"    = "dotnet"
   }
 
+  docker_settings = length(compact([var.docker_registry_server_username, var.docker_registry_server_password, var.docker_registry_server_url])) == 3 ? {
+    "DOCKER_REGISTRY_SERVER_URL" : format("https://%s", var.docker_registry_server_url)
+    "DOCKER_REGISTRY_SERVER_USERNAME" : var.docker_registry_server_username
+    "DOCKER_REGISTRY_SERVER_PASSWORD" : var.docker_registry_server_password
+  } : {}
+
   app_settings = merge(
     var.app_settings,
     local.insights_settings,
+    local.docker_settings,
     local.java_settings,
     {
       "FUNCTIONS_EXTENSION_VERSION" = "~2",

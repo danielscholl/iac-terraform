@@ -42,7 +42,8 @@ module "function_app" {
 
   function_app_config = {
      func1 = {
-        image = "danielscholl/spring-function-app:latest"
+        image = "danielscholl/spring-function-app:latest",
+        app_settings = { "Hello" = "World" }
      }
   }
 

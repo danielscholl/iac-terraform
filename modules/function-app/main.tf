@@ -27,7 +27,7 @@ resource "azurerm_function_app" "main" {
   storage_connection_string = data.azurerm_storage_account.main.primary_connection_string
   version                   = "~2"
 
-  app_settings = local.app_settings
+  app_settings              = merge(tomap(local.app_settings), var.function_app_config[local.app_names[count.index]].app_settings)
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]
