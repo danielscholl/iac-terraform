@@ -2,12 +2,17 @@
 # This module allows the creation of an Active Directory App
 ##############################################################
 
-output "name" {
-  description = "The name of the application."
-  value = azuread_application.main.name
+output "azuread_config_data" {
+  description = "Output data that pairs azuread names with their application ids."
+  value = {
+    for azuread in data.azuread_application.main :
+    azuread.name => {
+      application_id = azuread.application_id
+    }
+  }
 }
 
-output "app_id" {
-  description = "The id of the application."
-  value = azuread_application.main.application_id
+output "azuread_app_ids" {
+  description = "Output data that pairs azuread names with their application ids."
+  value       = data.azuread_application.main.*.application_id
 }

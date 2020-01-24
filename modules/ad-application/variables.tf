@@ -2,14 +2,27 @@
 # This module allows the creation of an Active Directory App
 ##############################################################
 
-variable "name" {
-  description = "Name of the application."
-  type        = string
+variable "ad_config" {
+  description = "Metadata about the Active Directory App to be created."
+  type = list(object({
+    name   = string
+    reply_urls = list(string)
+  }))
 }
 
 variable "type" {
   description = "Type of an application: `webapp/api` or `native`."
   default     = "webapp/api"
+}
+
+variable "resource_api_id" {
+  description = "The id of the api that this app has access to."
+  type        = string
+}
+
+variable "resource_role_id" {
+  description = "The id of the role permission for the api that his app has access to."
+  type        = string
 }
 
 variable "homepage" {
@@ -35,30 +48,8 @@ variable "group_membership_claims" {
   default     = "SecurityGroup"
 }
 
-variable "identifier_uris" {
-  description = "A list of user-defined URI(s) that uniquely identify a Web application within it's Azure AD tenant, or within a verified custom domain if the application is multi-tenant."
-  type        = list(string)
-  default     = []
+variable "resource_access_type" {
+  description = "The type of role describing the role name of a resource access."
+  type        = string
+  default     = "Role"
 }
-
-variable "reply_urls" {
-  description = "A list of URLs that user tokens are sent to for sign in, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to."
-  type        = list(string)
-  default     = []
-}
-
-variable "required_resource_access" {
-  description = "Required resource access for this application."
-  type = list(
-    object({
-      resource_app_id = string,
-      resource_access = list(
-        object({
-          id   = string,
-          type = string
-      }))
-  }))
-  default = []
-}
-
-
