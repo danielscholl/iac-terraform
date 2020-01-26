@@ -12,6 +12,11 @@ output "name" {
   value       = azurerm_cosmosdb_account.account.name
 }
 
+output "id" {
+  description = "The ComosDB Account Id."
+  value       = azurerm_cosmosdb_account.account.id
+}
+
 output "primary_master_key" {
   description = "The Primary master key for the CosmosDB Account."
   value       = azurerm_cosmosdb_account.account.primary_master_key
@@ -21,4 +26,5 @@ output "primary_master_key" {
 output "connection_strings" {
   description = "A list of connection strings available for this CosmosDB account."
   value       = azurerm_cosmosdb_account.account.connection_strings
+  sensitive   = true
 }

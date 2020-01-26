@@ -12,11 +12,6 @@ output "object_id" {
   description = "The Service Principal Object Id."
 }
 
-output "tenant_id" {
-  value = data.azurerm_client_config.main.tenant_id
-  description = "The Service Principal Tenant Id."
-}
-
 output "client_id" {
   value       = azuread_application.main.application_id
   description = "The Service Principal Client Id (Application Id)"
