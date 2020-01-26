@@ -31,6 +31,12 @@ variable "scopes" {
   default     = []
 }
 
+variable "create_for_rbac" {
+  description = "Create a new Service Principle"
+  type        = bool
+  default     = true
+}
+
 variable "object_id" {
   description = "Object Id of an existing service principle to be assigned to a role."
   type        = string
@@ -38,7 +44,7 @@ variable "object_id" {
 }
 
 locals {
-  scopes = length(var.scopes) > 0 ? var.scopes : [data.azurerm_subscription.main.id]
+  create_count = var.create_for_rbac == true ? 1 : 0
 
   date = regexall("^(?:(\\d{4})-(\\d{2})-(\\d{2}))[Tt]?(?:(\\d{2}):(\\d{2})(?::(\\d{2}))?(?:\\.(\\d+))?)?([Zz]|[\\+|\\-]\\d{2}:\\d{2})?$", var.end_date)
 

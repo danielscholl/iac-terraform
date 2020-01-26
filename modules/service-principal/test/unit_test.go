@@ -39,7 +39,7 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: count,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"module.service_principal.azuread_application.main": expectedResult,
+			"module.service_principal.azuread_application.main[0]": expectedResult,
 		},
 	}
 
