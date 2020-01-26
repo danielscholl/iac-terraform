@@ -2,6 +2,7 @@
 # This module allows the creation of a service-principal
 ##############################################################
 
+data "azurerm_subscription" "main" {}
 
 resource "azuread_application" "main" {
   name = var.name
