@@ -34,8 +34,8 @@ module "service_plan" {
   resource_group_name = module.resource_group.name
 
   // Container Based Function Apps must be Premium Plan  :-(
-  tier                = "Premium"
-  size                = "P1V2"
+  tier                = "PremiumV2"
+  size                = "P1v2"
 
   resource_tags = {
     iac = "terraform"
@@ -43,18 +43,18 @@ module "service_plan" {
 }
 
 module "function_app" {
-  source                  = "github.com/danielscholl/iac-terraform/modules/function-app"
+  source                  = "../"
   name                    = "iac-terraform-func-${module.resource_group.random}"
   resource_group_name     = module.resource_group.name
   storage_account_name    = module.storage_account.name
   service_plan_name       = module.service_plan.name
-  is_java = true
 
   function_app_config = {
      func1 = {
         image = "danielscholl/spring-function-app:latest",
-        app_settings = {
-          "Hello"         = "World",
+        app_settings = { 
+          "FUNCTIONS_WORKER_RUNTIME"    = "java"
+          "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
         }
      }
   }
@@ -82,7 +82,6 @@ module "function_app" {
 | `docker_registry_server_url`      | _string_   | The docker registry server URL for images. Default: `docker.io`|
 | `docker_registry_server_username` | _string_   | The docker registry server username for images. |
 | `docker_registry_server_password` | _string_   | The docker register server password for images. |
-| `is_java`                         | _string_   | Is the Function a Java App.                     |
 | `app_settings`                    | __Object__ |Application settings to insert on creating the app. |            
 | `is_vnet_isolated`                | _bool_     | Determines whether or not a virtual network is being used. |
 | `vnet_name`                       | _string_   | The integrated VNet name. |

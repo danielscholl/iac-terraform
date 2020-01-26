@@ -67,12 +67,6 @@ variable "docker_registry_server_password" {
   default     = ""
 }
 
-variable "is_java" {
-  description = "Is the Function App Java"
-  type = bool
-  default = true
-}
-
 variable "app_settings" {
   default     = {}
   type        = map
@@ -107,12 +101,6 @@ locals {
     APPINSIGHTS_INSTRUMENTATIONKEY      = var.instrumentation_key
   } : {}
 
-  java_settings = var.is_java == true ? {
-    "FUNCTIONS_WORKER_RUNTIME"    = "java"
-  } : {
-    "FUNCTIONS_WORKER_RUNTIME"    = "dotnet"
-  }
-
   docker_settings = length(compact([var.docker_registry_server_username, var.docker_registry_server_password, var.docker_registry_server_url])) == 3 ? {
     "DOCKER_REGISTRY_SERVER_URL" : format("https://%s", var.docker_registry_server_url)
     "DOCKER_REGISTRY_SERVER_USERNAME" : var.docker_registry_server_username
@@ -123,11 +111,6 @@ locals {
     var.app_settings,
     local.insights_settings,
     local.docker_settings,
-    local.java_settings,
-    {
-      "FUNCTIONS_EXTENSION_VERSION" = "~2",
-      "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
-    },
   )
 
   app_linux_fx_versions = [

@@ -24,8 +24,8 @@ module "service_plan" {
   resource_group_name = module.resource_group.name
 
   // Container Based Function Apps must be Premium Plan  :-(
-  tier                = "Premium"
-  size                = "P1V2"
+  tier                = "PremiumV2"
+  size                = "P1v2"
 
   resource_tags = {
     iac = "terraform"
@@ -38,12 +38,14 @@ module "function_app" {
   resource_group_name     = module.resource_group.name
   storage_account_name    = module.storage_account.name
   service_plan_name       = module.service_plan.name
-  is_java = true
 
   function_app_config = {
      func1 = {
         image = "danielscholl/spring-function-app:latest",
-        app_settings = { "Hello" = "World" }
+        app_settings = { 
+          "FUNCTIONS_WORKER_RUNTIME"    = "java"
+          "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
+        }
      }
   }
 
