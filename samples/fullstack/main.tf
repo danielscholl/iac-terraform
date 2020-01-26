@@ -160,6 +160,7 @@ locals {
   base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
   tenant_id = data.azurerm_client_config.current.tenant_id
+  subscription_id = data.azurerm_client_config.current.subscription_id
 
   // Resolved resource names
   name                  = local.base_name
@@ -167,12 +168,16 @@ locals {
   keyvault_name         = "${local.base_name_21}-kv"
   cosmosdb_account_name = "${local.base_name_83}-db"
   cosmosdb_database_name = "${local.base_name_83}"
-  storage_name          = "${replace(local.base_name_21, "-", "")}" 
+  storage_name          = "${replace(local.base_name_21, "-", "")}"
+  registry_name         = "${replace(local.base_name_21, "-", "")}"
   service_plan_name     = "${local.base_name_83}-sp"
   app_service_name      = local.base_name_21
   func_app_name         = local.base_name_21
   ad_app_name           = "${local.base_name}-easyauth"
   ad_principal_name     = "${local.base_name}-principal"
+
+  // Versions
+  func_runtime          = "2.0.12888.0"
   
 
   // Resolved TF Vars
@@ -183,6 +188,25 @@ locals {
       image = "${target.image_name}:${target.image_release_tag_prefix}"
     }
   }
+
+  // App Services Reply URLs
+  reply_urls = flatten([
+    for config in module.app_service.config_data :
+    [
+      format("https://%s", config.app_fqdn),
+      format("https://%s/.auth/login/aad/callback", config.app_fqdn),
+      format("https://%s", config.slot_fqdn),
+      format("https://%s/.auth/login/aad/callback", config.slot_fqdn)
+    ]
+  ])
+
+  contributor_scopes = concat(
+    [module.service_plan.id],
+    [module.cosmosdb.id],
+    [module.storage_account.id],
+    [module.container_registry.id],
+    module.app_service.ids
+  )
 }
 
 #-------------------------------
@@ -279,14 +303,20 @@ module "keyvault" {
   name           = local.keyvault_name
   resource_group_name = module.resource_group.name
 
-  secrets              = {
-    "cosmosdbName"        = module.cosmosdb.name
-    "cosmosdbAccount"         = module.cosmosdb.endpoint
-    "cosmosdbKey"             = module.cosmosdb.primary_master_key
-  }
-
   resource_tags          = {
     environment = local.ws_name
+  }
+}
+
+module "keyvault_secret" {
+  # Module Path
+  source = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
+
+  keyvault_id          = module.keyvault.id
+  secrets              = {
+    "cosmosdbName"     = module.cosmosdb.name
+    "cosmosdbAccount"  = module.cosmosdb.endpoint
+    "cosmosdbKey"      = module.cosmosdb.primary_master_key
   }
 }
 
@@ -330,7 +360,21 @@ module "storage_account" {
 
 
 #-------------------------------
-# Web Site
+# Container Registry
+#-------------------------------
+
+module "container_registry" {
+  source                    = "github.com/danielscholl/iac-terraform/modules/container-registry"
+
+  name                      = local.registry_name
+  resource_group_name       = module.resource_group.name
+
+  is_admin_enabled = false
+}
+
+
+#-------------------------------
+# Application
 #-------------------------------
 module "service_plan" {
   # Module Path
@@ -381,18 +425,19 @@ module "function_app" {
   instrumentation_key     = module.app_insights.instrumentation_key
   storage_account_name    = module.storage_account.name
 
-  app_settings               = var.app_service_settings
   # secure_app_settings        = module.keyvault.references
-  
-  is_java = true
 
   function_app_config = {
-     func1 = {
+     javafunc = {
         image = "danielscholl/spring-function-app:latest"
+        app_settings = {
+          "FUNCTIONS_WORKER_RUNTIME"    = "java"
+          "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
+        }
      }
   }
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }
@@ -404,83 +449,114 @@ module "service_principal" {
   source = "github.com/danielscholl/iac-terraform/modules/service-principal"
 
   name = local.ad_principal_name
+  
+  scopes = local.contributor_scopes
   role = "Contributor"
-  scopes = concat(
-    # Scope in App Services and Slots for deployments.
-    module.app_service.ids,
-    [
-      # Scope in App Service Plan for management and scaling.
-      module.service_plan.id
-    ]
-  )
 }
 
 
 #-------------------------------
-# Easy Auth Configuration
+# Configure AD App
 #-------------------------------
 module "ad_application" {
-    source = "github.com/danielscholl/iac-terraform/modules/ad-application"
+  source = "github.com/danielscholl/iac-terraform/modules/ad-application"
 
-    name = local.ad_app_name
-    reply_urls = flatten([
-      for config in module.app_service.config_data :
-      [
-        format("https://%s", config.app_fqdn),
-        format("https://%s/.auth/login/aad/callback", config.app_fqdn),
-        format("https://%s", config.slot_fqdn),
-        format("https://%s/.auth/login/aad/callback", config.slot_fqdn)
-      ]
-    ])
-    required_resource_access = [
-      {
-        resource_app_id = "00000002-0000-0000-c000-000000000000" // ID for Windows Graph API
-        resource_access = [
-          {
-            id = "824c81eb-e3f8-4ee6-8f6d-de7f50d565b7", // ID for Application.ReadWrite.OwnedBy
-            type = "Role"
-          }
-        ]
-      }
-    ]
+  ad_config = [
+    {
+      name   = local.ad_app_name
+      reply_urls = []
+    }
+  ]
+  resource_access_type = "Scope"
+  resource_api_id  = "00000002-0000-0000-c000-000000000000" // ID for Windows Graph API
+  resource_role_id = "824c81eb-e3f8-4ee6-8f6d-de7f50d565b7" // ID for Application.ReadWrite.OwnedBy
 }
 
-resource "null_resource" "auth" {
-  count      = length(module.app_service.uris)
-  depends_on = [module.ad_application.app_id]
+# resource "null_resource" "changed_reply_urls" {
+#   /* Orchestrates the destroy and create process of null_resource.auth dependencies
+#   /  during subsequent deployments that require new resources.
+#   */
+#   lifecycle {
+#     create_before_destroy = true
+#   }
 
-  triggers = {
-    app_service = join(",", module.app_service.uris)
-  }
+#   triggers = {
+#     app_service = join(",", local.reply_urls)
+#   }
+#   provisioner "local-exec" {
+#     environment = {
+#       URLS = join(" ", local.reply_urls)
+#       ID     = module.ad_application.config_data[local.name].application_id
+#     }
 
-  provisioner "local-exec" {
-    command = <<EOF
-      az webapp auth update                     \
-        --subscription "$SUBSCRIPTION_ID"       \
-        --resource-group "$RESOURCE_GROUP_NAME" \
-        --name "$APPNAME"                       \
-        --enabled true                          \
-        --action LoginWithAzureActiveDirectory  \
-        --aad-token-issuer-url "$ISSUER"        \
-        --aad-client-id "$APPID"                \
-      && az webapp auth update                  \
-        --subscription "$SUBSCRIPTION_ID"       \
-        --resource-group "$RESOURCE_GROUP_NAME" \
-        --name "$APPNAME"                       \
-        --slot "$SLOTSHORTNAME"                 \
-        --enabled true                          \
-        --action LoginWithAzureActiveDirectory  \
-        --aad-token-issuer-url "$ISSUER"        \
-        --aad-client-id "$APPID"
-      EOF
+#     command = <<EOF
+#       az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+#       az account set --subscription $ARM_SUBSCRIPTION_ID
+#       az ad app update --id "$ID" --reply-urls $URLS
+#       az logout
+#       EOF
+#   }
+# }
 
-    environment = {
-      SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
-      RESOURCE_GROUP_NAME = module.resource_group.name
-      SLOTSHORTNAME = "staging"
-      APPNAME = module.app_service.config_data[count.index].app_name
-      ISSUER = format("https://sts.windows.net/%s", local.tenant_id)
-      APPID = module.ad_application.app_id
-    }
-  }
+# resource "null_resource" "turn_on_easyauth" {
+#   count      = length(module.app_service.uris)
+
+#   triggers = {
+#     app_service = join(",", module.app_service.uris)
+#   }
+
+#   provisioner "local-exec" {
+#     # command = <<EOF
+#     #   az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $TENANT_ID
+#     #   az account set --subscription $SUBSCRIPTION_ID
+#     #   az webapp auth update                     \
+#     #     --subscription "$SUBSCRIPTION_ID"   \
+#     #     --resource-group "$RESOURCE_GROUP"      \
+#     #     --name "$APPNAME"                       \
+#     #     --enabled true                          \
+#     #     --action LoginWithAzureActiveDirectory  \
+#     #     --aad-token-issuer-url "$ISSUER"        \
+#     #     --aad-client-id "$APPID"                \
+#     #   az webapp auth update
+#     #     --subscription "$SUBSCRIPTION_ID"   \
+#     #     --resource-group "$RESOURCE_GROUP"      \
+#     #     --name "$APPNAME"                       \
+#     #     --slot "$SLOTSHORTNAME"                 \
+#     #     --enabled true                          \
+#     #     --action LoginWithAzureActiveDirectory  \
+#     #     --aad-token-issuer-url "$ISSUER"        \
+#     #     --aad-client-id "$APPID"
+#     #   az logout
+#     #   EOF
+
+#     command = <<EOF
+#     echo $SUBSCRIPTION_ID
+#     echo $RESOURCE_GROUP
+#     echo $SLOTSHORTNAME
+#     echo $APPNAME
+#     echo $ISSUER
+#     echo $APPID
+#     EOF
+
+#     environment = {
+#       SUBSCRIPTION_ID = local.subscription_id
+#       RESOURCE_GROUP = module.resource_group.name
+#       SLOTSHORTNAME = "staging"
+#       # APPNAME = module.app_service.config_data[count.index].app_name
+#       ISSUER = format("https://sts.windows.net/%s", local.tenant_id)
+#       # APPID = module.ad_application.app_ids[0]
+#     }
+#   }
+# }
+
+
+#-------------------------------
+# Output Variables  (output.tf)
+#-------------------------------
+output "app_ids" {
+  value = module.ad_application.app_ids
+}
+
+output "app_service_config_data" {
+  value = module.app_service.config_data
 }
