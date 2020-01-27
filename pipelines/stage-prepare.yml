@@ -1,6 +1,6 @@
 jobs:
 - job: Publish
-  pool: $(AGENT_POOL)
+  # pool: $(AGENT_POOL)
 
   workspace:
     clean: all
