@@ -26,7 +26,7 @@ stages:
         parameters:
           environment: ${{ environment.name }}
           # enablePrIsolation: ${{ environment.enablePrIsolation }}
-          # resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
 
     - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
@@ -44,5 +44,5 @@ stages:
         parameters:
           environment: ${{ environment.name }}
           # enablePrIsolation: ${{ environment.enablePrIsolation }}
-          # resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
