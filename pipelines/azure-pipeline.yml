@@ -26,12 +26,9 @@ stages:
 - template: stage-compose.yml
   parameters:
     environments:
-    - name: 'devint'
+    - name: 'dev'
   #     enablePrIsolation: true
   #     resourceNameIsolationLevel: 8
-    - name: 'qa'
-  #     enablePrIsolation: false
-  #     resourceNameIsolationLevel: 0
 
     configurations:
     - jobName: template_deployment
