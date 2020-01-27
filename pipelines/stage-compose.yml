@@ -15,7 +15,7 @@ stages:
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Determine CI Targets to Run
-        # pool: $(AGENT_POOL)
+        pool: $(AGENT_POOL)
         # condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
         - template: tasks/detect-cicd.yml
@@ -33,7 +33,7 @@ stages:
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Determine CI Targets to Run
-        # pool: $(AGENT_POOL)
+        pool: $(AGENT_POOL)
         # condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
         - template: tasks/detect-cicd.yml

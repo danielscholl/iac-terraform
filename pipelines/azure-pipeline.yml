@@ -27,10 +27,10 @@ stages:
   parameters:
     environments:
     - name: 'devint'
+      resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
-  #     resourceNameIsolationLevel: 8
-
+      
     configurations:
     - jobName: template_deployment
       terraformTemplatePath: '$(TF_DEPLOYMENT_TEMPLATE_ROOT)'
-      # deploymentTimeoutInMinutes: 120
+      deploymentTimeoutInMinutes: 120
