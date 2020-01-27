@@ -26,7 +26,7 @@ stages:
 - template: stage-compose.yml
   parameters:
     environments:
-    - name: 'dev'
+    - name: 'devint'
   #     enablePrIsolation: true
   #     resourceNameIsolationLevel: 8
 
