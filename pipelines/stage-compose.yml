@@ -1,0 +1,48 @@
+parameters:
+  environments: []
+  configurations: []
+
+stages:
+
+- stage: PublishBuildArtifact
+  jobs:
+  - template: stage-prepare.yml
+
+- ${{ each environment in parameters.environments }}:
+  - ${{ each config in parameters.configurations }}:
+
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Build
+      jobs:
+      - job: TemplateChangeDetection_${{ config.jobName }}_Build
+        displayName: Determine CI Targets to Run
+        # pool: $(AGENT_POOL)
+        # condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
+        steps:
+        - template: tasks/detect-cicd.yml
+          parameters:
+            terraformTemplatePath: ${{ config.terraformTemplatePath }}
+            jobName: ${{ config.jobName }}
+      - template: stage-build.yml
+        parameters:
+          environment: ${{ environment.name }}
+          # enablePrIsolation: ${{ environment.enablePrIsolation }}
+          # resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          configuration: ${{ config }}
+
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
+      jobs:
+      - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
+        displayName: Determine CI Targets to Run
+        # pool: $(AGENT_POOL)
+        # condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
+        steps:
+        - template: tasks/detect-cicd.yml
+          parameters:
+            terraformTemplatePath: ${{ config.terraformTemplatePath }}
+            jobName: ${{ config.jobName }}
+      - template: stage-deploy.yml
+        parameters:
+          environment: ${{ environment.name }}
+          # enablePrIsolation: ${{ environment.enablePrIsolation }}
+          # resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          configuration: ${{ config }}
