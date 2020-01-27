@@ -29,6 +29,9 @@ stages:
     - name: 'devint'
       resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
+    - name: 'qa'
+      resourceNameIsolationLevel: 8
+  #     enablePrIsolation: true
       
     configurations:
     - jobName: template_deployment
