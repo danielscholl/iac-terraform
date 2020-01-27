@@ -34,6 +34,6 @@ stages:
   #     enablePrIsolation: true
       
     configurations:
-    - jobName: template_deployment
+    - jobName: main
       terraformTemplatePath: '$(TF_DEPLOYMENT_TEMPLATE_ROOT)'
       deploymentTimeoutInMinutes: 120
