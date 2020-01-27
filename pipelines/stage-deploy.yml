@@ -9,7 +9,7 @@ parameters:
 jobs:
 
 - job: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
-  #pool: $(AGENT_POOL)
+  pool: $(AGENT_POOL)
   dependsOn: TemplateChangeDetection_${{ parameters.configuration.jobName }}_Deploy
   condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection_${{ parameters.configuration.jobName }}_Deploy.outputs['${{ parameters.configuration.jobName }}.needs_cicd'], 'true'))
   
@@ -23,7 +23,7 @@ jobs:
 
 - deployment: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}
   dependsOn: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
-  #pool: $(AGENT_POOL)
+  pool: $(AGENT_POOL)
 
   # ${{ if parameters.configuration.deploymentTimeoutInMinutes }}:
   #   timeoutInMinutes: '${{ parameters.configuration.deploymentTimeoutInMinutes }}'
