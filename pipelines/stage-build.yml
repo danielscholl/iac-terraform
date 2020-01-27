@@ -26,7 +26,7 @@ jobs:
   pool: $(AGENT_POOL)
 
   variables:
-#   - group: '${{ parameters.environment }} Environment Variables'
+  - group: '${{ parameters.environment }} Environment Variables'
 
   - name: TF_WORKSPACE_NAME
     value: $[ dependencies.Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs.outputs['ComputeWs.TF_WORKSPACE_NAME'] ]

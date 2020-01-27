@@ -25,8 +25,8 @@ jobs:
   dependsOn: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
   pool: $(AGENT_POOL)
 
-  # ${{ if parameters.configuration.deploymentTimeoutInMinutes }}:
-  #   timeoutInMinutes: '${{ parameters.configuration.deploymentTimeoutInMinutes }}'
+  ${{ if parameters.configuration.deploymentTimeoutInMinutes }}:
+    timeoutInMinutes: '${{ parameters.configuration.deploymentTimeoutInMinutes }}'
 
   variables:
   # - group: '${{ parameters.environment }} Environment Variables'
