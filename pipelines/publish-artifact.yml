@@ -37,13 +37,6 @@ jobs:
       sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
 
-  # - task: CopyFiles@2
-  #   displayName: Copy Test Harness to Artifact Directory
-  #   inputs:
-  #     contents: $(TEST_HARNESS_DIR)/**/*
-  #     sourceFolder: $(Build.SourcesDirectory)
-  #     targetFolder: $(Build.ArtifactStagingDirectory)
-
   - task: CopyFiles@2
     displayName: Copy Go Project Files
     inputs:
