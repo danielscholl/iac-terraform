@@ -6,7 +6,7 @@ stages:
 
 - stage: pipeline_publish_Artifact
   jobs:
-  - template: stage-prepare.yml
+  - template: publish-artifact.yml
 
 - ${{ each environment in parameters.environments }}:
   - ${{ each config in parameters.configurations }}:
