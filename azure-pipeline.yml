@@ -49,10 +49,9 @@ stages:
       environmentsToTeardownAfterRelease:
       - 'dev'
 
-    # - jobName: webdata
-    #   terraformTemplatePath: 'samples/webdata'
-    #   terraformWorkspacePrefix: 'wd'
-    #   deploymentTimeoutInMinutes: 30
-    #   environmentsToTeardownAfterRelease:
-    #   - 'dev'
-    #   - 'qa'
+    - jobName: webdata
+      terraformTemplatePath: 'samples/webdata'
+      terraformWorkspacePrefix: 'wd'
+      deploymentTimeoutInMinutes: 30
+      environmentsToTeardownAfterRelease:
+      - 'dev'
