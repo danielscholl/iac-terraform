@@ -40,7 +40,7 @@ stages:
   #     enablePrIsolation: true
 
     configurations:
-    - jobName: template_deployment
+    - jobName: simpleweb
       terraformTemplatePath: 'samples/simpleweb'
       terraformWorkspacePrefix: 'sw'
       deploymentTimeoutInMinutes: 20
