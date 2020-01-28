@@ -4,7 +4,7 @@ parameters:
 
 stages:
 
-- stage: PublishBuildArtifact
+- stage: pipeline_publish_Artifact
   jobs:
   - template: stage-prepare.yml
 

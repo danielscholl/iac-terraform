@@ -36,6 +36,7 @@ stages:
     - name: 'dev'
       resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
+  
     - name: 'qa'
       resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
@@ -47,3 +48,11 @@ stages:
       deploymentTimeoutInMinutes: 20
       environmentsToTeardownAfterRelease:
       - 'dev'
+
+    - jobName: webdata
+      terraformTemplatePath: 'samples/webdata'
+      terraformWorkspacePrefix: 'wd'
+      deploymentTimeoutInMinutes: 30
+      environmentsToTeardownAfterRelease:
+      - 'dev'
+      - 'qa'
