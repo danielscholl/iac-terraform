@@ -1,6 +1,6 @@
 jobs:
 - job: Publish
-  displayName: Copy Dependencies to Artifact Directory
+  displayName: Copy Artifacts
   pool: $(AGENT_POOL)
 
   workspace:
@@ -17,18 +17,25 @@ jobs:
   # - template: tasks/lint-tf.yml
 
   - task: CopyFiles@2
-    displayName: Stage Pipeline Scripts
+    displayName: Pipeline YAML files
     inputs:
       contents: $(PIPELINE_ROOT_DIR)/**/*
       sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
 
-  # - task: CopyFiles@2
-  #   displayName: Copy Terraform Directory to Artifact Directory
-  #   inputs:
-  #     contents: $(TF_ROOT_DIR)/**/*
-  #     sourceFolder: $(Build.SourcesDirectory)
-  #     targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: CopyFiles@2
+    displayName: Terraform Modules
+    inputs:
+      contents: moduls/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    displayName: Terraform Templates
+    inputs:
+      contents: samples/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
 
   # - task: CopyFiles@2
   #   displayName: Copy Test Harness to Artifact Directory
@@ -38,7 +45,7 @@ jobs:
   #     targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: CopyFiles@2
-    displayName: Stage Go Project Files
+    displayName: Go Project Files
     inputs:
       contents: go.*
       sourceFolder: $(Build.SourcesDirectory)

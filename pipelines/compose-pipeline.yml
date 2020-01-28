@@ -5,7 +5,7 @@ parameters:
 stages:
 
 - stage: publish_artifact
-  displayName: 'Required Artifacts'
+  displayName: 'Generate Artifacts'
   jobs:
   - template: publish-artifact.yml
 
