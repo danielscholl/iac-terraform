@@ -1,10 +1,10 @@
 parameters:
   environment: ''
   configuration: ''
-  # enablePrIsolation: true
+  enablePrIsolation: false
   resourceNameIsolationLevel: 8
   forceRun: false
-  # skipTests: false
+  skipTests: false
 
 jobs:
 

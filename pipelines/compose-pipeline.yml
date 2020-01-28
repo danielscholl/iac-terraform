@@ -18,7 +18,7 @@ stages:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Determine Changed Files
         pool: $(AGENT_POOL)
-        # condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
+        condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
@@ -37,7 +37,7 @@ stages:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Determine CI Targets
         pool: $(AGENT_POOL)
-        # condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
+        condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
