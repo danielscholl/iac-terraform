@@ -17,6 +17,9 @@ steps:
 
         set -euo pipefail
 
+        echo "-------DEBUG-------"
+        echo $TF_VAR_remote_state_account
+
         function storageAccountPrimaryKey() {
             az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv
         }
@@ -35,4 +38,10 @@ steps:
         # Setting the scripts to be run as executable
         chmod -fR 755 *.sh || true
 
-        go test -v $(go list ./... | grep "$TERRAFORM_TEMPLATE_PATH" | grep "unit")
+        echo "-------DEBUG-------"
+        echo $ARM_ACCESS_KEY
+        echo $ARM_CLIENT_SECRET
+        echo $ARM_CLIENT_ID
+        echo $ARM_TENANT_ID
+
+        # go test -v $(go list ./... | grep "$TERRAFORM_TEMPLATE_PATH" | grep "unit")

@@ -1,7 +1,7 @@
 steps:
   - task: Bash@3
     name: LintCheckTerraform
-    displayName: Lint Terraform files
+    displayName: Lint Terraform Files
     inputs:
       targetType: 'inline'
       script: |
