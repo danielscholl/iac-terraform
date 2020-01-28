@@ -11,10 +11,10 @@ jobs:
     displayName: 'Verify Go Version is Installed'
     inputs:
       version: '$(GO_VERSION)'
- 
-  # - template: tasks/lint-go.yml
 
-  # - template: tasks/lint-tf.yml
+  - template: tasks/lint-go.yml
+
+  - template: tasks/lint-tf.yml
 
   - task: CopyFiles@2
     displayName: Copy ADO yml files

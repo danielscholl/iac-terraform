@@ -45,17 +45,6 @@ RUN wget -q -O terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFO
   unzip terraform.zip -d /usr/local/bin && \
   rm terraform.zip
 
-# Install Golang
-# RUN wget -q -O golang.tar.gz "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" && \
-#   tar -xvf golang.tar.gz && \
-#   mv go /usr/local && \
-#   rm golang.tar.gz
-
-# ENV GOROOT=/usr/local/go
-# ENV GOPATH $HOME/go
-# ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-
-
 WORKDIR /azp
 
 COPY start.sh .

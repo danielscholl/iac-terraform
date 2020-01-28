@@ -1,7 +1,7 @@
 steps:
   - task: Bash@3
     name: LintCheckGo
-    displayName: Lint check Go files
+    displayName: Lint Go files
     inputs:
       targetType: 'inline'
       script: |
