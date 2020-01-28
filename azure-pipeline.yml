@@ -1,3 +1,9 @@
+# Required Group Variables - iac-terraform-variables
+# AGENT_POOL  (iac-terraform)
+# PIPELINE_ROOT_DIR  (pipelines)
+# TF_ROOT_DIR (samples)
+# TF_DEPLOYMENT_TEMPLATE_ROOT (samples)
+
 trigger:
   batch: true
   branches:
@@ -26,29 +32,22 @@ stages:
 - template: stage-compose.yml
   parameters:
     environments:
-    - name: 'devint'
+    - name: 'dev'
       resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
     - name: 'qa'
       resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
       
-    configurations:
-    - jobName: main
-      terraformTemplatePath: '$(TF_DEPLOYMENT_TEMPLATE_ROOT)'
-      deploymentTimeoutInMinutes: 120
-
-
-
     configurationMatrix:
     - jobName: simpleweb
       terraformTemplatePath: 'samples/simpleweb'
       terraformWorkspacePrefix: 'sw'
       environmentsToTeardownAfterRelease:
-      - 'devint'
+      - 'dev'
 
-     - jobName: webdata
+    - jobName: webdata
       terraformTemplatePath: 'samples/webdata'
       terraformWorkspacePrefix: 'wd'
       environmentsToTeardownAfterRelease:
-      - 'devint'
+      - 'dev'
