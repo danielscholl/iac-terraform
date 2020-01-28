@@ -29,7 +29,7 @@ variables:
 - group: 'iac-terraform-variables'
 
 stages:
-- template: stage-compose.yml
+- template: pipelines/stage-compose.yml
   parameters:
     environments:
     - name: 'dev'
