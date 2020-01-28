@@ -1,6 +1,6 @@
 jobs:
 - job: Publish
-  displayName: Copy Artifacts
+  displayName: Validate and Publish Artifacts
   pool: $(AGENT_POOL)
 
   workspace:
@@ -26,7 +26,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy Terraform Modules
     inputs:
-      contents: moduls/**/*
+      contents: modules/**/*
       sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
 
