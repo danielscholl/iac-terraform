@@ -4,14 +4,16 @@ parameters:
 
 stages:
 
-- stage: publish_pipeline_Artifact
+- stage: publish_artifact
+  displayName: 'Publish Pipeline Artifacts'
   jobs:
   - template: publish-artifact.yml
 
 - ${{ each environment in parameters.environments }}:
   - ${{ each config in parameters.configurations }}:
 
-    - stage: ${{ config.jobName }}_${{ environment.name }}_Build
+    - stage: ${{ config.jobName }}_${{ environment.name }}_build
+      displayName: 'Build ${{ config.jobName }} Env=${{ environment.name }}'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Determine CI Targets to Run
@@ -29,7 +31,8 @@ stages:
           resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
 
-    - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
+    - stage: ${{ config.jobName }}_${{ environment.name }}_deploy
+      displayName: 'Deploy ${{ config.jobName }} Env=${{ environment.name }}'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Determine CI Targets to Run
