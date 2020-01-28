@@ -1,5 +1,6 @@
 jobs:
 - job: Publish
+  displayName: Copy Dependencies to Artifact Directory
   pool: $(AGENT_POOL)
 
   workspace:
@@ -16,7 +17,7 @@ jobs:
   # - template: tasks/lint-tf.yml
 
   - task: CopyFiles@2
-    displayName: Copy Pipeline Scripts to Artifact Directory
+    displayName: Stage Pipeline Scripts
     inputs:
       contents: $(PIPELINE_ROOT_DIR)/**/*
       sourceFolder: $(Build.SourcesDirectory)
@@ -37,14 +38,14 @@ jobs:
   #     targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: CopyFiles@2
-    displayName: Copy Go Mod/Sum to Artifact Directory
+    displayName: Stage Go Project Files
     inputs:
       contents: go.*
       sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: PublishBuildArtifacts@1
-    displayName: Publish Artifact
+    displayName: Publish the Artifact
     inputs:
       parallel: true
       parallelCount: 8
