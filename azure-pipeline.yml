@@ -5,9 +5,10 @@
 # TF_DEPLOYMENT_TEMPLATE_ROOT (samples)
 # TF_VERSION (0.12.20)
 # GO_VERSION (1.12.14)
-# SERVICE_CONNECTION_NAME  <your_subscription>
-# REMOTE_STATE_CONTAINER
-# REMOTE_STATE_ACCOUNT
+# SERVICE_CONNECTION_NAME  <your_service_connection_name>
+# REMOTE_STATE_ACCOUNT <your_remote_state_account_name>
+# REMOTE_STATE_CONTAINER <your_remote_state_container_name>
+
 
 trigger:
   batch: true
