@@ -3,8 +3,11 @@
 # PIPELINE_ROOT_DIR  (pipelines)
 # TF_ROOT_DIR (samples)
 # TF_DEPLOYMENT_TEMPLATE_ROOT (samples)
-# TF_VERSION 0.12.20
+# TF_VERSION (0.12.20)
 # GO_VERSION (1.12.14)
+# SERVICE_CONNECTION_NAME  <your_subscription>
+# REMOTE_STATE_CONTAINER
+# REMOTE_STATE_ACCOUNT
 
 trigger:
   batch: true

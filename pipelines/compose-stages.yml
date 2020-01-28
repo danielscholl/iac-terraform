@@ -17,7 +17,7 @@ stages:
       displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
-        displayName: Determine Changed Files
+        displayName: Determine Changes
         pool: $(AGENT_POOL)
         condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
@@ -36,7 +36,7 @@ stages:
       displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
-        displayName: Determine CI Targets
+        displayName: Determine Changes
         pool: $(AGENT_POOL)
         condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
