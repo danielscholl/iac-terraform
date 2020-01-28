@@ -1,6 +1,7 @@
 parameters:
   environments: []
   configurations: []
+  forceRun: false
 
 stages:
 
