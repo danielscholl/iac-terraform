@@ -58,10 +58,10 @@ variable "cosmosdb_container_name" {
 #-------------------------------
 locals {
   // Sanitized Names
-  app_id    = random_string.workspace_scope.keepers.app_id
-  location  = replace(trimspace(lower(var.location)), "_", "-")
-  ws_name   = random_string.workspace_scope.keepers.ws_name
-  suffix    = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
+  app_id   = random_string.workspace_scope.keepers.app_id
+  location = replace(trimspace(lower(var.location)), "_", "-")
+  ws_name  = random_string.workspace_scope.keepers.ws_name
+  suffix   = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // base name for resources, name constraints documented here: https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
   base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
@@ -72,13 +72,13 @@ locals {
   base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name                  = "${local.base_name_83}"
-  keyvault_name         = "${local.base_name_21}-kv"
-  cosmosdb_account_name = "${local.base_name_83}-db"
+  name                   = "${local.base_name_83}"
+  keyvault_name          = "${local.base_name_21}-kv"
+  cosmosdb_account_name  = "${local.base_name_83}-db"
   cosmosdb_database_name = "${local.base_name_83}"
-  service_plan_name     = "${local.base_name_83}-plan"
-  app_service_name      = "${local.base_name_83}"
-  insights_name         = "${local.base_name_83}-insights"
+  service_plan_name      = "${local.base_name_83}-plan"
+  app_service_name       = "${local.base_name_83}"
+  insights_name          = "${local.base_name_83}-insights"
 
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url
@@ -126,9 +126,9 @@ module "resource_group" {
   name     = local.name
   location = local.location
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 
@@ -140,10 +140,10 @@ module "keyvault" {
   source = "github.com/danielscholl/iac-terraform/modules/keyvault"
 
   # Module variable
-  name           = local.keyvault_name
+  name                = local.keyvault_name
   resource_group_name = module.resource_group.name
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }
@@ -166,7 +166,7 @@ module "cosmosdb" {
   database_name            = local.cosmosdb_database_name
   container_name           = var.cosmosdb_container_name
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }
@@ -179,8 +179,8 @@ module "keyvault-secret" {
   source = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
 
   # Module variable
-  keyvault_id          = module.keyvault.id
-  secrets              = {
+  keyvault_id = module.keyvault.id
+  secrets = {
     "cosmosdb-key" = module.cosmosdb.primary_master_key
   }
 }
@@ -190,7 +190,7 @@ module "keyvault-secret" {
 #-------------------------------
 module "app_insights" {
   # Module Path
-  source              = "github.com/danielscholl/iac-terraform/modules/app-insights"
+  source = "github.com/danielscholl/iac-terraform/modules/app-insights"
 
   # Module variable
   name                = local.insights_name
@@ -212,7 +212,7 @@ module "service_plan" {
   name                = local.service_plan_name
   resource_group_name = module.resource_group.name
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }
@@ -229,14 +229,14 @@ module "app_service" {
   docker_registry_server_url = local.reg_url
   vault_uri                  = module.keyvault.uri
   instrumentation_key        = module.app_insights.instrumentation_key
-  app_settings               = {
-    cosmosdb_database        = module.cosmosdb.name
-    cosmosdb_account         = module.cosmosdb.endpoint
-    cosmosdb_key             = module.cosmosdb.primary_master_key
+  app_settings = {
+    cosmosdb_database = module.cosmosdb.name
+    cosmosdb_account  = module.cosmosdb.endpoint
+    cosmosdb_key      = module.cosmosdb.primary_master_key
   }
-  secure_app_settings        = module.keyvault.references
+  secure_app_settings = module.keyvault.references
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }

@@ -52,10 +52,10 @@ variable "docker_registry_server_url" {
 #-------------------------------
 locals {
   // Sanitized Names
-  app_id    = random_string.workspace_scope.keepers.app_id
-  location  = replace(trimspace(lower(var.location)), "_", "-")
-  ws_name   = random_string.workspace_scope.keepers.ws_name
-  suffix    = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
+  app_id   = random_string.workspace_scope.keepers.app_id
+  location = replace(trimspace(lower(var.location)), "_", "-")
+  ws_name  = random_string.workspace_scope.keepers.ws_name
+  suffix   = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // Base Names
   base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
@@ -111,9 +111,9 @@ module "resource_group" {
   name     = local.name
   location = local.location
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 
@@ -128,9 +128,9 @@ module "service_plan" {
   name                = local.service_plan_name
   resource_group_name = module.resource_group.name
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 module "app_service" {
@@ -144,9 +144,9 @@ module "app_service" {
   app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 
