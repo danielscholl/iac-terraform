@@ -8,7 +8,7 @@ jobs:
 
   steps:
   - task: GoTool@0
-    displayName: 'Verify Go Version is Installed'
+    displayName: 'Verify Go Version Installed'
     inputs:
       version: '$(GO_VERSION)'
 
