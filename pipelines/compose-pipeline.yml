@@ -16,7 +16,7 @@ stages:
       displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
-        displayName: determine git diff changes
+        displayName: Determine changed files
         pool: $(AGENT_POOL)
         # condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:

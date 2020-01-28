@@ -1,6 +1,6 @@
 jobs:
 - job: Publish
-  displayName: Validate and Publish Artifacts
+  displayName: Validate and Publish
   pool: $(AGENT_POOL)
 
   workspace:
