@@ -27,7 +27,7 @@ stages:
       - template: stage-build.yml
         parameters:
           environment: ${{ environment.name }}
-          # enablePrIsolation: ${{ environment.enablePrIsolation }}
+          enablePrIsolation: ${{ environment.enablePrIsolation }}
           resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
 
@@ -46,6 +46,6 @@ stages:
       - template: stage-deploy.yml
         parameters:
           environment: ${{ environment.name }}
-          # enablePrIsolation: ${{ environment.enablePrIsolation }}
+          enablePrIsolation: ${{ environment.enablePrIsolation }}
           resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}

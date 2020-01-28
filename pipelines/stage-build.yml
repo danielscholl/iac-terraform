@@ -19,7 +19,7 @@ jobs:
     parameters:
       terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
       environmentName: ${{ parameters.environment }}
-      # enablePrIsolation: ${{ parameters.enablePrIsolation }}
+      enablePrIsolation: ${{ parameters.enablePrIsolation }}
       stepName: ComputeWs
 
 - job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}
@@ -55,10 +55,10 @@ jobs:
       artifactName: $(BUILD_ARTIFACT_NAME)
       downloadPath: '$(System.DefaultWorkingDirectory)'
 
-#   - task: GoTool@0
-#     displayName: 'Verify Go Version is Installed'
-#     inputs:
-#       version: '$(GO_VERSION)'
+  - task: GoTool@0
+    displayName: 'Verify Go Version is Installed'
+    inputs:
+      version: '$(GO_VERSION)'
 
 #   - template: tasks/tests-unit.yml
 #     parameters:

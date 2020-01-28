@@ -1,7 +1,7 @@
 parameters:
   environment: ''
   configuration: ''
-  # enablePrIsolation: true
+  enablePrIsolation: false
   resourceNameIsolationLevel: 8
   forceRun: false
   # skipTests: false
@@ -18,7 +18,7 @@ jobs:
     parameters:
       terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
       environmentName: ${{ parameters.environment }}
-      # enablePrIsolation: ${{ parameters.enablePrIsolation }}
+      enablePrIsolation: ${{ parameters.enablePrIsolation }}
       stepName: ComputeWs
 
 - deployment: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}

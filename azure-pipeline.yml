@@ -37,7 +37,7 @@ stages:
     environments:
     - name: 'dev'
       resourceNameIsolationLevel: 8
-  #     enablePrIsolation: true
+      enablePrIsolation: false
 
     configurations:
     - jobName: simpleweb
