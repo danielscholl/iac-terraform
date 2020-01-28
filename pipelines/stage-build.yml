@@ -37,7 +37,7 @@ jobs:
     value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
 
   - name: TERRAFORM_TEMPLATE_PATH
-    value: ${{ parameters.configuration.terraformTemplatePath }}
+    value: ${{ parameters.configuration.terraformModulePath }}
 
   - name: TF_TEMPLATE_WORKING_DIR
     value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)/${{ parameters.configuration.terraformTemplatePath }}'

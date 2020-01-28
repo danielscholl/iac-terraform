@@ -46,6 +46,7 @@ stages:
     configurations:
     - jobName: simpleweb
       terraformTemplatePath: 'samples/simpleweb'
+      terraformModulePath: 'modules'
       terraformWorkspacePrefix: 'sw'
       deploymentTimeoutInMinutes: 20
       environmentsToTeardownAfterRelease:

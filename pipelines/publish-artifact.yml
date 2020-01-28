@@ -8,7 +8,7 @@ jobs:
 
   steps:
   - task: GoTool@0
-    displayName: 'Verify Go'
+    displayName: 'Install Go'
     inputs:
       version: '$(GO_VERSION)'
 
