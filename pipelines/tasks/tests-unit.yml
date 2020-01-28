@@ -17,9 +17,13 @@ steps:
 
         set -euo pipefail
 
-        echo "-------DEBUG-------"
-        echo "ARM_SUBSCRIPTION_ID = ${ARM_SUBSCRIPTION_ID}"
-        echo "TF_VAR_remote_state_account = ${TF_VAR_remote_state_account}"
+        export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
+        export ARM_TENANT_ID=$(az account show --query tenantId -otsv)
+        export ARM_CLIENT_SECRET="$servicePrincipalKey"
+        export ARM_CLIENT_ID="$servicePrincipalId"
+
+        env | grep ARM
+
 
         function storageAccountPrimaryKey() {
             az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv

@@ -7,7 +7,7 @@ parameters:
 steps:
   - task: Bash@3
     name: ${{ parameters.stepName }}
-    displayName: Compute and output pipeline variable for Terraform Workspace
+    displayName: Set Terraform Workspace Variable
     env:
       TERRAFORM_WORKSPACE_PREFIX: ${{ parameters.terraformWorkspacePrefix }}
       ENVIRONMENT_NAME: ${{ parameters.environmentName }}
