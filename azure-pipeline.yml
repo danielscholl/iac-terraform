@@ -11,6 +11,7 @@ trigger:
     - master
   paths:
     include:
+    - azure-pipeline.yml
     - /pipelines/*
     exclude:
     - /**/*.md
