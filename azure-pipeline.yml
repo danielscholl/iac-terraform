@@ -38,16 +38,11 @@ stages:
     - name: 'qa'
       resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
-      
-    configurationMatrix:
-    - jobName: simpleweb
+
+    configurations:
+    - jobName: template_deployment
       terraformTemplatePath: 'samples/simpleweb'
       terraformWorkspacePrefix: 'sw'
-      environmentsToTeardownAfterRelease:
-      - 'dev'
-
-    - jobName: webdata
-      terraformTemplatePath: 'samples/webdata'
-      terraformWorkspacePrefix: 'wd'
+      deploymentTimeoutInMinutes: 20
       environmentsToTeardownAfterRelease:
       - 'dev'
