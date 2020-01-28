@@ -3,6 +3,7 @@
 # PIPELINE_ROOT_DIR  (pipelines)
 # TF_ROOT_DIR (samples)
 # TF_DEPLOYMENT_TEMPLATE_ROOT (samples)
+# GO_VERSION (1.12.14)
 
 trigger:
   batch: true

@@ -23,7 +23,7 @@ jobs:
       stepName: ComputeWs
 
 - job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}
-  displayName: Unit Test
+  displayName: Terraform Unit Test
   dependsOn: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
   pool: $(AGENT_POOL)
 

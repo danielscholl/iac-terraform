@@ -7,10 +7,10 @@ jobs:
     clean: all
 
   steps:
-  # - task: GoTool@0
-  #   displayName: 'Verify Go Version is Installed'
-  #   inputs:
-  #     version: '$(GO_VERSION)'
+  - task: GoTool@0
+    displayName: 'Verify Go Version is Installed'
+    inputs:
+      version: '$(GO_VERSION)'
  
   # - template: tasks/lint-go.yml
 

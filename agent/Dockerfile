@@ -1,4 +1,6 @@
 FROM ubuntu:16.04
+ARG TERRAFORM_VERSION=0.12.20
+ARG GO_VERSION=1.12.14
 
 # To make it easier for build and release pipelines to run apt-get,
 # configure apt to not require confirmation (assume the -y argument by default)
@@ -15,7 +17,22 @@ RUN apt-get update \
   libcurl3 \
   libicu55 \
   libunwind8 \
-  netcat
+  netcat \
+  wget \
+  unzip
+
+RUN wget -q -O terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" && \
+  unzip terraform.zip -d /usr/local/bin && \
+  rm terraform.zip
+
+RUN wget -q -O golang.tar.gz "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" && \
+  tar -xvf golang.tar.gz && \
+  mv go /usr/local && \
+  rm golang.tar.gz
+
+ENV GOROOT=/usr/local/go
+ENV GOPATH $HOME/go
+ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 WORKDIR /azp
 
