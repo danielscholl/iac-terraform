@@ -51,7 +51,7 @@ resource "azurerm_app_service_slot" "staging" {
   tags                = var.resource_tags
   depends_on          = [azurerm_app_service.main]
 
-  app_settings        = local.app_settings
+  app_settings = local.app_settings
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]

@@ -12,7 +12,7 @@ module "service_bus" {
 
   topics = [
     {
-      name = "terraform-topic"
+      name                = "terraform-topic"
       enable_partitioning = true
       authorization_rules = [
         {

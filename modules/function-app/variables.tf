@@ -31,7 +31,7 @@ variable "storage_account_name" {
 variable "function_app_config" {
   description = "Metadata about the function apps to be created."
   type = map(object({
-    image = string
+    image        = string
     app_settings = map(string)
   }))
   default = {}
@@ -98,7 +98,7 @@ locals {
   app_configs                    = values(var.function_app_config)
 
   insights_settings = var.instrumentation_key != "" ? {
-    APPINSIGHTS_INSTRUMENTATIONKEY      = var.instrumentation_key
+    APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
   } : {}
 
   docker_settings = length(compact([var.docker_registry_server_username, var.docker_registry_server_password, var.docker_registry_server_url])) == 3 ? {

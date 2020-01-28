@@ -101,20 +101,20 @@ locals {
   acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
-  
+
 
   docker_settings = var.docker_registry_server_url != "" ? {
-    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
+    DOCKER_REGISTRY_SERVER_URL      = format("https://%s", var.docker_registry_server_url)
+    DOCKER_REGISTRY_SERVER_USERNAME = var.docker_registry_server_username
+    DOCKER_REGISTRY_SERVER_PASSWORD = var.docker_registry_server_password
   } : {}
 
   keyvault_settings = var.vault_uri != "" ? {
-    KEYVAULT_URI                        = var.vault_uri
+    KEYVAULT_URI = var.vault_uri
   } : {}
 
   insights_settings = var.instrumentation_key != "" ? {
-    APPINSIGHTS_INSTRUMENTATIONKEY      = var.instrumentation_key
+    APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
   } : {}
 
 

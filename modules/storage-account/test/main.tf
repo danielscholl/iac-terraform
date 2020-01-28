@@ -6,14 +6,14 @@ module "resource_group" {
 }
 
 module "storage_account" {
-  source                    = "../"
-  resource_group_name       = module.resource_group.name
-  name                      = substr("iacterraform${module.resource_group.random}", 0, 23)
+  source              = "../"
+  resource_group_name = module.resource_group.name
+  name                = substr("iacterraform${module.resource_group.random}", 0, 23)
   containers = [
     {
-      name  = "iac-container",
+      name        = "iac-container",
       access_type = "private"
     }
   ]
-  encryption_source         = "Microsoft.Storage"
+  encryption_source = "Microsoft.Storage"
 }

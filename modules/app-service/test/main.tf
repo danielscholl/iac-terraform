@@ -23,9 +23,9 @@ module "app_service" {
   }
 
   app_service_config = {
-     web = {
-        image = "azuredocs/aci-helloworld:latest"
-     }
+    web = {
+      image = "azuredocs/aci-helloworld:latest"
+    }
   }
 
   resource_tags = {

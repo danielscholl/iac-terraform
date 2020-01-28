@@ -8,8 +8,8 @@ module "resource_group" {
 module "service_principal" {
   source = "../"
 
-  name = format("iac-terraform-%s", module.resource_group.random)
-  role = "Contributor"
-  scopes = [module.resource_group.id]
+  name     = format("iac-terraform-%s", module.resource_group.random)
+  role     = "Contributor"
+  scopes   = [module.resource_group.id]
   end_date = "1W"
 }

@@ -7,7 +7,7 @@ data "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_storage_account" "main" {
-  name                     = lower(var.name)
+  name = lower(var.name)
 
   resource_group_name       = data.azurerm_resource_group.main.name
   location                  = data.azurerm_resource_group.main.location
@@ -17,7 +17,7 @@ resource "azurerm_storage_account" "main" {
   enable_https_traffic_only = var.ensure_https
   account_encryption_source = var.encryption_source
 
-  
+
   # enrolls storage account into azure 'managed identities' authentication
   identity {
     type = var.assign_identity ? "SystemAssigned" : null

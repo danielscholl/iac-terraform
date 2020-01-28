@@ -12,8 +12,8 @@ resource "azurerm_cosmosdb_account" "account" {
   resource_group_name = data.azurerm_resource_group.group.name
   tags                = var.resource_tags
 
-  offer_type          = "Standard"
-  kind                = var.kind
+  offer_type = "Standard"
+  kind       = var.kind
 
   enable_automatic_failover = var.automatic_failover
 

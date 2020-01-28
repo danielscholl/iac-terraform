@@ -7,18 +7,18 @@ module "resource_group" {
 
 
 module "network" {
-    source = "../"
+  source = "../"
 
-    name                = "iac-terraform-vnet-${module.resource_group.random}"
-    resource_group_name = module.resource_group.name
-    address_space       = "10.0.1.0/24"
-    dns_servers         = ["8.8.8.8"]
-    subnet_prefixes     = ["10.0.1.0/26", "10.0.1.64/26", "10.0.1.128/26", "10.0.1.192/27", "10.0.1.224/28"]
-    subnet_names        = ["Web-Tier", "App-Tier", "Data-Tier", "Mgmt-Tier", "GatewaySubnet"]
+  name                = "iac-terraform-vnet-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
+  address_space       = "10.0.1.0/24"
+  dns_servers         = ["8.8.8.8"]
+  subnet_prefixes     = ["10.0.1.0/26", "10.0.1.64/26", "10.0.1.128/26", "10.0.1.192/27", "10.0.1.224/28"]
+  subnet_names        = ["Web-Tier", "App-Tier", "Data-Tier", "Mgmt-Tier", "GatewaySubnet"]
 
-    # Tags
-    resource_tags = {
-      iac = "terraform"
-    }
+  # Tags
+  resource_tags = {
+    iac = "terraform"
+  }
 
 }

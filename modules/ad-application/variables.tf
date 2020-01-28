@@ -5,7 +5,7 @@
 variable "ad_config" {
   description = "Metadata about the Active Directory App to be created."
   type = list(object({
-    name   = string
+    name       = string
     reply_urls = list(string)
   }))
 }

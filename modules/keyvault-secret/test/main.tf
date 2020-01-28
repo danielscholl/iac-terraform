@@ -12,9 +12,9 @@ module "keyvault" {
 }
 
 module "keyvault_secret" {
-  source               = "../"
-  keyvault_id          = module.keyvault.id
-  secrets              = {
-    "iac": "terraform"
+  source      = "../"
+  keyvault_id = module.keyvault.id
+  secrets = {
+    "iac" : "terraform"
   }
 }

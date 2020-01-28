@@ -18,9 +18,9 @@ module "app_service" {
   docker_registry_server_url = "mcr.microsoft.com"
 
   app_service_config = {
-     web = {
-        image = "azuredocs/aci-helloworld:latest"
-     }
+    web = {
+      image = "azuredocs/aci-helloworld:latest"
+    }
   }
 }
 

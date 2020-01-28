@@ -9,8 +9,8 @@ resource "random_password" "main" {
 }
 
 resource "azuread_application" "main" {
-  count = local.create_count
-  name  = var.name
+  count                      = local.create_count
+  name                       = var.name
   available_to_other_tenants = false
 }
 
@@ -30,8 +30,8 @@ resource "azuread_service_principal_password" "main" {
   count                = var.password != null ? 1 : 0
   service_principal_id = azuread_service_principal.main[0].id
 
-  value = coalesce(var.password, random_password.main[0].result)
-  end_date = local.end_date
+  value             = coalesce(var.password, random_password.main[0].result)
+  end_date          = local.end_date
   end_date_relative = local.end_date_relative
 
   lifecycle {

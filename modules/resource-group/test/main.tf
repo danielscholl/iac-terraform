@@ -4,7 +4,7 @@ module "resource_group" {
   name     = "iac-terraform"
   location = "eastus2"
 
-  resource_tags          = {
+  resource_tags = {
     environment = "test-environment"
-  } 
+  }
 }
