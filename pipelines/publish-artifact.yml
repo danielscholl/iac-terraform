@@ -17,21 +17,21 @@ jobs:
   # - template: tasks/lint-tf.yml
 
   - task: CopyFiles@2
-    displayName: Pipeline YAML files
+    displayName: Copy ADO yml files
     inputs:
       contents: $(PIPELINE_ROOT_DIR)/**/*
       sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: CopyFiles@2
-    displayName: Terraform Modules
+    displayName: Copy Terraform Modules
     inputs:
       contents: moduls/**/*
       sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: CopyFiles@2
-    displayName: Terraform Templates
+    displayName: Copy Terraform Templates
     inputs:
       contents: samples/**/*
       sourceFolder: $(Build.SourcesDirectory)
@@ -45,14 +45,14 @@ jobs:
   #     targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: CopyFiles@2
-    displayName: Go Project Files
+    displayName: Copy Go Project Files
     inputs:
       contents: go.*
       sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: PublishBuildArtifacts@1
-    displayName: Publish the Artifact
+    displayName: Publish Artifact
     inputs:
       parallel: true
       parallelCount: 8
