@@ -8,12 +8,11 @@ jobs:
 
   steps:
   - task: GoTool@0
-    displayName: 'Install Go'
+    displayName: 'Install Golang'
     inputs:
       version: '$(GO_VERSION)'
-
+      
   - template: tasks/lint-go.yml
-
   - template: tasks/lint-tf.yml
 
   - task: CopyFiles@2

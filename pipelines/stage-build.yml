@@ -56,7 +56,7 @@ jobs:
       downloadPath: '$(System.DefaultWorkingDirectory)'
 
   - task: GoTool@0
-    displayName: 'Verify Go Version is Installed'
+    displayName: 'Install Golang'
     inputs:
       version: '$(GO_VERSION)'
 
