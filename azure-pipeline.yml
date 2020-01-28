@@ -37,3 +37,18 @@ stages:
     - jobName: main
       terraformTemplatePath: '$(TF_DEPLOYMENT_TEMPLATE_ROOT)'
       deploymentTimeoutInMinutes: 120
+
+
+
+    configurationMatrix:
+    - jobName: simpleweb
+      terraformTemplatePath: 'samples/simpleweb'
+      terraformWorkspacePrefix: 'sw'
+      environmentsToTeardownAfterRelease:
+      - 'devint'
+
+     - jobName: webdata
+      terraformTemplatePath: 'samples/webdata'
+      terraformWorkspacePrefix: 'wd'
+      environmentsToTeardownAfterRelease:
+      - 'devint'
