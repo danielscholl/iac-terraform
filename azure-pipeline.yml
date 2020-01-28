@@ -30,15 +30,11 @@ variables:
 - group: 'iac-terraform-variables'
 
 stages:
-- template: pipelines/compose-stage.yml
+- template: pipelines/compose-pipeline.yml
   parameters:
     environments:
     - name: 'dev'
       resourceNameIsolationLevel: 8
-  #     enablePrIsolation: true
-
-    # - name: 'qa'
-    #   resourceNameIsolationLevel: 8
   #     enablePrIsolation: true
 
     configurations:
@@ -48,10 +44,3 @@ stages:
       deploymentTimeoutInMinutes: 20
       environmentsToTeardownAfterRelease:
       - 'dev'
-
-    # - jobName: webdata
-    #   terraformTemplatePath: 'samples/webdata'
-    #   terraformWorkspacePrefix: 'wd'
-    #   deploymentTimeoutInMinutes: 30
-    #   environmentsToTeardownAfterRelease:
-    #   - 'dev'

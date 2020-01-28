@@ -9,6 +9,7 @@ parameters:
 jobs:
 
 - job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
+  displayName: terraform workspace
   pool: $(AGENT_POOL)
   dependsOn: TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build
   condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build.outputs['${{ parameters.configuration.jobName }}.needs_cicd'], 'true'))
