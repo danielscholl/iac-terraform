@@ -30,7 +30,7 @@ variables:
 - group: 'iac-terraform-variables'
 
 stages:
-- template: pipelines/stage-compose.yml
+- template: pipelines/compose-stage.yml
   parameters:
     environments:
     - name: 'dev'
@@ -49,9 +49,9 @@ stages:
       environmentsToTeardownAfterRelease:
       - 'dev'
 
-    - jobName: webdata
-      terraformTemplatePath: 'samples/webdata'
-      terraformWorkspacePrefix: 'wd'
-      deploymentTimeoutInMinutes: 30
-      environmentsToTeardownAfterRelease:
-      - 'dev'
+    # - jobName: webdata
+    #   terraformTemplatePath: 'samples/webdata'
+    #   terraformWorkspacePrefix: 'wd'
+    #   deploymentTimeoutInMinutes: 30
+    #   environmentsToTeardownAfterRelease:
+    #   - 'dev'

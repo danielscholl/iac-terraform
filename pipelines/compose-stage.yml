@@ -5,7 +5,7 @@ parameters:
 stages:
 
 - stage: publish_artifact
-  displayName: 'Publish Pipeline Artifacts'
+  displayName: 'Pipeline Artifacts'
   jobs:
   - template: publish-artifact.yml
 
@@ -13,7 +13,7 @@ stages:
   - ${{ each config in parameters.configurations }}:
 
     - stage: ${{ config.jobName }}_${{ environment.name }}_build
-      displayName: 'Build ${{ config.jobName }} Env=${{ environment.name }}'
+      displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Determine CI Targets to Run
@@ -32,7 +32,7 @@ stages:
           configuration: ${{ config }}
 
     - stage: ${{ config.jobName }}_${{ environment.name }}_deploy
-      displayName: 'Deploy ${{ config.jobName }} Env=${{ environment.name }}'
+      displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Determine CI Targets to Run
