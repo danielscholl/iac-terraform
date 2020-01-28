@@ -17,7 +17,7 @@ jobs:
   - template: tasks/lint-tf.yml
 
   - task: CopyFiles@2
-    displayName: Copy ADO yml files
+    displayName: Copy ADO Files
     inputs:
       contents: $(PIPELINE_ROOT_DIR)/**/*
       sourceFolder: $(Build.SourcesDirectory)

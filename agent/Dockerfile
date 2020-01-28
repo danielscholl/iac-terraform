@@ -1,5 +1,5 @@
 FROM ubuntu:16.04
-ARG TERRAFORM_VERSION=0.12.20
+ARG TF_VERSION=0.12.20
 ARG GO_VERSION=1.12.14
 
 # To make it easier for build and release pipelines to run apt-get,
@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 # Install Terraform
-RUN wget -q -O terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" && \
+RUN wget -q -O terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" && \
   unzip terraform.zip -d /usr/local/bin && \
   rm terraform.zip
 
