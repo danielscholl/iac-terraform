@@ -46,7 +46,7 @@ jobs:
   steps:
 
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download Artifacts'
+    displayName: 'Download'
     inputs:
       artifactName: $(BUILD_ARTIFACT_NAME)
       downloadPath: '$(System.DefaultWorkingDirectory)'
@@ -63,14 +63,14 @@ jobs:
   - template: tasks/tf-plan.yml
 
   - task: CopyFiles@2
-    displayName: Copy State to Artifact
+    displayName: Copy State for next Stage
     inputs:
       contents: '**'
       sourceFolder: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
       targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: PublishBuildArtifacts@1
-    displayName: Publish Artifact
+    displayName: Publish
     inputs:
       parallel: true
       parallelCount: 8
