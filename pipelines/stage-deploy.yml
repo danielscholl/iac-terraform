@@ -2,6 +2,7 @@ parameters:
   environment: ''
   configuration: ''
   forceRun: false
+  skipTests: false
 
 jobs:
 
