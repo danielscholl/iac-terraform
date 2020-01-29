@@ -1,6 +1,6 @@
 steps:
   - task: AzureCLI@1
-    displayName: 'TF Initialize'
+    displayName: 'TF Initialize Workspace'
     env:
       TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
       TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
