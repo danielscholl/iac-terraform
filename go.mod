@@ -1,4 +1,4 @@
-module github.com/danielscholl/iac-terraform/modules
+module github.com/danielscholl/iac-terraform
 
 go 1.12
 
