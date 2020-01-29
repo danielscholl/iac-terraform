@@ -1,6 +1,6 @@
 **/*
-!./modules/**.*
-!./samples/**.*
-!./pipelines/**.*
+!modules/
+!samples/
+!pipelines/
 !azure-pipeline.yml
 !go.*
