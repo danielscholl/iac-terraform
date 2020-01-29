@@ -44,12 +44,14 @@ stages:
     - name: 'dev'
       resourceNameIsolationLevel: 8
       enablePrIsolation: false
+      forceRun: false
+      skipTests: false
 
     configurations:
     - jobName: simpleweb
+      terraformWorkspacePrefix: 'sw'
       terraformTemplatePath: 'samples/simpleweb'
       terraformModulePath: 'modules'
-      terraformWorkspacePrefix: 'sw'
       deploymentTimeoutInMinutes: 20
-      # environmentsToTeardownAfterRelease:
-      # - 'dev'
+      environmentsToTeardownAfterRelease:
+      - 'dev'

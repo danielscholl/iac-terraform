@@ -3,7 +3,7 @@ parameters:
 
 steps:
   - task: AzureCLI@1
-    displayName: 'Integration Test Terraform Template'
+    displayName: 'Run Integration Tests'
     condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skip }}))
     env:
       TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)

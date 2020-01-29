@@ -1,6 +1,0 @@
-**/*
-!modules/
-!samples/
-!pipelines/
-!azure-pipeline.yml
-!go.*
