@@ -44,7 +44,6 @@ stages:
     - name: 'dev'
       resourceNameIsolationLevel: 8
       enablePrIsolation: false
-      forceRun: false
       skipTests: false
 
     configurations:
