@@ -6,7 +6,7 @@ parameters:
 stages:
 
 - stage: publish_artifact
-  displayName: 'Initial Artifacts'
+  displayName: 'Initialize'
   jobs:
   - template: publish-artifact.yml
 

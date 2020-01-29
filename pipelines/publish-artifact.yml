@@ -16,8 +16,8 @@ jobs:
   - template: tasks/lint-tf.yml
 
   # Artifacts to publish are tracked in the .artifactignore
-  # - publish: $(Build.SourcesDirectory)
-  #   artifact: $(BUILD_ARTIFACT_NAME)
+  - publish: $(Build.SourcesDirectory)
+    artifact: $(BUILD_ARTIFACT_NAME)
 
   # - task: CopyFiles@2
   #   displayName: Copy ADO Files
