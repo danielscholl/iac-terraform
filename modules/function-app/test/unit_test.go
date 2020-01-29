@@ -32,7 +32,6 @@ func TestTemplate(t *testing.T) {
 			"https_only": false,
 			"version": "~2",
 			"app_settings": {
-				"FUNCTIONS_EXTENSION_VERSION": "~2",
 				"FUNCTIONS_WORKER_RUNTIME": "java",
 				"WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false"
 			}
