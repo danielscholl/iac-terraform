@@ -1,6 +1,6 @@
 steps:
   - task: AzureCLI@1
-    displayName: 'Terraform Init & Workspace'
+    displayName: 'TF Initialize'
     env:
       TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
       TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
@@ -10,10 +10,7 @@ steps:
       scriptLocation: inlineScript
       inlineScript: |
         #!/usr/bin/env bash
-
         set -euo pipefail
-
-
 
         function terraformVersionCheck() {
             if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
@@ -40,9 +37,6 @@ steps:
 
         export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
         export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv)
-
-        env |grep ARM
-        env |grep TF
 
         terraform init -backend-config "storage_account_name=$TF_VAR_remote_state_account" -backend-config "container_name=$TF_VAR_remote_state_container"
         terraform workspace new $TF_WORKSPACE_NAME || terraform workspace select $TF_WORKSPACE_NAME
