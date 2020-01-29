@@ -7,7 +7,7 @@ parameters:
 steps:
   - task: Bash@3
     name: ${{ parameters.stepName }}
-    displayName: Set Variable Workspace
+    displayName: Determine Workspace
     env:
       TERRAFORM_WORKSPACE_PREFIX: ${{ parameters.terraformWorkspacePrefix }}
       ENVIRONMENT_NAME: ${{ parameters.environmentName }}

@@ -15,21 +15,13 @@ steps:
       scriptLocation: inlineScript
       inlineScript: |
         #!/usr/bin/env bash
-
         set -euo pipefail
 
-        function storageAccountPrimaryKey() {
-            az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv
-        }
-
-        function azureTenantId() {
-            az account show --query "tenantId" --output tsv
-        }
-
-        export ARM_ACCESS_KEY=$(storageAccountPrimaryKey)
-        export ARM_CLIENT_SECRET="$servicePrincipalKey"
-        export ARM_CLIENT_ID="$servicePrincipalId"
-        export ARM_TENANT_ID=$(azureTenantId)
+        export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
+        export ARM_TENANT_ID=$tenantId
+        export ARM_CLIENT_SECRET=$servicePrincipalKey
+        export ARM_CLIENT_ID=$servicePrincipalId
+        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv)
 
         cd "$ARTIFACT_ROOT"/"$TERRAFORM_TEMPLATE_PATH"
 

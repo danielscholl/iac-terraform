@@ -70,5 +70,5 @@ jobs:
           parameters:
             skip: ${{ parameters.skipTests }}
 
-        # - ${{ if containsValue(parameters.configuration.environmentsToTeardownAfterRelease, parameters.environment) }}:
-        #   - template: tasks/tf-destroy.yml
+        - ${{ if containsValue(parameters.configuration.environmentsToTeardownAfterRelease, parameters.environment) }}:
+          - template: tasks/tf-destroy.yml

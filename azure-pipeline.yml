@@ -50,5 +50,5 @@ stages:
       terraformModulePath: 'modules'
       terraformWorkspacePrefix: 'sw'
       deploymentTimeoutInMinutes: 20
-      environmentsToTeardownAfterRelease:
-      - 'dev'
+      # environmentsToTeardownAfterRelease:
+      # - 'dev'
