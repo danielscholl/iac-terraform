@@ -50,7 +50,7 @@ jobs:
   - download: none
 
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download Build Artifacts'
+    displayName: 'Download Artifacts'
     inputs:
       artifactName: $(BUILD_ARTIFACT_NAME)
       downloadPath: '$(System.DefaultWorkingDirectory)'
@@ -63,13 +63,11 @@ jobs:
   - template: tasks/tests-unit.yml
     parameters:
       skip: ${{ parameters.skipTests }}
-
   - template: tasks/tf-ws-create.yml
-
   - template: tasks/tf-plan.yml
 
   - task: CopyFiles@2
-    displayName: Copy Build Directory to Artifact Directory
+    displayName: Copy State to Artifact
     inputs:
       contents: '**'
       sourceFolder: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'

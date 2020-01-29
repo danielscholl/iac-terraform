@@ -4,7 +4,7 @@ parameters:
   enablePrIsolation: false
   resourceNameIsolationLevel: 8
   forceRun: false
-  skipTests: false
+  skipTests: true
 
 jobs:
 
@@ -29,7 +29,7 @@ jobs:
     timeoutInMinutes: '${{ parameters.configuration.deploymentTimeoutInMinutes }}'
 
   variables:
-  # - group: '${{ parameters.environment }} Environment Variables'
+  - group: '${{ parameters.environment }} Environment Variables'
 
   - name: TF_WORKSPACE_NAME
     value: $[ dependencies.Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs.outputs['ComputeWs.TF_WORKSPACE_NAME'] ]
@@ -51,7 +51,6 @@ jobs:
     runOnce:
       deploy:
         steps:
-
         - download: none
 
         - task: DownloadBuildArtifacts@0
@@ -60,18 +59,16 @@ jobs:
             artifactName: '$(RELEASE_ARTIFACT_NAME)'
             downloadPath: '$(System.DefaultWorkingDirectory)'
             
-        # - task: GoTool@0
-        #   displayName: 'Verify Go Version is Installed'
-        #   inputs:
-        #     version: '$(GO_VERSION)'
+        - task: GoTool@0
+          displayName: 'Verify Go Version is Installed'
+          inputs:
+            version: '$(GO_VERSION)'
 
-        # - template: tasks/tf-ws-create.yml
-
-        # - template: tasks/tf-plan.yml
-
-        # - template: tasks/tests-int.yml
-        #   parameters:
-        #     skip: ${{ parameters.skipTests }}
+        - template: tasks/tf-ws-create.yml
+        - template: tasks/tf-apply.yml
+        - template: tasks/tests-int.yml
+          parameters:
+            skip: ${{ parameters.skipTests }}
 
         # - ${{ if containsValue(parameters.configuration.environmentsToTeardownAfterRelease, parameters.environment) }}:
         #   - template: tasks/tf-destroy.yml
