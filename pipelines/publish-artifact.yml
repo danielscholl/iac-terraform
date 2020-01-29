@@ -15,42 +15,38 @@ jobs:
   - template: tasks/lint-go.yml
   - template: tasks/lint-tf.yml
 
-  # Artifacts to publish are tracked in the .artifactignore
-  - publish: $(Build.SourcesDirectory)
-    artifact: $(BUILD_ARTIFACT_NAME)
+  - task: CopyFiles@2
+    displayName: Copy ADO Files
+    inputs:
+      contents: $(PIPELINE_ROOT_DIR)/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
 
-  # - task: CopyFiles@2
-  #   displayName: Copy ADO Files
-  #   inputs:
-  #     contents: $(PIPELINE_ROOT_DIR)/**/*
-  #     sourceFolder: $(Build.SourcesDirectory)
-  #     targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: CopyFiles@2
+    displayName: Copy Modules
+    inputs:
+      contents: modules/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
 
-  # - task: CopyFiles@2
-  #   displayName: Copy Modules
-  #   inputs:
-  #     contents: modules/**/*
-  #     sourceFolder: $(Build.SourcesDirectory)
-  #     targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: CopyFiles@2
+    displayName: Copy Templates
+    inputs:
+      contents: samples/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
 
-  # - task: CopyFiles@2
-  #   displayName: Copy Templates
-  #   inputs:
-  #     contents: samples/**/*
-  #     sourceFolder: $(Build.SourcesDirectory)
-  #     targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: CopyFiles@2
+    displayName: Copy Go Project Files
+    inputs:
+      contents: go.*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
 
-  # - task: CopyFiles@2
-  #   displayName: Copy Go Project Files
-  #   inputs:
-  #     contents: go.*
-  #     sourceFolder: $(Build.SourcesDirectory)
-  #     targetFolder: $(Build.ArtifactStagingDirectory)
-
-  # - task: PublishBuildArtifacts@1
-  #   displayName: Publish Artifact
-  #   inputs:
-  #     parallel: true
-  #     parallelCount: 8
-  #     artifactName: '$(BUILD_ARTIFACT_NAME)'
-  #     pathToPublish: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifact
+    inputs:
+      parallel: true
+      parallelCount: 8
+      artifactName: '$(BUILD_ARTIFACT_NAME)'
+      pathToPublish: $(Build.ArtifactStagingDirectory)
