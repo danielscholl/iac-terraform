@@ -47,13 +47,14 @@ jobs:
 
   steps:
   - checkout: none
-  - download: none
+  - download: current
+    artifact: $(BUILD_ARTIFACT_NAME)
 
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download Artifacts'
-    inputs:
-      artifactName: $(BUILD_ARTIFACT_NAME)
-      downloadPath: '$(System.DefaultWorkingDirectory)'
+  # - task: DownloadBuildArtifacts@0
+  #   displayName: 'Download Artifacts'
+  #   inputs:
+  #     artifactName: $(BUILD_ARTIFACT_NAME)
+  #     downloadPath: '$(System.DefaultWorkingDirectory)'
 
   - task: GoTool@0
     displayName: 'Install Golang'
