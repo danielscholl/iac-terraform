@@ -19,6 +19,7 @@ trigger:
     include:
     - azure-pipeline.yml
     - /pipelines/*
+    - /modules/*
     exclude:
     - /**/*.md
 
