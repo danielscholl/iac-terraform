@@ -1,5 +1,6 @@
 # Required Group Variables - iac-terraform-variables
 # AGENT_POOL  (iac-terraform)
+# BUILD_ARTIFACT_NAME  (iac-terraform)
 # PIPELINE_ROOT_DIR  (pipelines)
 # TF_ROOT_DIR (samples)
 # TF_DEPLOYMENT_TEMPLATE_ROOT (samples)
