@@ -1,6 +1,6 @@
 steps:
   - task: AzureCLI@1
-    displayName: 'Set Terraform Workspace'
+    displayName: 'Terraform Init & Workspace'
     env:
       TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
       TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
@@ -36,12 +36,13 @@ steps:
 
         terraformVersionCheck
 
-        echo "Change Directory to $TF_TEMPLATE_WORKING_DIR"
-
         cd $TF_TEMPLATE_WORKING_DIR
 
         export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
         export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv)
+
+        env |grep ARM
+        env |grep TF
 
         terraform init -backend-config "storage_account_name=$TF_VAR_remote_state_account" -backend-config "container_name=$TF_VAR_remote_state_container"
         terraform workspace new $TF_WORKSPACE_NAME || terraform workspace select $TF_WORKSPACE_NAME
