@@ -1,14 +1,10 @@
 # Required Group Variables - iac-terraform-variables
-# AGENT_POOL  (iac-terraform)
-# BUILD_ARTIFACT_NAME  (iac-terraform)
-# PIPELINE_ROOT_DIR  (pipelines)
-# TF_ROOT_DIR (samples)
-# TF_DEPLOYMENT_TEMPLATE_ROOT (samples)
-# TF_VERSION (0.12.20)
-# GO_VERSION (1.12.14)
-# SERVICE_CONNECTION_NAME  <your_service_connection_name>
-# REMOTE_STATE_ACCOUNT <your_remote_state_account_name>
-# REMOTE_STATE_CONTAINER <your_remote_state_container_name>
+  # AGENT_POOL  (iac-terraform)
+  # BUILD_ARTIFACT_NAME  (iac-terraform)
+  # FORCE_RUN (false)
+  # SERVICE_CONNECTION_NAME  <your_service_connection_name>
+  # REMOTE_STATE_ACCOUNT <your_remote_state_account_name>
+  # REMOTE_STATE_CONTAINER <your_remote_state_container_name>
 
 
 trigger:
@@ -35,6 +31,14 @@ pr:
     - /**/*.md
 
 variables:
+- name: 'TF_VERSION'
+  value: '0.12.20'
+- name: 'GO_VERSION'
+  value: '1.12.14'
+- name: 'TF_ROOT_DIR'
+  value: 'samples'
+- name: 'PIPELINE_ROOT_DIR'
+  value: 'pipelines'
 - group: 'iac-terraform-variables'
 
 stages:
