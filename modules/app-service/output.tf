@@ -30,9 +30,9 @@ output "config_data" {
   ]
 }
 
-output "identity_tenant_id" {
+output "identity_tenant_ids" {
   description = "The Tenant ID for the Service Principal associated with the Managed Service Identity of this App Service."
-  value       = azurerm_app_service.main[0].identity[0].tenant_id
+  value       = azurerm_app_service.main.*.identity.0.tenant_id
 }
 
 output "identity_object_ids" {
