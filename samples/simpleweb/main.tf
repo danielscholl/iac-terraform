@@ -154,5 +154,5 @@ module "app_service" {
 # Output Variables  (output.tf)
 #-------------------------------
 output "app_service_default_hostname" {
-  value = "https://${element(module.app_service.uris, 0)}"
+  value = "https://${module.app_service.uris.0}"
 }

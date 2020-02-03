@@ -2,7 +2,7 @@ package test
 
 import (
 	"crypto/tls"
-	"fmt"
+	// "fmt"
 	"os"
 	"strings"
 	"testing"
@@ -15,7 +15,7 @@ import (
 func TestTerraformHttpExample(t *testing.T) {
 	t.Parallel()
 
-	workspace := fmt.Sprintf("iac")
+	// workspace := fmt.Sprintf("sw")
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -48,12 +48,12 @@ func TestTerraformHttpExample(t *testing.T) {
 	timeBetweenRetries := 5 * time.Second
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
-	defer terraform.Destroy(t, terraformOptions)
+	// defer terraform.Destroy(t, terraformOptions)
 
-	terraform.Init(t, terraformOptions)
-	terraform.WorkspaceSelectOrNew(t, terraformOptions, workspace)
-	terraform.Plan(t, terraformOptions)
-	terraform.Apply(t, terraformOptions)
+	// terraform.Init(t, terraformOptions)
+	// terraform.WorkspaceSelectOrNew(t, terraformOptions, workspace)
+	// terraform.Plan(t, terraformOptions)
+	// terraform.Apply(t, terraformOptions)
 
 	homepage := terraform.Output(t, terraformOptions, "app_service_default_hostname")
 
