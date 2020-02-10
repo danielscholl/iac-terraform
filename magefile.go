@@ -22,7 +22,6 @@ func All() {
 
 // Execute Integration Tests for the simpleweb sample. Only executes tests in 'simpleweb' directories.
 func TestSimpleWeb() error {
-	mg.Deps(Clean)
 	mg.Deps(Check)
 	fmt.Println("INFO: Running sample tests...")
 	return FindAndRunTests("simpleweb")
@@ -30,7 +29,6 @@ func TestSimpleWeb() error {
 
 // Execute Integration Tests for the webdata sample. Only executes tests in 'webdata' directories.
 func TestWebData() error {
-	mg.Deps(Clean)
 	mg.Deps(Check)
 	fmt.Println("INFO: Running sample tests...")
 	return FindAndRunTests("webdata")
