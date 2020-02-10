@@ -247,7 +247,7 @@ module "app_service" {
 module "keyvault_policy" {
   source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
   vault_id                = module.keyvault.id
-  tenant_id               = module.app_service.identity_tenant_id
+  tenant_id               = module.app_service.identity_tenant_ids.0
   object_ids              = module.app_service.identity_object_ids
   key_permissions         = ["get"]
   secret_permissions      = ["get"]
