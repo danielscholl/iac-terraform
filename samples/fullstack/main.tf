@@ -323,7 +323,7 @@ module "keyvault_secret" {
 module "web_keyvault_policy" {
   source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
   vault_id                = module.keyvault.id
-  tenant_id               = module.app_service.identity_tenant_id
+  tenant_id               = module.app_service.identity_tenant_ids.0
   object_ids              = module.app_service.identity_object_ids
   key_permissions         = ["get", "list"]
   secret_permissions      = ["get", "list"]
@@ -472,31 +472,30 @@ module "ad_application" {
   resource_role_id     = "824c81eb-e3f8-4ee6-8f6d-de7f50d565b7" // ID for Application.ReadWrite.OwnedBy
 }
 
-# resource "null_resource" "changed_reply_urls" {
-#   /* Orchestrates the destroy and create process of null_resource.auth dependencies
-#   /  during subsequent deployments that require new resources.
-#   */
-#   lifecycle {
-#     create_before_destroy = true
-#   }
+resource "null_resource" "changed_reply_urls" {
 
-#   triggers = {
-#     app_service = join(",", local.reply_urls)
-#   }
-#   provisioner "local-exec" {
-#     environment = {
-#       URLS = join(" ", local.reply_urls)
-#       ID     = module.ad_application.config_data[local.name].application_id
-#     }
+  lifecycle {
+    create_before_destroy = true
+  }
 
-#     command = <<EOF
-#       az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
-#       az account set --subscription $ARM_SUBSCRIPTION_ID
-#       az ad app update --id "$ID" --reply-urls $URLS
-#       az logout
-#       EOF
-#   }
-# }
+  triggers = {
+    app_service = join(",", local.reply_urls)
+  }
+
+  provisioner "local-exec" {
+    environment = {
+      URLS = join(" ", local.reply_urls)
+      ID   = module.ad_application.config_data[local.ad_app_name].application_id
+    }
+
+    command = <<EOF
+      az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+      az account set --subscription $ARM_SUBSCRIPTION_ID
+      az ad app update --id "$ID" --reply-urls $URLS
+      az logout
+    EOF
+  }
+}
 
 # resource "null_resource" "turn_on_easyauth" {
 #   count      = length(module.app_service.uris)
