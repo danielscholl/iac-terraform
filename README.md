@@ -144,4 +144,5 @@ terraform apply
 This repo was created for personal learning objectives. 
 Concepts and terraform modules have been modified from the following projects.
 - [Project Cobalt](https://github.com/microsoft/cobalt) 
+- [Project Bedrock](https://github.com/microsoft/bedrock) 
 - [Innovation Norway](https://github.com/innovationnorway)
