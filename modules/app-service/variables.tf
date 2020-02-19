@@ -8,6 +8,12 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
+}
+
 variable "service_plan_name" {
   description = "The name of the service plan."
   type        = string
@@ -34,12 +40,6 @@ variable "secure_app_settings" {
   description = "Map of sensitive app settings. Uses Key Vault references as values for app settings."
 }
 
-variable "resource_tags" {
-  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
-  type        = map(string)
-  default     = {}
-}
-
 variable "vault_uri" {
   description = "Specifies the URI of the Key Vault resource. Providing this will create a new app setting called KEYVAULT_URI containing the uri value."
   type        = string
@@ -56,6 +56,18 @@ variable "is_always_on" {
   description = "Is the app is loaded at all times. Defaults to true."
   type        = string
   default     = true
+}
+
+variable "auth" {
+  type        = any
+  default     = {}
+  description = "Auth settings for the web app. This should be `auth` object."
+}
+
+variable "identity" {
+  type        = any
+  default     = {}
+  description = "Managed service identity properties. This should be `identity` object."
 }
 
 variable "docker_registry_server_url" {
@@ -102,6 +114,19 @@ locals {
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
 
+  auth = merge({
+    enabled = false
+    active_directory = {
+      client_id     = ""
+      client_secret = ""
+    }
+    token_store_enabled = true
+  }, var.auth)
+
+  identity = merge({
+    enabled = true
+    ids     = null
+  }, var.identity)
 
   docker_settings = var.docker_registry_server_url != "" ? {
     DOCKER_REGISTRY_SERVER_URL      = format("https://%s", var.docker_registry_server_url)
@@ -117,7 +142,6 @@ locals {
     APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
   } : {}
 
-
   app_settings = merge(
     var.app_settings,
     local.docker_settings,
@@ -125,9 +149,8 @@ locals {
     local.insights_settings,
     {
       WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-    },
+    }
   )
-
 
   app_linux_fx_versions = [
     for config in values(var.app_service_config) :
