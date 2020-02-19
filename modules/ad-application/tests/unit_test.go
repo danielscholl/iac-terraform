@@ -10,7 +10,7 @@ import (
 )
 
 var name = "adapplication-"
-var count = 2
+var count = 3
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",
@@ -39,7 +39,7 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: count,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"module.ad_application.azuread_application.main[0]": expectedResult,
+			"module.ad-application.azuread_application.main": expectedResult,
 		},
 	}
 

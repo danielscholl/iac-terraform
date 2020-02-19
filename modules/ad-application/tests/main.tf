@@ -1,23 +1,37 @@
-locals {
+
+module "ad-application" {
+  source = "../"
+
   name = "iac-terraform-ad-app"
+  group_membership_claims = "All"
+
   reply_urls = [
     "https://iac-terraform.com",
     "https://iac-terraform.com/.auth/login/aad/callback"
   ]
-}
 
-module "ad_application" {
-  source = "../"
-
-  resource_access_type = "Scope"
-  ad_config = [
+  api_permissions = [
     {
-      name       = local.name
-      reply_urls = local.reply_urls
+      name = "Microsoft Graph"
+      oauth2_permissions = [
+        "Directory.Read.All",
+        "User.Read"
+      ]
+      app_roles = [
+        "Directory.Read.All"
+      ]
     }
   ]
-  resource_api_id  = "00000003-0000-0000-c000-000000000000" // Microsoft Graph API
-  resource_role_id = "e1fe6dd8-ba31-4d61-89e7-88639da4683d" // User.Read API
+
+  app_roles = [
+    {
+      name        = "test"
+      description = "test"
+      member_types = [
+        "Application"
+      ]
+    }
+  ]
 }
 
 # resource "null_resource" "changed_reply_urls" {

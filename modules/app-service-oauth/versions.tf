@@ -1,10 +1,10 @@
 ##############################################################
-# This module allows the creation of a AD Application
+# This module allows the creation of a Web App
 ##############################################################
 
 terraform {
-  required_version = "~> 0.12.8"
+  required_version = "~> 0.12.17"
   required_providers {
-    azuread = "~> 0.7"
+    azurerm = "~> 1.37"
   }
 }

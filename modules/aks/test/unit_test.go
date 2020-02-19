@@ -11,7 +11,7 @@ import (
 
 var name = "cluster-"
 var location = "eastus"
-var count = 17
+var count = 18
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",
@@ -39,7 +39,7 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: count,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"module.aks.azurerm_kubernetes_cluster.main":  expectedResult,
+			"module.aks.azurerm_kubernetes_cluster.main": expectedResult,
 		},
 	}
 

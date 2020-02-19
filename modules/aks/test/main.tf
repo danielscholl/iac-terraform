@@ -1,10 +1,3 @@
-variable "client_id" {
-  type = string
-}
-
-variable "client_secret" {
-  type = string
-}
 
 module "resource_group" {
   source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
@@ -12,10 +5,19 @@ module "resource_group" {
   location = "eastus2"
 }
 
+module "service_principal" {
+  source = "github.com/danielscholl/iac-terraform/modules/service-principal"
+
+  name = format("iac-terraform-%s", module.resource_group.random)
+  role = "Contributor"
+  scopes = [module.resource_group.id]
+  end_date = "1W"
+}
+
 module "network" {
     source = "github.com/danielscholl/iac-terraform/modules/network"
 
-    name                = "iac-terraform-vnet-${module.resource_group.random}"
+    name = format("iac-terraform-vnet-%s", module.resource_group.random)
     resource_group_name = module.resource_group.name
     address_space       = "10.10.0.0/16"
     dns_servers         = ["8.8.8.8"]
@@ -45,11 +47,12 @@ data "azurerm_client_config" "current" {}
 
 module "aks" {
   source                   = "../"
-  name                     = "iac-terraform-cluster-${module.resource_group.random}"
+
+  name                     = format("iac-terraform-cluster-%s", module.resource_group.random)
   resource_group_name      = module.resource_group.name
-  dns_prefix               = "iac-terraform-cluster-${module.resource_group.random}"
-  service_principal_id     = var.client_id
-  service_principal_secret = var.client_secret
+  dns_prefix               = format("iac-terraform-cluster-%s", module.resource_group.random)
+  service_principal_id     = module.service_principal.client_id
+  service_principal_secret = module.service_principal.client_secret
 
   ssh_public_key           = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
   vnet_subnet_id           = module.network.subnets.0
