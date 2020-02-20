@@ -41,7 +41,7 @@ resource "azurerm_app_service" "main" {
         resource      = local.auth.active_directory.client_id
       }
       default_provider = "AzureActiveDirectory"
-      unauthenticated_client_action = "RedirectToLoginPage"
+      # unauthenticated_client_action = "RedirectToLoginPage"
 
       dynamic "active_directory" {
         for_each = [auth_settings.value.active_directory]
