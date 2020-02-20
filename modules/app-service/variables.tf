@@ -114,15 +114,6 @@ locals {
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
 
-  auth = merge({
-    enabled = false
-    active_directory = {
-      client_id     = ""
-      client_secret = ""
-    }
-    token_store_enabled = true
-  }, var.auth)
-
   identity = merge({
     enabled = true
     ids     = null
@@ -151,6 +142,17 @@ locals {
       WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     }
   )
+
+  auth = merge(
+    var.auth,
+    {
+      enabled = false
+      active_directory = {
+        client_id     = ""
+        client_secret = ""
+      }
+      token_store_enabled = true
+    })
 
   app_linux_fx_versions = [
     for config in values(var.app_service_config) :
