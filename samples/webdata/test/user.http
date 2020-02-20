@@ -1,0 +1,18 @@
+@host = webdata-iyzr1nbx-webdata-user.azurewebsites.net
+@firstName = john
+
+
+# -----------------------
+# API: user-api
+###
+# @name createUser
+POST https://{{host}}/api/user
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "address": "1234 First St Dallas, TX 75038"
+}
+
+@userId = {{createUser.response.body.id}}
