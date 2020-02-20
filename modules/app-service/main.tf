@@ -111,8 +111,20 @@ resource "azurerm_app_service_slot" "staging" {
         content {
           client_id     = active_directory.value.client_id
           client_secret = active_directory.value.client_secret
+
           allowed_audiences = formatlist("https://%s", concat(
           [format("%s.azurewebsites.net", var.name)], var.custom_hostnames))
+        }
+      }
+
+      dynamic "microsoft" {
+        for_each = [auth_settings.value.microsoft]
+
+        content {
+          client_id     = active_directory.value.client_id
+          client_secret = active_directory.value.client_secret
+
+          oauth_scopes = var.custom_scopes
         }
       }
     }

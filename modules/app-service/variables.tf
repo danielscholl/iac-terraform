@@ -70,6 +70,18 @@ variable "identity" {
   description = "Managed service identity properties. This should be `identity` object."
 }
 
+variable "custom_hostnames" {
+  type        = list(string)
+  default     = []
+  description = "List of custom hostnames to use for the web app ActiveDirectory Provider."
+}
+
+variable "oauth_scopes" {
+  type        = list(string)
+  default     = []
+  description = "List of oauth_scopes to use for the web app Microsoft Provider."
+}
+
 variable "docker_registry_server_url" {
   description = "The docker registry server URL for images."
   type        = string
