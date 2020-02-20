@@ -54,7 +54,7 @@ resource "random_password" "main" {
   special = false
 }
 
-resource "azuread_service_principal_password" "main" {
+resource "azuread_application_password" "main" {
   count                = var.password != null ? 1 : 0
   application_object_id = azuread_application.main.id
 
