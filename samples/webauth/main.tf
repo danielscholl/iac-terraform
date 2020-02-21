@@ -7,9 +7,9 @@
 
 terraform {
   required_version = ">= 0.12"
-  backend "azurerm" {
-    key = "terraform.tfstate"
-  }
+  # backend "azurerm" {
+  #   key = "terraform.tfstate"
+  # }
 }
 
 #-------------------------------
@@ -252,6 +252,15 @@ module "ad_application" {
   reply_urls = [
     "http://localhost:8080",
     "http://locahost:8080/.auth/login/aad/callback"
+  ]
+
+  api_permissions = [
+    {
+      name = "Microsoft Graph"
+      oauth2_permissions = [
+        "User.Read"
+      ]
+    }
   ]
 }
 
@@ -515,6 +524,14 @@ output "TENANT_ID" {
 
 output "SUBSCRIPTION_ID" {
   value = data.azurerm_client_config.current.subscription_id
+}
+
+output "PRINCIPAL_ID" {
+  value = module.service_principal.client_id
+}
+
+output "PRINCIPAL_SECRET" {
+  value = module.service_principal.client_secret
 }
 
 output "CLIENT_ID" {
