@@ -8,12 +8,13 @@ jobs:
 
 - job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
   displayName: Initialize Build
-  pool:
-    vmImage: 'ubuntu-16.04'
   dependsOn: TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build
   condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build.outputs['${{ parameters.configuration.jobName }}.needs_cicd'], 'true'))
   
   steps:
+  - template: tasks/debug-variables.yml
+    parameters:
+      enable: $(DEBUG)
   - template: tasks/tf-ws-compute.yml
     parameters:
       terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
@@ -24,8 +25,6 @@ jobs:
 - job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}
   displayName: Execute Build
   dependsOn: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
-  pool:
-    vmImage: 'ubuntu-16.04'
 
   variables:
   - group: '${{ parameters.environment }} Environment Variables'
