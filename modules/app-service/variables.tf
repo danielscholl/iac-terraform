@@ -164,7 +164,7 @@ locals {
         client_secret = ""
       }
       token_store_enabled = true
-    })
+  })
 
   app_linux_fx_versions = [
     for config in values(var.app_service_config) :

@@ -8,21 +8,21 @@ module "resource_group" {
 module "service_principal" {
   source = "github.com/danielscholl/iac-terraform/modules/service-principal"
 
-  name = format("iac-terraform-%s", module.resource_group.random)
-  role = "Contributor"
-  scopes = [module.resource_group.id]
+  name     = format("iac-terraform-%s", module.resource_group.random)
+  role     = "Contributor"
+  scopes   = [module.resource_group.id]
   end_date = "1W"
 }
 
 module "network" {
-    source = "github.com/danielscholl/iac-terraform/modules/network"
+  source = "github.com/danielscholl/iac-terraform/modules/network"
 
-    name = format("iac-terraform-vnet-%s", module.resource_group.random)
-    resource_group_name = module.resource_group.name
-    address_space       = "10.10.0.0/16"
-    dns_servers         = ["8.8.8.8"]
-    subnet_prefixes     = ["10.10.1.0/24"]
-    subnet_names        = ["Cluster-Subnet"]
+  name                = format("iac-terraform-vnet-%s", module.resource_group.random)
+  resource_group_name = module.resource_group.name
+  address_space       = "10.10.0.0/16"
+  dns_servers         = ["8.8.8.8"]
+  subnet_prefixes     = ["10.10.1.0/24"]
+  subnet_names        = ["Cluster-Subnet"]
 }
 
 resource "tls_private_key" "key" {
@@ -46,7 +46,7 @@ resource "null_resource" "save-key" {
 data "azurerm_client_config" "current" {}
 
 module "aks" {
-  source                   = "../"
+  source = "../"
 
   name                     = format("iac-terraform-cluster-%s", module.resource_group.random)
   resource_group_name      = module.resource_group.name
@@ -54,9 +54,9 @@ module "aks" {
   service_principal_id     = module.service_principal.client_id
   service_principal_secret = module.service_principal.client_secret
 
-  ssh_public_key           = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
-  vnet_subnet_id           = module.network.subnets.0
-  
+  ssh_public_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
+  vnet_subnet_id = module.network.subnets.0
+
   resource_tags = {
     iac = "terraform"
   }

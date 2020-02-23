@@ -1,4 +1,4 @@
- 
+
 module "common-provider" {
   source = "../../common/provider"
 }

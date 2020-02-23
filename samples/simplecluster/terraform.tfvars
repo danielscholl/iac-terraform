@@ -5,6 +5,6 @@
    This file holds the variables to be used with the application.
 */
 
-name                       = "simplecluster"
-location                   = "eastus"
-randomization_level        = 3
+name                = "simplecluster"
+location            = "eastus"
+randomization_level = 3

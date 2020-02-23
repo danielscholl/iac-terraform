@@ -55,11 +55,11 @@ resource "random_password" "main" {
 }
 
 resource "azuread_application_password" "main" {
-  count                = var.password != null ? 1 : 0
+  count                 = var.password != null ? 1 : 0
   application_object_id = azuread_application.main.id
 
-  value = coalesce(var.password, random_password.main[0].result)
-  end_date = local.end_date
+  value             = coalesce(var.password, random_password.main[0].result)
+  end_date          = local.end_date
   end_date_relative = local.end_date_relative
 
   lifecycle {

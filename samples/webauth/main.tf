@@ -244,8 +244,8 @@ module "resource_group" {
 module "ad_application" {
   source = "github.com/danielscholl/iac-terraform/modules/ad-application"
 
-  name = local.ad_app_name
-  group_membership_claims = "All"
+  name                       = local.ad_app_name
+  group_membership_claims    = "All"
   oauth2_allow_implicit_flow = false
   available_to_other_tenants = false
 
@@ -330,14 +330,14 @@ module "keyvault_secret" {
     "cosmosdbName"    = module.cosmosdb.name
     "cosmosdbAccount" = module.cosmosdb.endpoint
     "cosmosdbKey"     = module.cosmosdb.primary_master_key
-    "clientId"       = module.ad_application.id
-    "clientSecret"   = module.ad_application.password
+    "clientId"        = module.ad_application.id
+    "clientSecret"    = module.ad_application.password
   }
 }
 
 module "web_keyvault_policy" {
   # Module Path
-  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  source = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
 
   # Module variable
   vault_id                = module.keyvault.id
@@ -374,13 +374,13 @@ module "app_service" {
   source = "github.com/danielscholl/iac-terraform/modules/app-service"
 
   # Module Variables
-  name                = local.app_service_name
-  resource_group_name = module.resource_group.name
-  service_plan_name   = module.service_plan.name
-  instrumentation_key = module.app_insights.instrumentation_key
-  app_service_config  = local.app_services
+  name                       = local.app_service_name
+  resource_group_name        = module.resource_group.name
+  service_plan_name          = module.service_plan.name
+  instrumentation_key        = module.app_insights.instrumentation_key
+  app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
-  secure_app_settings = module.keyvault.references
+  secure_app_settings        = module.keyvault.references
 
   app_settings = {
     cosmosdb_database = module.cosmosdb.name
@@ -436,7 +436,7 @@ module "service_principal" {
 
   # Module Variables
   name = local.ad_principal_name
-  role   = "Contributor"
+  role = "Contributor"
 
   scopes = concat(
     [module.service_plan.id],
@@ -449,7 +449,7 @@ module "service_principal" {
 // Not sure why this would have to happen based on changes in app-service for auth.
 // Something isn't taking affect.
 resource "null_resource" "auth" {
-  count      = length(module.app_service.uris)
+  count = length(module.app_service.uris)
 
   triggers = {
     app_service = join(",", module.app_service.uris)
@@ -471,12 +471,12 @@ resource "null_resource" "auth" {
 
     environment = {
       SUBSCRIPTION_ID = local.subscription_id
-      RESOURCE_GROUP = module.resource_group.name
-      SLOTSHORTNAME = "staging"
-      APPNAME = module.app_service.config_data[count.index].app_name
-      ISSUER = format("https://sts.windows.net/%s", local.tenant_id)
-      CLIENT_ID = module.ad_application.id
-      CLIENT_SECRET = module.ad_application.password
+      RESOURCE_GROUP  = module.resource_group.name
+      SLOTSHORTNAME   = "staging"
+      APPNAME         = module.app_service.config_data[count.index].app_name
+      ISSUER          = format("https://sts.windows.net/%s", local.tenant_id)
+      CLIENT_ID       = module.ad_application.id
+      CLIENT_SECRET   = module.ad_application.password
     }
   }
 }

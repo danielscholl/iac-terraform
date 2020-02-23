@@ -45,9 +45,9 @@ locals {
   base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
 
   // Resolved resource names
-  name          = "${local.base_name}"
-  vnet_name     = "${local.base_name}-vnet"
-  cluster_name  = "${local.base_name}-cluster"
+  name         = "${local.base_name}"
+  vnet_name    = "${local.base_name}-vnet"
+  cluster_name = "${local.base_name}-cluster"
 
 }
 
@@ -95,12 +95,12 @@ module "resource_group" {
 # Virtual Network
 #-------------------------------
 module "network" {
-    source = "github.com/danielscholl/iac-terraform/modules/network"
+  source = "github.com/danielscholl/iac-terraform/modules/network"
 
-    name                = "iac-terraform-vnet-${module.resource_group.random}"
-    resource_group_name = module.resource_group.name
-    address_space       = "10.10.0.0/16"
-    dns_servers         = ["8.8.8.8"]
-    subnet_prefixes     = ["10.10.1.0/24"]
-    subnet_names        = ["Cluster-Subnet"]
+  name                = "iac-terraform-vnet-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
+  address_space       = "10.10.0.0/16"
+  dns_servers         = ["8.8.8.8"]
+  subnet_prefixes     = ["10.10.1.0/24"]
+  subnet_names        = ["Cluster-Subnet"]
 }

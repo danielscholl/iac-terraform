@@ -22,7 +22,7 @@ variable "vnet_subnet_id" {
 
 variable "nsg_id" {
   description = "A Network Security Group ID to attach to the network interface"
-  default = ""
+  default     = ""
 }
 
 variable "public_ip_dns" {

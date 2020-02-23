@@ -1,9 +1,9 @@
 data "azurerm_resource_group" "aksgitops" {
-    name = var.resource_group_name
+  name = var.resource_group_name
 }
 
 module "aks" {
-  source              = "github.com/danielscholl/iac-terraform/modules/aks"
+  source = "github.com/danielscholl/iac-terraform/modules/aks"
 
   resource_group_name      = data.azurerm_resource_group.aksgitops.name
   cluster_name             = var.cluster_name

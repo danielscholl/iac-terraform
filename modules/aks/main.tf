@@ -22,10 +22,10 @@ resource "azurerm_log_analytics_workspace" "main" {
 }
 
 resource "azurerm_log_analytics_solution" "main" {
-  solution_name         = "ContainerInsights"
-  resource_group_name   = data.azurerm_resource_group.main.name
-  location              = data.azurerm_resource_group.main.location
-  
+  solution_name       = "ContainerInsights"
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+
   workspace_resource_id = azurerm_log_analytics_workspace.main.id
   workspace_name        = azurerm_log_analytics_workspace.main.name
 
@@ -40,10 +40,10 @@ resource "azurerm_kubernetes_cluster" "main" {
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
 
-  tags                = var.resource_tags
-  
-  dns_prefix          = var.dns_prefix
-  kubernetes_version  = var.kubernetes_version
+  tags = var.resource_tags
+
+  dns_prefix         = var.dns_prefix
+  kubernetes_version = var.kubernetes_version
 
   linux_profile {
     admin_username = var.admin_user

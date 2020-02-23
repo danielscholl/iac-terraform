@@ -2,7 +2,7 @@
 module "ad-application" {
   source = "../"
 
-  name = "iac-terraform-ad-app"
+  name                    = "iac-terraform-ad-app"
   group_membership_claims = "All"
 
   reply_urls = [

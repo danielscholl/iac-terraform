@@ -323,7 +323,7 @@ module "keyvault_secret" {
 }
 
 module "web_keyvault_policy" {
-  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  source = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
 
   vault_id                = module.keyvault.id
   tenant_id               = module.app_service.identity_tenant_ids.0
@@ -472,9 +472,9 @@ module "ad_application" {
   ]
   oauth2_allow_implicit_flow = false
   available_to_other_tenants = true
-  resource_access_type = "Scope"
-  resource_api_id      = "00000002-0000-0000-c000-000000000000" // ID for Windows Graph API
-  resource_role_id     = "824c81eb-e3f8-4ee6-8f6d-de7f50d565b7" // ID for Application.ReadWrite.OwnedBy
+  resource_access_type       = "Scope"
+  resource_api_id            = "00000002-0000-0000-c000-000000000000" // ID for Windows Graph API
+  resource_role_id           = "824c81eb-e3f8-4ee6-8f6d-de7f50d565b7" // ID for Application.ReadWrite.OwnedBy
 }
 
 resource "null_resource" "changed_reply_urls" {
