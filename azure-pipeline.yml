@@ -1,12 +1,4 @@
-# Required Group Variables - iac-terraform-variables
-  # AGENT_POOL  (iac-terraform)
-  # BUILD_ARTIFACT_NAME  (iac-terraform)
-  # FORCE_RUN (false)
-  # SERVICE_CONNECTION_NAME  <your_service_connection_name>
-  # REMOTE_STATE_ACCOUNT <your_remote_state_account_name>
-  # REMOTE_STATE_CONTAINER <your_remote_state_container_name>
-
-
+### This pipeline should be triggered and run only when items that affect the pipeline are modified.
 trigger:
   batch: true
   branches:
@@ -31,25 +23,56 @@ pr:
     - /**/*.md
 
 variables:
+
+###  Version of Terraform to be used in the pipeline.
 - name: 'TF_VERSION'
-  value: '0.12.20'
+  value: '0.12.21'
+
+###  Version of Go to be used in the pipeline.
 - name: 'GO_VERSION'
   value: '1.12.14'
+
+###  Root Directory of modules and templates are found.
 - name: 'TF_ROOT_DIR'
   value: 'samples'
+
+###  Root Directory of where the ADO Pipelines are found for nested templates.
 - name: 'PIPELINE_ROOT_DIR'
   value: 'pipelines'
+
+### Required Variables in the Group
+###   AGENT_POOL
+###   BUILD_ARTIFACT_NAME
+###   REMOTE_STATE_CONTAINER
+###   SERVICE_CONNECTION_NAME
 - group: 'iac-terraform-variables'
 
+
+###   ** These are loaded in stage-build.yml and stage-deploy.yml **
+## -------------------------------------------------------------------------------
+### Required Env Group Variables - `Infrastructure Pipeline Variables - {env_name}`
+###    REMOTE_STATE_ACCOUNT
+###    SUBSCRIPTION
 stages:
 - template: pipelines/compose-stages.yml
   parameters:
+
+## -------------------------------------------------------------------------------
+###   Environments are the list of each environment that the pipeline should create
+###      enablePrIsolation - Create a temporary new environment with the PR number.  Pair this with Configuration - TeardownAfterRelease
+###      resourceNameIsolationLevel -- Specify how many unique characters are used in the naming convention.
     environments:
     - name: 'dev'
       resourceNameIsolationLevel: 8
       enablePrIsolation: false
       skipTests: false
 
+## -------------------------------------------------------------------------------
+###   Configurations are the list templates that the pipeline should create.
+###      terraformWorkspacePrefix is the prefix used for all resources
+###      terraformTemplatePath is the path of the template to be executed.
+###      deploymentTimeoutInMinutes is length of time before timing out with an error.
+###      environmentsToTeardownAfterRelease is the list of environments to execute tf destroy on.
     configurations:
     - jobName: simpleweb
       terraformWorkspacePrefix: 'sw'
