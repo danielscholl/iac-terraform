@@ -11,7 +11,7 @@
 #   }
 # }
 
-@HOST = {{BASE}}-web.azurewebsites.net
+@HOST = {{BASE}}-webauth-web.azurewebsites.net
 
 
 # -----------------------

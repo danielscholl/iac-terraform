@@ -441,7 +441,7 @@ module "service_principal" {
   scopes = concat(
     [module.service_plan.id],
     [module.cosmosdb.id],
-    [module.resource_group.id],
+    [module.keyvault.id],
     module.app_service.ids
   )
 }
@@ -524,6 +524,10 @@ output "TENANT_ID" {
 
 output "SUBSCRIPTION_ID" {
   value = data.azurerm_client_config.current.subscription_id
+}
+
+output "APP_ID" {
+  value = module.ad_application.id
 }
 
 output "PRINCIPAL_ID" {
