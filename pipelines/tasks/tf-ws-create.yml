@@ -1,9 +1,6 @@
 steps:
   - task: AzureCLI@1
     displayName: 'TF Initialize Workspace'
-    env:
-      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'
       addSpnToEnvironment: true
@@ -11,6 +8,13 @@ steps:
       inlineScript: |
         #!/usr/bin/env bash
         set -euo pipefail
+
+        ## This Script requires the following variables to be available. ##
+        # Required Variable = TF_VERSION
+        # Required Variable = ARM_SUBSCRIPTION_ID
+        # Required Variable = TF_VAR_remote_state_account
+        # Required Variable = TF_VAR_remote_state_container
+
 
         function terraformVersionCheck() {
             if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
@@ -35,8 +39,7 @@ steps:
 
         cd $TF_TEMPLATE_WORKING_DIR
 
-        export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
-        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv)
+        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$(TF_VAR_remote_state_account)" --query "[0].value" --output tsv)
 
         terraform init -backend-config "storage_account_name=$TF_VAR_remote_state_account" -backend-config "container_name=$TF_VAR_remote_state_container"
         terraform workspace new $TF_WORKSPACE_NAME || terraform workspace select $TF_WORKSPACE_NAME

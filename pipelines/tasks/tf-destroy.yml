@@ -2,9 +2,6 @@ steps:
   - task: AzureCLI@1
     condition: always()
     displayName: 'Teardown Environment'
-    env:
-      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'
       addSpnToEnvironment: true
@@ -13,6 +10,12 @@ steps:
         #!/usr/bin/env bash
         set -euo pipefail
         set -o nounset
+
+        ## This Script requires the following variables to be available. ##
+        # Required Variable = TF_VERSION
+        # Required Variable = ARM_SUBSCRIPTION_ID
+        # Required Variable = TF_VAR_remote_state_account
+        # Required Variable = TF_VAR_remote_state_container
 
         function terraformVersionCheck() {
             if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
@@ -40,12 +43,11 @@ steps:
         # Setting the scripts to be run as executable
         chmod -R 752 .terraform
 
-        export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
         export ARM_TENANT_ID=$tenantId
         export ARM_CLIENT_SECRET=$servicePrincipalKey
         export ARM_CLIENT_ID=$servicePrincipalId
-        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv)
-        
+        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$(TF_VAR_remote_state_account)" --query "[0].value" --output tsv)
+
         TF_CLI_ARGS=${TF_CLI_ARGS:-}
 
         terraform destroy $TF_CLI_ARGS -auto-approve
