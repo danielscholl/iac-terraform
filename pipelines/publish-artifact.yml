@@ -15,7 +15,7 @@ jobs:
   - template: tasks/lint-tf.yml
   - template: tasks/debug-variables.yml
     parameters:
-      disable: false
+      disable: False
 
   - task: CopyFiles@2
     displayName: Copy ADO Files
