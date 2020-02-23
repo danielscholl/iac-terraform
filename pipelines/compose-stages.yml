@@ -18,7 +18,8 @@ stages:
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Analyze Changes
-        pool: $(AGENT_POOL)
+        pool:
+          vmImage: 'ubuntu-16.04'
         condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
         - template: tasks/detect-cicd.yml
@@ -37,7 +38,8 @@ stages:
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Determine Changes
-        pool: $(AGENT_POOL)
+        pool:
+          vmImage: 'ubuntu-16.04'
         condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
         steps:
         - template: tasks/detect-cicd.yml
