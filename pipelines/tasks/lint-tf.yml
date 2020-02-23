@@ -6,7 +6,6 @@ steps:
       targetType: 'inline'
       script: |
         #!/usr/bin/env bash
-
         set -euo pipefail
 
         function terraformVersionCheck() {
