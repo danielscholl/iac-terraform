@@ -3,7 +3,7 @@
 steps:
   - task: Bash@3
     displayName: 'Debug Variables'
-    condition: eq('${{ parameters.enable }}', true)
+    condition: eq('${{ parameters.disable }}', true)
     inputs:
       targetType: 'inline'
       script: 'env | sort'
