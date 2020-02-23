@@ -1,7 +1,8 @@
 jobs:
 - job: Publish
   displayName: Validate and Publish
-  pool: $(AGENT_POOL)
+  pool:
+    vmImage: 'ubuntu-16.04'
 
   workspace:
     clean: all
