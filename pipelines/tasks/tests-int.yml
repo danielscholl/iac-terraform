@@ -6,8 +6,8 @@ steps:
     displayName: 'Run Integration Tests'
     condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skip }}))
     env:
-      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+      TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
+      TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
       TF_VAR_randomization_level: $(resourceNameIsolationLevel)
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'

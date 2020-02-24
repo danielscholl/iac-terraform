@@ -2,9 +2,9 @@ steps:
   - task: AzureCLI@1
     displayName: 'TF Plan'
     env:
-      TF_VAR_randomization_level: $(resourceNameIsolationLevel)
       TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
       TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
+      TF_VAR_randomization_level: $(resourceNameIsolationLevel)
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'
       addSpnToEnvironment: true
