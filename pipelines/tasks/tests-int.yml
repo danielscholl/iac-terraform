@@ -17,7 +17,6 @@ steps:
         #!/usr/bin/env bash
         set -euo pipefail
 
-        export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
         export ARM_TENANT_ID=$tenantId
         export ARM_CLIENT_SECRET=$servicePrincipalKey
         export ARM_CLIENT_ID=$servicePrincipalId
@@ -25,8 +24,7 @@ steps:
 
         cd "$ARTIFACT_ROOT"/"$TERRAFORM_TEMPLATE_PATH"
 
-        # Setting the scripts to be run as executable
-        chmod -fR 755 *.sh || true
+        chmod -fR 755 *.sh || true  # Setting the scripts to be run as executable
 
         echo "TF_WORKSPACE_NAME: ${TF_WORKSPACE_NAME}"
         echo "TF_VAR_randomization_level: $TF_VAR_randomization_level"
