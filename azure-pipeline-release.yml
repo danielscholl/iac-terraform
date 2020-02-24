@@ -34,7 +34,7 @@ variables:
 
 ### Required Variables in the Group
 ###   BUILD_ARTIFACT_NAME
-###   REMOTE_STATE_CONTAINER
+###   FORCE_RUN
 ###   SERVICE_CONNECTION_NAME
 - group: 'iac-terraform-variables'
 
@@ -42,8 +42,10 @@ variables:
 ###   ** These are loaded in stage-build.yml and stage-deploy.yml **
 ## -------------------------------------------------------------------------------
 ### Required Env Group Variables - `Infrastructure Pipeline Variables - {env_name}`
-###    REMOTE_STATE_ACCOUNT
-###    SUBSCRIPTION
+###    ARM_SUBSCRIPTION_ID
+###    TF_VAR_remote_state_account
+###    TF_VAR_remote_state_container
+###    TF_VAR_location
 stages:
 - template: pipelines/compose-stages.yml
   parameters:
