@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Container Registry
+##############################################################
+
 data "azurerm_resource_group" "main" {
   name = var.resource_group_name
 }

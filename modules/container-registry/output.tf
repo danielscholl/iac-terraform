@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Container Registry
+##############################################################
+
 output "id" {
   description = "The Container Registry ID."
   value       = azurerm_container_registry.main.id

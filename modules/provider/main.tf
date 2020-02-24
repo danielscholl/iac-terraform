@@ -3,13 +3,17 @@
 ##############################################################
 
 provider "azurerm" {
-  azurerm = "~> 1.44"
+  version = "=1.44"
 }
 
 provider "null" {
   version = "~>2.1.0"
 }
 
+provider "random" {
+  version = "~>2.2"
+}
+
 provider "azuread" {
-  version = "~>0.7.0"
+  version = "=0.7.0"
 }
