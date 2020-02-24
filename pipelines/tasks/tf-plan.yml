@@ -49,7 +49,6 @@ steps:
         rm -f *.out                   # Clear all previous plans
         chmod -f 752 *.sh || true     # Setting the scripts to be run as executable
 
-        export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
         export ARM_TENANT_ID=$tenantId
         export ARM_CLIENT_SECRET=$servicePrincipalKey
         export ARM_CLIENT_ID=$servicePrincipalId
