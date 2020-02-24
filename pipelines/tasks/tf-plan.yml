@@ -18,6 +18,10 @@ steps:
         # Required Variable = TF_VAR_remote_state_account
         # Required Variable = TF_VAR_remote_state_container
 
+        echo "ServicePrincipalId:  $servicePrincipalId"
+        env |grep ARM
+        env |grep TF
+
         function terraformVersionCheck() {
             if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
                 echo "Terraform version check completed"
@@ -38,13 +42,10 @@ steps:
         }
 
         terraformVersionCheck
-
         cd $TF_TEMPLATE_WORKING_DIR
 
-        # Clear all previous plans
-        rm -f *.out
-        # Setting the scripts to be run as executable
-        chmod -f 752 *.sh || true
+        rm -f *.out                   # Clear all previous plans
+        chmod -f 752 *.sh || true     # Setting the scripts to be run as executable
 
         export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
         export ARM_TENANT_ID=$tenantId
@@ -54,8 +55,5 @@ steps:
 
         TF_PLAN_FILE="${TF_WORKSPACE_NAME}_plan.out"
         TF_CLI_ARGS=${TF_CLI_ARGS:-}
-
-        echo "TF_WORKSPACE_NAME: ${TF_WORKSPACE_NAME}"
-        echo "TF_VAR_randomization_level: $TF_VAR_randomization_level"
 
         terraform plan $TF_CLI_ARGS -input=false -out $TF_PLAN_FILE

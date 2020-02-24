@@ -17,6 +17,11 @@ steps:
         # Required Variable = TF_VAR_remote_state_account
         # Required Variable = TF_VAR_remote_state_container
 
+        echo "ServicePrincipalId:  $servicePrincipalId"
+        env |grep ARM
+        env |grep TF
+        
+
         function terraformVersionCheck() {
             if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
                 echo "Terraform version check completed"
@@ -40,8 +45,7 @@ steps:
 
         cd "$TF_TEMPLATE_WORKING_DIR"
 
-        # Setting the scripts to be run as executable
-        chmod -R 752 .terraform
+        chmod -R 752 .terraform          # Setting the scripts to be run as executable
 
         export ARM_TENANT_ID=$tenantId
         export ARM_CLIENT_SECRET=$servicePrincipalKey

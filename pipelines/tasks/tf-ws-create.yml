@@ -10,11 +10,14 @@ steps:
         set -euo pipefail
 
         ## This Script requires the following variables to be available. ##
-        # Required Variable = TF_VERSION
         # Required Variable = ARM_SUBSCRIPTION_ID
+        # Required Variable = TF_VERSION
         # Required Variable = TF_VAR_remote_state_account
         # Required Variable = TF_VAR_remote_state_container
 
+        echo "ServicePrincipalId:  $servicePrincipalId"
+        env |grep ARM
+        env |grep TF
 
         function terraformVersionCheck() {
             if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
@@ -36,7 +39,6 @@ steps:
         }
 
         terraformVersionCheck
-
         cd $TF_TEMPLATE_WORKING_DIR
 
         export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$(TF_VAR_remote_state_account)" --query "[0].value" --output tsv)

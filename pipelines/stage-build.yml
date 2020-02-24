@@ -12,9 +12,6 @@ jobs:
   condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build.outputs['${{ parameters.configuration.jobName }}.needs_cicd'], 'true'))
   
   steps:
-  - template: tasks/debug-variables.yml
-    parameters:
-      disable: False
   - template: tasks/tf-ws-compute.yml
     parameters:
       terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
@@ -60,6 +57,9 @@ jobs:
   - template: tasks/tests-unit.yml
     parameters:
       skip: ${{ parameters.skipTests }}
+  - template: tasks/debug-variables.yml
+    parameters:
+      disable: False
   - template: tasks/tf-ws-create.yml
   - template: tasks/tf-plan.yml
 
