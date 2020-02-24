@@ -1,4 +1,7 @@
 # Introduction
+
+[![Build Status](https://dascholl.visualstudio.com/osdu/_apis/build/status/danielscholl.iac-terraform-release?branchName=master)](https://dascholl.visualstudio.com/osdu/_build/latest?definitionId=73&branchName=master)
+
 Infrastructure as Code using Terraform - Module Development
 
 __Prerequisites__
