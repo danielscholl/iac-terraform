@@ -40,8 +40,7 @@ stages:
         vmImage: 'ubuntu-16.04'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
-        displayName: Determine Changes
-        condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
+        displayName: Analyze Changes
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
