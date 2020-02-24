@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Container Registry
+##############################################################
+
 variable "name" {
   description = "The name of the Container Registry."
   type        = string

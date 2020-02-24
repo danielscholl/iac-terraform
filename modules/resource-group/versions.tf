@@ -3,9 +3,9 @@
 ##############################################################
 
 terraform {
-  required_version = "~> 0.12.17"
+  required_version = "~> 0.12.20"
   required_providers {
-    azurerm = "~> 1.37"
     random  = "~> 2.2"
+    azurerm = "~> 1.44"
   }
 }
