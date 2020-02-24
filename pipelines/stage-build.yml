@@ -8,8 +8,6 @@ jobs:
 
 - job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
   displayName: Initialize Build
-  pool:
-    vmImage: 'ubuntu-16.04'
   dependsOn: TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build
   condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build.outputs['${{ parameters.configuration.jobName }}.needs_cicd'], 'true'))
   
@@ -24,8 +22,6 @@ jobs:
 - job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}
   displayName: Execute Build
   dependsOn: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
-  pool:
-    vmImage: 'ubuntu-16.04'
 
   variables:
   - group: '${{ parameters.environment }} Environment Variables'
@@ -61,6 +57,9 @@ jobs:
   - template: tasks/tests-unit.yml
     parameters:
       skip: ${{ parameters.skipTests }}
+  - template: tasks/debug-variables.yml
+    parameters:
+      disable: False
   - template: tasks/tf-ws-create.yml
   - template: tasks/tf-plan.yml
 

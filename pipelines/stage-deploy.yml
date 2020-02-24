@@ -7,8 +7,6 @@ parameters:
 jobs:
 
 - job: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
-  pool:
-    vmImage: 'ubuntu-16.04'
   dependsOn: TemplateChangeDetection_${{ parameters.configuration.jobName }}_Deploy
   condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection_${{ parameters.configuration.jobName }}_Deploy.outputs['${{ parameters.configuration.jobName }}.needs_cicd'], 'true'))
   
@@ -22,8 +20,6 @@ jobs:
 
 - deployment: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}
   dependsOn: Provision_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
-  pool:
-    vmImage: 'ubuntu-16.04'
 
   ${{ if parameters.configuration.deploymentTimeoutInMinutes }}:
     timeoutInMinutes: '${{ parameters.configuration.deploymentTimeoutInMinutes }}'
