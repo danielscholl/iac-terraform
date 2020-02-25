@@ -144,7 +144,7 @@ variable "boot_diagnostics_sa_type" {
 }
 
 variable "custom_script" {
-  type = string
+  type        = string
   description = "(Optional) URL to the Custom Script to run"
-  default = ""
+  default     = ""
 }

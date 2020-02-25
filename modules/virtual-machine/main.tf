@@ -3,9 +3,9 @@
 ##############################################################
 
 locals {
-  is_windows = contains(list(var.vm_os_simple, var.vm_os_offer), "WindowsServer") || contains(list(var.vm_os_simple, var.vm_os_offer), "Windows10") ? "true" : "false"
-  linux_count = local.is_windows != "true" && var.is_windows_image != "true" && var.data_disk == "false" ? var.vm_instances : 0
-  is_windows_nodisk = (var.vm_os_id != "" && var.is_windows_image == "true") || local.is_windows == "true" && var.data_disk == "false" ? true : false
+  is_windows          = contains(list(var.vm_os_simple, var.vm_os_offer), "WindowsServer") || contains(list(var.vm_os_simple, var.vm_os_offer), "Windows10") ? "true" : "false"
+  linux_count         = local.is_windows != "true" && var.is_windows_image != "true" && var.data_disk == "false" ? var.vm_instances : 0
+  is_windows_nodisk   = (var.vm_os_id != "" && var.is_windows_image == "true") || local.is_windows == "true" && var.data_disk == "false" ? true : false
   is_windows_withdisk = (var.vm_os_id != "" && var.is_windows_image == "true") || local.is_windows == "true" && var.data_disk == "true" ? true : false
 }
 
@@ -245,12 +245,12 @@ resource "azurerm_availability_set" "vm" {
 }
 
 resource "azurerm_public_ip" "vm" {
-  count                        = var.public_ip_instances
-  name                         = "${var.vm_hostname}${count.index}-ip"
-  resource_group_name          = data.azurerm_resource_group.main.name
-  location                     = data.azurerm_resource_group.main.location
-  allocation_method            = var.public_ip_address_allocation
-  domain_name_label            = element(var.public_ip_dns, count.index)
+  count               = var.public_ip_instances
+  name                = "${var.vm_hostname}${count.index}-ip"
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  allocation_method   = var.public_ip_address_allocation
+  domain_name_label   = element(var.public_ip_dns, count.index)
 }
 
 resource "azurerm_network_interface" "vm" {

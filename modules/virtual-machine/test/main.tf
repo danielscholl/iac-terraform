@@ -16,7 +16,7 @@ module "network" {
 }
 
 module "windows10desktop" {
-  source         = "../"
+  source = "../"
 
   resource_group_name = module.resource_group.name
   vm_hostname         = "desktop-vm"
