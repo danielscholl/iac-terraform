@@ -12,8 +12,10 @@ variable "resource_group_name" {
   default     = "terraform-compute"
 }
 
-variable "location" {
-  description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
 }
 
 variable "vnet_subnet_id" {
@@ -60,7 +62,7 @@ variable "vm_size" {
   default     = "Standard_DS1_V2"
 }
 
-variable "nb_instances" {
+variable "vm_instances" {
   description = "Specify the number of vm instances"
   default     = "1"
 }
@@ -100,21 +102,12 @@ variable "vm_os_version" {
   default     = "latest"
 }
 
-variable "tags" {
-  type        = "map"
-  description = "A map of the tags to use on the resources that are deployed with this module."
-
-  default = {
-    source = "terraform"
-  }
-}
-
 variable "public_ip_address_allocation" {
   description = "Defines how an IP address is assigned. Options are Static or Dynamic."
-  default     = "dynamic"
+  default     = "Dynamic"
 }
 
-variable "nb_public_ip" {
+variable "public_ip_instances" {
   description = "Number of public IPs to assign corresponding to one IP per vm. Set to 0 to not assign any public IP addresses."
   default     = "1"
 }
@@ -135,7 +128,7 @@ variable "data_disk_size_gb" {
 }
 
 variable "data_disk" {
-  type        = "string"
+  type        = string
   description = "Set to true to add a datadisk."
   default     = "false"
 }
@@ -148,4 +141,10 @@ variable "boot_diagnostics" {
 variable "boot_diagnostics_sa_type" {
   description = "(Optional) Storage account type for boot diagnostics"
   default     = "Standard_LRS"
+}
+
+variable "custom_script" {
+  type        = string
+  description = "(Optional) URL to the Custom Script to run"
+  default     = ""
 }
