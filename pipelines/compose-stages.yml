@@ -17,7 +17,7 @@ stages:
     displayName: '${{ environment.name }}_Deployment'
 
   - ${{ each config in parameters.configurations }}:
-    - stage: ${{ config.jobName }}_${{ environment.name }}_build
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Build
       displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
       dependsOn: ${{ environment.name }}_Deployment
       pool:
@@ -37,9 +37,9 @@ stages:
           resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
 
-    - stage: ${{ config.jobName }}_${{ environment.name }}_deploy
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
       displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
-      dependsOn: ${{ environment.name }}_Deployment
+      dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
       pool:
         vmImage: 'ubuntu-16.04'
       jobs:
