@@ -7,8 +7,6 @@ stages:
 
 - stage: publish_artifact
   displayName: 'Initialize'
-  pool:
-    vmImage: 'ubuntu-16.04'
   jobs:
   - template: publish-artifact.yml
 
@@ -27,8 +25,8 @@ stages:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Analyze Changes
         pool:
-        name: Azure Pipelines
-        vmImage: 'ubuntu-16.04'
+          name: Azure Pipelines
+          vmImage: 'ubuntu-16.04'
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
@@ -48,8 +46,8 @@ stages:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Analyze Changes
         pool:
-        name: Azure Pipelines
-        vmImage: 'ubuntu-16.04'
+          name: Azure Pipelines
+          vmImage: 'ubuntu-16.04'
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
