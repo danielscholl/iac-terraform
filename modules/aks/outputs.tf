@@ -3,7 +3,7 @@
 ##############################################################
 
 output "id" {
-  value.   = azurerm_kubernetes_cluster.id
+  value    = azurerm_kubernetes_cluster.id
 }
 
 output "client_certificate" {
