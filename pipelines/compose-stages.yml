@@ -41,7 +41,7 @@ stages:
 
     - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
       displayName: 'Deploy configuration: ${{ config.jobName }}'
-      dependsOn: ${{ environment.name }}_Deployment
+      dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Analyze Changes
