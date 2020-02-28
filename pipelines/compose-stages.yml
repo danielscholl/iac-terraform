@@ -13,8 +13,9 @@ stages:
 - ${{ each environment in parameters.environments }}:
 
   - stage: ${{ environment.name }}_Deployment
-    # jobs:
-    #   - job: Environment_${{ environment.name }}_Build
+    displayName: 'Environment: ${{ environment.name }}'
+    jobs:
+      - job: Environment_${{ environment.name }}_Build
 
   - ${{ each config in parameters.configurations }}:
     - stage: ${{ config.jobName }}_${{ environment.name }}_Build
