@@ -19,7 +19,7 @@ stages:
 
   - ${{ each config in parameters.configurations }}:
     - stage: ${{ config.jobName }}_${{ environment.name }}_Build
-      displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
+      displayName: 'Build configuration: ${{ config.jobName }}'
       dependsOn: ${{ environment.name }}_Deployment
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
@@ -40,7 +40,7 @@ stages:
           configuration: ${{ config }}
 
     - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
-      displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
+      displayName: 'Deploy configuration: ${{ config.jobName }}'
       dependsOn: ${{ environment.name }}_Deployment
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
