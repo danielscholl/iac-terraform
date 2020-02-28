@@ -17,8 +17,6 @@ pr:
   branches:
     include:
     - '*'
-    exclude:
-    - master
   paths:
     include:
     - azure-pipeline.yml
