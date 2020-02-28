@@ -13,10 +13,15 @@ stages:
   - template: publish-artifact.yml
 
 - ${{ each environment in parameters.environments }}:
-  - ${{ each config in parameters.configurations }}:
+  - stage: ${{ environment.name }}_Deployment
+    displayName: '${{ environment.name }}_Deployment'
+    jobs:
+      - job: Environment_${{ environment.name }}_Build
 
-    - stage: ${{ config.jobName }}_${{ environment.name }}_build
+  - ${{ each config in parameters.configurations }}:
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Build
       displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
+      dependsOn: ${{ environment.name }}_Deployment
       pool:
         vmImage: 'ubuntu-16.04'
       jobs:
@@ -34,8 +39,9 @@ stages:
           resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
 
-    - stage: ${{ config.jobName }}_${{ environment.name }}_deploy
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
       displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
+      dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
       pool:
         vmImage: 'ubuntu-16.04'
       jobs:
