@@ -18,7 +18,7 @@ resource "kubernetes_pod" "redis" {
 
 resource "kubernetes_service" "redis" {
   metadata {
-    name      = "azure-vote-back"
+    name = "azure-vote-back"
     labels {
       name = "azure-vote-back"
     }
@@ -49,7 +49,7 @@ resource "kubernetes_pod" "web" {
         container_port = 80
       }
       env {
-        name = "REDIS"
+        name  = "REDIS"
         value = "azure-vote-back"
       }
     }
@@ -58,7 +58,7 @@ resource "kubernetes_pod" "web" {
 
 resource "kubernetes_service" "web" {
   metadata {
-    name      = "azure-vote-front"
+    name = "azure-vote-front"
   }
   spec {
     selector {

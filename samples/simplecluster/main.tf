@@ -7,9 +7,9 @@
 
 terraform {
   required_version = ">= 0.12"
-  # backend "azurerm" {
-  #   key = "terraform.tfstate"
-  # }
+  backend "azurerm" {
+    key = "terraform.tfstate"
+  }
 }
 
 #-------------------------------
@@ -31,6 +31,16 @@ variable "randomization_level" {
   default     = 8
 }
 
+variable "agent_vm_count" {
+  type    = string
+  default = "2"
+}
+
+variable "agent_vm_size" {
+  type    = string
+  default = "Standard_D2s_v3"
+}
+
 #-------------------------------
 # Private Variables  (common.tf)
 #-------------------------------
@@ -42,7 +52,7 @@ locals {
   suffix   = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // Base Names
-  base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
+  base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
@@ -203,6 +213,8 @@ module "aks" {
   dns_prefix               = local.cluster_name
   service_principal_id     = module.service_principal.client_id
   service_principal_secret = module.service_principal.client_secret
+  agent_vm_count           = var.agent_vm_count
+  agent_vm_size            = var.agent_vm_size
 
   ssh_public_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
   vnet_subnet_id = module.network.subnets.0

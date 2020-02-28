@@ -81,41 +81,21 @@ az aks get-credentials --name $CLUSTER_NAME \
   --resource-group $RESOURCE_GROUP \
   --admin
 
+# Install kubectl command
+az aks install-cli --install-location ~/bin/kubectl
+
 # Validate the cluster
-kubectl get nodes
-kubectl get pods --all-namespaces
+~/bin/kubectl get nodes
+~/bin/kubectl get pods --all-namespaces
 ```
 
-1. Build the Docker Images and Deploy using the Azure CLI
-
-```bash
-## Ensure kubectl is using the appropriate configuration!!
-#--------------------------------------------------------
-
-ResourceGroup="<your_resource_group>"
-deploy.sh $ResourceGroup
-
-# Watch to see the app come alive
-kubectl get service azure-vote-front --watch
-```
-
-2. Build and Deploy a Sample Application using Docker
+1. Build and Deploy a Sample Application using Docker
 
 _Build the application_
-
 ```bash
-## Ensure kubectl is using the appropriate configuration!!
-#--------------------------------------------------------
-
-# Set the variable to your resource group where ACR exists.
-ResourceGroup="<your_resource_group>"
-
-# Login to the Registry
-Registry=$(az acr list -g $ResourceGroup --query [].name -otsv)
-az acr login -g $ResourceGroup -n $Registry
-
-# Get the FQDN to be used
-RegistryServer=$(az acr show -g $RegistryGroup -n $Registry --query loginServer -otsv)
+# Login to the Registry and get the FQDN
+az acr login -n $REGISTRY_NAME
+RegistryServer=$(az acr show -n $REGISTRY_NAME --query loginServer -otsv)
 
 # Create a Compose File for the App
 cat > docker-compose.yaml <<EOF
@@ -129,8 +109,8 @@ services:
         - "6379:6379"
 
   azure-vote-front:
-    build: ./src/azure-vote
-    image: ${RegistryServer}/azure-vote-front
+    build: ./app/azure-vote
+    image: ${RegistryServer}/azure-vote-front:${USER}
     container_name: azure-vote-front
     environment:
       REDIS: azure-vote-back
@@ -142,15 +122,15 @@ EOF
 # Build and push the Docker Images
 docker-compose build
 docker-compose push
-```
 
+# Check Repository for Images and Tags
+az acr repository list -n $REGISTRY_NAME
+az acr repository show-tags -n $REGISTRY_NAME --repository azure-vote-front
+```
 
 _Deploy the application_
 
 ```bash
-# Retrieve the Registry Server FQDN
-RegistryServer=$(az acr show -g $ResourceGroup -n $Registry --query loginServer -otsv)
-
 # Create a k8s manifest file for the App
 cat > deployment.yaml <<EOF
 apiVersion: apps/v1beta1
@@ -199,7 +179,7 @@ spec:
     spec:
       containers:
       - name: azure-vote-front
-        image: ${RegistryServer}/azure-vote-front
+        image: ${RegistryServer}/azure-vote-front:${USER}
         ports:
         - containerPort: 80
         resources:
@@ -223,14 +203,14 @@ spec:
     app: azure-vote-front
 EOF
 
-kubectl apply -f deployment.yaml
-kubectl get service azure-vote-front --watch  # Wait for the External IP to come live
+~/bin/kubectl apply -f deployment.yaml
+~/bin/kubectl get service azure-vote-front --watch  # Wait for the External IP to come live
 
 
-# Set the variable to your resource group where ACR exists.
-ResourceGroup="demo-cluster"
-Cluster=$(az aks list -g $ResourceGroup --query [].name -otsv)
+## THIS SECTION NOT TESTED YET
+# Add a clusterrolebinding for cluster-admin to the dashboard
+~/bin/kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
 
 # Open the dashboard
-az aks browse -n $Cluster -g $ResourceGroup 
+az aks browse -n $CLUSTER_NAME -g $RESOURCE_GROUP 
 ```

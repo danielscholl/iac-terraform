@@ -1,0 +1,97 @@
+### This pipeline should be triggered once changes have been merged into master.
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - azure-pipeline.yml
+    - /pipelines/*
+    - /modules/*
+    exclude:
+    - /**/*.md
+
+pr:
+  branches:
+    include:
+    - '*'
+  paths:
+    include:
+    - azure-pipeline.yml
+    - /pipelines/*
+    - /modules/*
+    - /samples/*
+    exclude:
+    - /**/*.md
+
+variables:
+
+###  Version of Terraform to be used in the pipeline.
+- name: 'TF_VERSION'
+  value: '0.12.21'
+
+###  Version of Go to be used in the pipeline.
+- name: 'GO_VERSION'
+  value: '1.12.14'
+
+###  Root Directory of modules and templates are found.
+- name: 'TF_ROOT_DIR'
+  value: 'samples'
+
+###  Root Directory of where the ADO Pipelines are found for nested templates.
+- name: 'PIPELINE_ROOT_DIR'
+  value: 'pipelines'
+
+### Required Variables in the Group
+###   BUILD_ARTIFACT_NAME
+###   FORCE_RUN
+###   SERVICE_CONNECTION_NAME
+- group: 'iac-terraform-variables'
+
+
+###   ** These are loaded in stage-build.yml and stage-deploy.yml **
+## -------------------------------------------------------------------------------
+### Required Env Group Variables - `Infrastructure Pipeline Variables - {env_name}`
+###    ARM_SUBSCRIPTION_ID
+###    TF_VAR_remote_state_account
+###    TF_VAR_remote_state_container
+###    TF_VAR_location
+stages:
+- template: pipelines/compose-stages.yml
+  parameters:
+
+## -------------------------------------------------------------------------------
+###   Environments are the list of each environment that the pipeline should create
+###      enablePrIsolation - Create a temporary new environment with the PR number.  Pair this with Configuration - TeardownAfterRelease
+###      resourceNameIsolationLevel -- Specify how many unique characters are used in the naming convention.
+###   Environments can be different for master branch vs non master branches.
+    environments:
+    - name: 'dev'
+      resourceNameIsolationLevel: 8
+      enablePrIsolation: false
+      skipTests: false
+    - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+      - name: 'prod'
+        enablePrIsolation: false
+        resourceNameIsolationLevel: 8
+
+## -------------------------------------------------------------------------------
+###   Configurations are the list templates that the pipeline should create.
+###      terraformWorkspacePrefix is the prefix used for all resources
+###      terraformTemplatePath is the path of the template to be executed.
+###      deploymentTimeoutInMinutes is length of time before timing out with an error.
+###      environmentsToTeardownAfterRelease is the list of environments to execute tf destroy on.
+    configurations:
+    - jobName: simpleweb
+      terraformWorkspacePrefix: 'sw'
+      terraformTemplatePath: 'samples/simpleweb'
+      terraformModulePath: 'modules'
+      deploymentTimeoutInMinutes: 20
+    
+    # Configurations can be isolated to only in specified branches
+    # - ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+    #   - jobName: webauth
+    #     terraformWorkspacePrefix: wa
+    #     terraformTemplatePath: 'samples/webauth'
+    #     deploymentTimeoutInMinutes: 120
