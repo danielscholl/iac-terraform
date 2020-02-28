@@ -23,11 +23,12 @@ stages:
     - stage: ${{ config.jobName }}_${{ environment.name }}_Build
       displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
       dependsOn: Environment_${{ environment.name }}
-      pool:
-        vmImage: 'ubuntu-16.04'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Analyze Changes
+        pool:
+        name: Azure Pipelines
+        vmImage: 'ubuntu-16.04'
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
@@ -43,11 +44,12 @@ stages:
     - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
       displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
       dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
-      pool:
-        vmImage: 'ubuntu-16.04'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Analyze Changes
+        pool:
+        name: Azure Pipelines
+        vmImage: 'ubuntu-16.04'
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
