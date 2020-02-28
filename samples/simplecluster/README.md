@@ -55,15 +55,30 @@ terraform destroy
 
 ## Deploy a Sample Application to the Cluster
 
+1. Export the required environment variables from the provisioned resources.
+
+```bash
+# Environment Variables
+export RESOURCE_GROUP="<your_resource_group_name>"
+export CLUSTER_NAME="<your_cluster_name>"
+export PRINCIPAL_ID="<your_principal_id>"
+export PRINCIPAL_SECRET="<your_principal_secret>"
+export REGISTRY_NAME="<your_registry_name>"
+```
+
+1. Execute the following command to configure your local Azure CLI.
+
+```bash
+# This logs your local Azure CLI in using the configured service principal.
+az login --service-principal -u $PRINCIPAL_ID -p $PRINCIPAL_SECRET --tenant $ARM_TENANT_ID
+```
 
 1. Ensure the proper AKS Credentials have been retrieved
 
 ```bash
-ResourceGroup="<your_resource_group>"
-Cluster="<your_cluster>"
 # Pull the cluster admin context
-az aks get-credentials --name <your_cluster> \
-  --resource-group $ResourceGroup \
+az aks get-credentials --name $CLUSTER_NAME \
+  --resource-group $RESOURCE_GROUP \
   --admin
 
 # Validate the cluster

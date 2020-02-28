@@ -165,7 +165,9 @@ module "keyvault_secret" {
 
   keyvault_id = module.keyvault.id
   secrets = {
-    "sshKey"    = tls_private_key.key.private_key_pem
+    "sshKey"       = tls_private_key.key.private_key_pem
+    "clientId"     = module.service_principal.client_id
+    "clientSecret" = module.service_principal.client_secret
   }
 }
 
@@ -184,6 +186,7 @@ module "service_principal" {
   scopes = concat(
     [module.network.id],
     [module.container_registry.id],
+    [module.aks.id],
     [module.keyvault.id]
   )
 }
@@ -210,3 +213,30 @@ module "aks" {
 }
 
 
+#-------------------------------
+# Output Variables  (output.tf)
+#-------------------------------
+
+output "RESOURCE_GROUP" {
+  value = module.resource_group.name
+}
+
+output "REGISTRY_NAME" {
+  value = module.container_registry.name
+}
+
+output "CLUSTER_NAME" {
+  value = local.cluster_name
+}
+
+output "PRINCIPAL_ID" {
+  value = module.service_principal.client_id
+}
+
+output "PRINCIPAL_SECRET" {
+  value = module.service_principal.client_secret
+}
+
+output "id_rsa" {
+  value = tls_private_key.key.private_key_pem
+}
