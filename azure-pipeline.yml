@@ -1,4 +1,4 @@
-### This pipeline should be triggered once changes have been merged into master.
+### Trigger Pipeline for all Merges into master.
 trigger:
   batch: true
   branches:
@@ -12,10 +12,13 @@ trigger:
     exclude:
     - /**/*.md
 
+### Trigger Pipeline for all Pull Requests into master.
 pr:
   branches:
     include:
     - '*'
+    exclude:
+    - master
   paths:
     include:
     - azure-pipeline.yml
@@ -65,16 +68,18 @@ stages:
 ###   Environments are the list of each environment that the pipeline should create
 ###      enablePrIsolation - Create a temporary new environment with the PR number.  Pair this with Configuration - TeardownAfterRelease
 ###      resourceNameIsolationLevel -- Specify how many unique characters are used in the naming convention.
-###   Environments can be different for master branch vs non master branches.
+
     environments:
     - name: 'dev'
       resourceNameIsolationLevel: 8
       enablePrIsolation: false
       skipTests: false
-    - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-      - name: 'prod'
-        enablePrIsolation: false
-        resourceNameIsolationLevel: 8
+
+    ###  Only deploy this environment when using master branches.
+    # - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    #   - name: 'prod'
+    #     enablePrIsolation: false
+    #     resourceNameIsolationLevel: 8
 
 ## -------------------------------------------------------------------------------
 ###   Configurations are the list templates that the pipeline should create.
@@ -89,7 +94,7 @@ stages:
       terraformModulePath: 'modules'
       deploymentTimeoutInMinutes: 20
     
-    # Configurations can be isolated to only in specified branches
+    # Only deploy this configuration when not using master branch.
     # - ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
     #   - jobName: webauth
     #     terraformWorkspacePrefix: wa
