@@ -2,6 +2,10 @@
 # This module allows the creation of a Kubernetes Cluster
 ##############################################################
 
+output "id" {
+  value = azurerm_kubernetes_cluster.main.id
+}
+
 output "client_certificate" {
   sensitive = true
   value     = azurerm_kubernetes_cluster.main.kube_config.0.client_certificate
