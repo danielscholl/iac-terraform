@@ -73,16 +73,12 @@ stages:
       resourceNameIsolationLevel: 8
       enablePrIsolation: false
       skipTests: false
-    - name: 'qa'
-      resourceNameIsolationLevel: 8
-      enablePrIsolation: false
-      skipTests: false
 
     ###  Only deploy this environment when using master branches.
-    - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-      - name: 'prod'
-        enablePrIsolation: false
-        resourceNameIsolationLevel: 8
+    # - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    #   - name: 'prod'
+    #     enablePrIsolation: false
+    #     resourceNameIsolationLevel: 8
 
 ## -------------------------------------------------------------------------------
 ###   Configurations are the list templates that the pipeline should create.
