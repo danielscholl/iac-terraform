@@ -14,11 +14,10 @@ trigger:
 
 ### Trigger Pipeline for all Pull Requests into master.
 pr:
+  autoCancel: true
   branches:
     include:
     - '*'
-    exclude:
-    - master
   paths:
     include:
     - azure-pipeline.yml
@@ -74,12 +73,16 @@ stages:
       resourceNameIsolationLevel: 8
       enablePrIsolation: false
       skipTests: false
+    - name: 'qa'
+      resourceNameIsolationLevel: 8
+      enablePrIsolation: false
+      skipTests: false
 
     ###  Only deploy this environment when using master branches.
-    # - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-    #   - name: 'prod'
-    #     enablePrIsolation: false
-    #     resourceNameIsolationLevel: 8
+    - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+      - name: 'prod'
+        enablePrIsolation: false
+        resourceNameIsolationLevel: 8
 
 ## -------------------------------------------------------------------------------
 ###   Configurations are the list templates that the pipeline should create.
@@ -96,7 +99,7 @@ stages:
     
     # Only deploy this configuration when not using master branch.
     # - ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
-    #   - jobName: webauth
-    #     terraformWorkspacePrefix: wa
-    #     terraformTemplatePath: 'samples/webauth'
+    #   - jobName: webdata
+    #     terraformWorkspacePrefix: wd
+    #     terraformTemplatePath: 'samples/webdata'
     #     deploymentTimeoutInMinutes: 120

@@ -7,26 +7,26 @@ stages:
 
 - stage: publish_artifact
   displayName: 'Initialize'
-  pool:
-    vmImage: 'ubuntu-16.04'
   jobs:
   - template: publish-artifact.yml
 
 - ${{ each environment in parameters.environments }}:
+
   - stage: ${{ environment.name }}_Deployment
-    displayName: '${{ environment.name }}_Deployment'
+    displayName: 'Environment: ${{ environment.name }}'
     jobs:
       - job: Environment_${{ environment.name }}_Build
 
   - ${{ each config in parameters.configurations }}:
     - stage: ${{ config.jobName }}_${{ environment.name }}_Build
-      displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
+      displayName: 'Build configuration: ${{ config.jobName }}'
       dependsOn: ${{ environment.name }}_Deployment
-      pool:
-        vmImage: 'ubuntu-16.04'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Build
         displayName: Analyze Changes
+        pool:
+          name: Azure Pipelines
+          vmImage: 'ubuntu-16.04'
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
@@ -40,13 +40,14 @@ stages:
           configuration: ${{ config }}
 
     - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
-      displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
+      displayName: 'Deploy configuration: ${{ config.jobName }}'
       dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
-      pool:
-        vmImage: 'ubuntu-16.04'
       jobs:
       - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
         displayName: Analyze Changes
+        pool:
+          name: Azure Pipelines
+          vmImage: 'ubuntu-16.04'
         steps:
         - template: tasks/detect-cicd.yml
           parameters:
