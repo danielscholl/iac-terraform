@@ -19,12 +19,12 @@ variable "agent_vm_count" {
 }
 
 variable "acr_enabled" {
-  type = string
+  type    = string
   default = "true"
 }
 
 variable "gc_enabled" {
-  type = string
+  type    = string
   default = "true"
 }
 
@@ -38,8 +38,8 @@ variable "enable_flux" {
 }
 
 variable "flux_recreate" {
-  type = string
-  default     = ""
+  type    = string
+  default = ""
 }
 
 variable "gitops_ssh_url" {
@@ -66,12 +66,12 @@ variable "gitops_label" {
 }
 
 variable "gitops_url_branch" {
-  type = string
+  type    = string
   default = "master"
 }
 
 variable "kubernetes_version" {
-  type = string
+  type    = string
   default = "1.15.7"
 }
 
