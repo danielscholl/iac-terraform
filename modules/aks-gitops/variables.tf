@@ -1,22 +1,31 @@
+variable "name" {
+  type = string
+}
+
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
+}
+
+variable "agent_vm_size" {
+  type    = string
+  default = "Standard_D2s_v3"
+}
+
 variable "agent_vm_count" {
   type    = string
   default = "3"
 }
 
-variable "agent_vm_size" {
-  type = string
-}
-
 variable "acr_enabled" {
   type = string
+  default = "true"
 }
 
 variable "gc_enabled" {
   type = string
-}
-
-variable "cluster_name" {
-  type = string
+  default = "true"
 }
 
 variable "dns_prefix" {
@@ -30,6 +39,7 @@ variable "enable_flux" {
 
 variable "flux_recreate" {
   type = string
+  default     = ""
 }
 
 variable "gitops_ssh_url" {
@@ -57,10 +67,12 @@ variable "gitops_label" {
 
 variable "gitops_url_branch" {
   type = string
+  default = "master"
 }
 
 variable "kubernetes_version" {
   type = string
+  default = "1.15.7"
 }
 
 variable "resource_group_name" {
