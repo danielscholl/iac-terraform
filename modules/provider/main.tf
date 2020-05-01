@@ -3,7 +3,8 @@
 ##############################################################
 
 provider "azurerm" {
-  version = "=1.44"
+  version = "=2.7.0"
+  features {}
 }
 
 provider "null" {

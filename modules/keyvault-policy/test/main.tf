@@ -1,17 +1,22 @@
+provider "azurerm" {
+  version = "=2.7.0"
+  features {}
+}
+
 module "resource_group" {
-  source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source   = "../../resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }
 
 module "service_plan" {
-  source              = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source              = "../../service-plan"
   name                = "iac-terraform-plan-${module.resource-group.random}"
   resource_group_name = module.resource_group.name
 }
 
 module "app_service" {
-  source                     = "github.com/danielscholl/iac-terraform/modules/app-service"
+  source                     = "../../app-service"
   name                       = "iac-terraform-web-${module.resource_group.random}"
   resource_group_name        = module.resource_group.name
   service_plan_name          = module.service_plan.name
@@ -25,7 +30,7 @@ module "app_service" {
 }
 
 module "keyvault" {
-  source              = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  source              = "../../keyvault"
   name                = "iac-terraform-kv-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 }

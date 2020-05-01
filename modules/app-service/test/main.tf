@@ -1,5 +1,10 @@
+provider "azurerm" {
+  version = "=2.7.0"
+  features {}
+}
+
 module "resource_group" {
-  source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source   = "../../resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }
@@ -25,7 +30,7 @@ module "resource_group" {
 # }
 
 module "service_plan" {
-  source              = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source              = "../../service-plan"
   name                = "iac-terraform-plan-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 }

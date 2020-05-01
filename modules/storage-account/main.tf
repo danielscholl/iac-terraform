@@ -15,8 +15,6 @@ resource "azurerm_storage_account" "main" {
   account_tier              = var.tier
   account_replication_type  = var.replication_type
   enable_https_traffic_only = var.ensure_https
-  account_encryption_source = var.encryption_source
-
 
   # enrolls storage account into azure 'managed identities' authentication
   identity {

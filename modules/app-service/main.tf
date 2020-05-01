@@ -26,7 +26,13 @@ resource "azurerm_app_service" "main" {
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]
     always_on            = var.is_always_on
-    virtual_network_name = var.vnet_name
+    dynamic "ip_restriction" {
+      for_each = var.allowed_ip_addresses
+      content {
+        ip_address  = ip_restriction.value
+        # virtual_network_subnet_id = "255.255.255.255"
+      }
+    }
   }
 
   dynamic "auth_settings" {
@@ -89,7 +95,13 @@ resource "azurerm_app_service_slot" "staging" {
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]
     always_on            = var.is_always_on
-    virtual_network_name = var.vnet_name
+    dynamic "ip_restriction" {
+      for_each = var.allowed_ip_addresses
+      content {
+        ip_address  = ip_restriction.value
+        # virtual_network_subnet_id = "255.255.255.255"
+      }
+    }
   }
 
   dynamic "auth_settings" {
@@ -153,21 +165,4 @@ data "azurerm_app_service" "all" {
   name                = azurerm_app_service.main[count.index].name
   resource_group_name = data.azurerm_resource_group.main.name
   depends_on          = [azurerm_app_service.main]
-}
-
-resource "azurerm_template_deployment" "main" {
-  name                = "access_restriction"
-  count               = var.is_vnet_isolated ? length(local.app_names) : 0
-  resource_group_name = data.azurerm_resource_group.main.name
-
-  parameters = {
-    service_name                   = format("%s-%s", var.name, lower(local.app_names[count.index]))
-    vnet_subnet_id                 = var.vnet_subnet_id
-    access_restriction_name        = local.access_restriction_name
-    access_restriction_description = local.access_restriction_description
-  }
-
-  deployment_mode = "Incremental"
-  template_body   = file("${path.module}/azuredeploy.json")
-  depends_on      = [data.azurerm_app_service.all]
 }

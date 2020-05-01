@@ -1,3 +1,8 @@
+provider "azurerm" {
+  version = "=2.7.0"
+  features {}
+}
+
 module "resource_group" {
   source = "../"
 
