@@ -8,10 +8,32 @@ resource "random_password" "main" {
   special = false
 }
 
+data "azuread_service_principal" "main" {
+  count        = length(local.api_names)
+  display_name = local.api_names[count.index]
+}
+
 resource "azuread_application" "main" {
   count                      = local.create_count
   name                       = var.name
   available_to_other_tenants = false
+
+  dynamic "required_resource_access" {
+    for_each = local.required_resource_access
+    iterator = resource
+    content {
+      resource_app_id = resource.value.resource_app_id
+
+      dynamic "resource_access" {
+        for_each = resource.value.resource_access
+        iterator = access
+        content {
+          id   = access.value.id
+          type = access.value.type
+        }
+      }
+    }
+  }
 }
 
 resource "azuread_service_principal" "main" {

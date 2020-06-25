@@ -12,4 +12,13 @@ module "service_principal" {
   role     = "Contributor"
   scopes   = [module.resource_group.id]
   end_date = "1W"
+
+  api_permissions = [
+    {
+      name = "Microsoft Graph"
+      app_roles = [
+        "Directory.Read.All"
+      ]
+    }
+  ]
 }

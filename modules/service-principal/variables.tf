@@ -43,12 +43,48 @@ variable "object_id" {
   default     = ""
 }
 
+variable "api_permissions" {
+  type        = any
+  default     = []
+  description = "List of API permissions."
+}
+
 locals {
   create_count = var.create_for_rbac == true ? 1 : 0
 
   date = regexall("^(?:(\\d{4})-(\\d{2})-(\\d{2}))[Tt]?(?:(\\d{2}):(\\d{2})(?::(\\d{2}))?(?:\\.(\\d+))?)?([Zz]|[\\+|\\-]\\d{2}:\\d{2})?$", var.end_date)
 
   duration = regexall("^(?:(\\d+)Y)?(?:(\\d+)M)?(?:(\\d+)W)?(?:(\\d+)D)?(?:(\\d+)h)?(?:(\\d+)m)?(?:(\\d+)s)?$", var.end_date)
+
+  service_principals = {
+    for s in data.azuread_service_principal.main : s.display_name => {
+      application_id     = s.application_id
+      display_name       = s.display_name
+      app_roles          = { for p in s.app_roles : p.value => p.id }
+    }
+  }
+
+  api_permissions = [
+    for p in var.api_permissions : merge({
+      id                 = ""
+      name               = ""
+      app_roles          = []
+    }, p)
+  ]
+
+  api_names = local.api_permissions[*].name
+
+  required_resource_access = [
+    for a in local.api_permissions : {
+      resource_app_id = local.service_principals[a.name].application_id
+      resource_access = concat(
+         [for p in a.app_roles : {
+          id   = local.service_principals[a.name].app_roles[p]
+          type = "Role"
+        }]
+      )
+    }
+  ]
 
   end_date_relative = length(local.duration) > 0 ? format(
     "%dh",
