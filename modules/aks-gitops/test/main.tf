@@ -1,12 +1,15 @@
+provider "azurerm" {
+  features {}
+}
 
 module "resource_group" {
-  source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source   = "../../modules/resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }
 
 module "service_principal" {
-  source = "github.com/danielscholl/iac-terraform/modules/service-principal"
+  source = "../../modules/service-principal"
 
   name     = format("iac-terraform-%s", module.resource_group.random)
   role     = "Contributor"
@@ -15,7 +18,7 @@ module "service_principal" {
 }
 
 module "network" {
-  source = "github.com/danielscholl/iac-terraform/modules/network"
+  source = "../../modules/network"
 
   name                = format("iac-terraform-vnet-%s", module.resource_group.random)
   resource_group_name = module.resource_group.name

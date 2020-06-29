@@ -13,6 +13,26 @@ terraform {
 }
 
 #-------------------------------
+# Providers
+#-------------------------------
+provider "azurerm" {
+  version = "=2.16.0"
+  features {}
+}
+
+provider "null" {
+  version = "~>2.1.0"
+}
+
+provider "random" {
+  version = "~>2.2"
+}
+
+provider "azuread" {
+  version = "=0.10.0"
+}
+
+#-------------------------------
 # Application Variables  (variables.tf)
 #-------------------------------
 variable "name" {
@@ -82,13 +102,6 @@ resource "random_string" "workspace_scope" {
 
 
 #-------------------------------
-# Required Providers
-#-------------------------------
-module "provider" {
-  source = "github.com/danielscholl/iac-terraform?ref=master/modules/provider"
-}
-
-#-------------------------------
 # SSH Key
 #-------------------------------
 resource "tls_private_key" "key" {
@@ -114,7 +127,7 @@ resource "null_resource" "save-key" {
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../modules/resource-group"
 
   name     = local.name
   location = local.location
@@ -129,7 +142,7 @@ module "resource_group" {
 # Virtual Network
 #-------------------------------
 module "network" {
-  source = "github.com/danielscholl/iac-terraform/modules/network"
+  source = "../../modules/network"
 
   name                = local.vnet_name
   resource_group_name = module.resource_group.name
@@ -144,7 +157,7 @@ module "network" {
 # Container Registry
 #-------------------------------
 module "container_registry" {
-  source = "github.com/danielscholl/iac-terraform/modules/container-registry"
+  source = "../../modules/container-registry"
 
   name                = local.registry_name
   resource_group_name = module.resource_group.name
@@ -158,7 +171,7 @@ module "container_registry" {
 #-------------------------------
 module "keyvault" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  source = "../../modules/keyvault"
 
   # Module variable
   name                = local.keyvault_name
@@ -171,7 +184,7 @@ module "keyvault" {
 
 module "keyvault_secret" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
+  source = "../../modules/keyvault-secret"
 
   keyvault_id = module.keyvault.id
   secrets = {
@@ -187,7 +200,7 @@ module "keyvault_secret" {
 #-------------------------------
 module "service_principal" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/service-principal"
+  source = "../../modules/service-principal"
 
   # Module Variables
   name = local.ad_principal_name
@@ -206,7 +219,7 @@ module "service_principal" {
 # Azure Kubernetes Service
 #-------------------------------
 module "aks" {
-  source = "github.com/danielscholl/iac-terraform/modules/aks"
+  source = "../../modules/aks"
 
   name                     = local.cluster_name
   resource_group_name      = module.resource_group.name

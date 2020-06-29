@@ -25,7 +25,6 @@ module "storage_account" {
       access_type = "private"
     }
   ]
-  encryption_source         = "Microsoft.Storage"
 }
 
 module "service_plan" {
@@ -83,9 +82,6 @@ module "function_app" {
 | `docker_registry_server_username` | _string_   | The docker registry server username for images. |
 | `docker_registry_server_password` | _string_   | The docker register server password for images. |
 | `app_settings`                    | __Object__ |Application settings to insert on creating the app. |            
-| `is_vnet_isolated`                | _bool_     | Determines whether or not a virtual network is being used. |
-| `vnet_name`                       | _string_   | The integrated VNet name. |
-| `vnet_subnet_id`                  | _string_   | The VNet integration subnet gateway identifier. |
 
 
 The __function_app_config__ object accepts the following keys:

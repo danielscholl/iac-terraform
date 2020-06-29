@@ -1,5 +1,9 @@
+provider "azurerm" {
+  features {}
+}
+
 module "resource_group" {
-  source   = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source   = "../../resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }

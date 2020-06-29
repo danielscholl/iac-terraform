@@ -13,6 +13,26 @@ terraform {
 }
 
 #-------------------------------
+# Providers
+#-------------------------------
+provider "azurerm" {
+  version = "=2.7.0"
+  features {}
+}
+
+provider "null" {
+  version = "~>2.1.0"
+}
+
+provider "random" {
+  version = "~>2.2"
+}
+
+provider "azuread" {
+  version = "=0.7.0"
+}
+
+#-------------------------------
 # Application Variables  (variables.tf)
 #-------------------------------
 variable "name" {
@@ -107,20 +127,13 @@ resource "random_string" "workspace_scope" {
 }
 
 
-#-------------------------------
-# Azure Required Providers
-#-------------------------------
-module "provider" {
-  source = "../../modules/provider"
-}
-
 
 #-------------------------------
 # Resource Group
 #-------------------------------
 module "resource_group" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../modules/resource-group"
 
   # Module variable
   name     = local.name
@@ -137,7 +150,7 @@ module "resource_group" {
 #-------------------------------
 module "keyvault" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  source = "../../modules/keyvault"
 
   # Module variable
   name                = local.keyvault_name
@@ -154,7 +167,7 @@ module "keyvault" {
 #-------------------------------
 module "cosmosdb" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/cosmosdb"
+  source = "../../modules/cosmosdb"
 
   # Module variable
   name                     = local.cosmosdb_account_name
@@ -163,8 +176,21 @@ module "cosmosdb" {
   automatic_failover       = false
   consistency_level        = "Session"
   primary_replica_location = local.location
-  database_name            = local.cosmosdb_database_name
-  container_name           = var.cosmosdb_container_name
+  databases                = [
+    {
+      name       = local.cosmosdb_database_name
+      throughput = 400
+    }
+  ]
+
+  sql_collections          = [
+    {
+      name               = var.cosmosdb_container_name
+      database_name      = local.cosmosdb_database_name
+      partition_key_path = "/id"
+      throughput         = 400
+    }
+  ]
 
   resource_tags = {
     environment = local.ws_name
@@ -176,7 +202,7 @@ module "cosmosdb" {
 #-------------------------------
 module "keyvault-secret" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
+  source = "../../modules/keyvault-secret"
 
   # Module variable
   keyvault_id = module.keyvault.id
@@ -190,7 +216,7 @@ module "keyvault-secret" {
 #-------------------------------
 module "app_insights" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/app-insights"
+  source = "../../modules/app-insights"
 
   # Module variable
   name                = local.insights_name
@@ -206,7 +232,7 @@ module "app_insights" {
 #-------------------------------
 module "service_plan" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source = "../../modules/service-plan"
 
   # Module Variables
   name                = local.service_plan_name
@@ -219,7 +245,7 @@ module "service_plan" {
 
 module "app_service" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/app-service"
+  source = "../../modules/app-service"
 
   # Module Variables
   name                       = local.app_service_name
@@ -245,7 +271,7 @@ module "app_service" {
 # Access Policies
 #-------------------------------
 module "keyvault_policy" {
-  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  source                  = "../../modules/keyvault-policy"
   vault_id                = module.keyvault.id
   tenant_id               = module.app_service.identity_tenant_ids.0
   object_ids              = module.app_service.identity_object_ids

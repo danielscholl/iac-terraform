@@ -13,6 +13,27 @@ terraform {
 }
 
 #-------------------------------
+# Providers
+#-------------------------------
+provider "azurerm" {
+  version = "=2.16.0"
+  features {}
+}
+
+provider "null" {
+  version = "~>2.1.0"
+}
+
+provider "random" {
+  version = "~>2.2"
+}
+
+provider "azuread" {
+  version = "=0.10.0"
+}
+
+
+#-------------------------------
 # Application Variables  (variables.tf)
 #-------------------------------
 variable "name" {
@@ -230,19 +251,11 @@ data "azurerm_client_config" "current" {}
 
 
 #-------------------------------
-# Azure Required Providers
-#-------------------------------
-module "provider" {
-  source = "../../modules/provider"
-}
-
-
-#-------------------------------
 # Resource Group
 #-------------------------------
 module "resource_group" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../modules/resource-group"
 
   # Module variable
   name     = local.name
@@ -260,7 +273,7 @@ module "resource_group" {
 #-------------------------------
 module "app_insights" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/app-insights"
+  source = "../../modules/app-insights"
 
   # Module variable
   name                = local.insights_name
@@ -277,7 +290,7 @@ module "app_insights" {
 #-------------------------------
 module "cosmosdb" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/cosmosdb"
+  source = "../../modules/cosmosdb"
 
   # Module variable
   name                     = local.cosmosdb_account_name
@@ -299,7 +312,7 @@ module "cosmosdb" {
 #-------------------------------
 module "keyvault" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  source = "../../modules/keyvault"
 
   # Module variable
   name                = local.keyvault_name
@@ -312,7 +325,7 @@ module "keyvault" {
 
 module "keyvault_secret" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
+  source = "../../modules/keyvault-secret"
 
   keyvault_id = module.keyvault.id
   secrets = {
@@ -323,7 +336,7 @@ module "keyvault_secret" {
 }
 
 module "web_keyvault_policy" {
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  source = "../../modules/keyvault-policy"
 
   vault_id                = module.keyvault.id
   tenant_id               = module.app_service.identity_tenant_ids.0
@@ -334,7 +347,7 @@ module "web_keyvault_policy" {
 }
 
 module "func_keyvault_policy" {
-  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  source                  = "../../modules/keyvault-policy"
   vault_id                = module.keyvault.id
   tenant_id               = module.function_app.identity_tenant_id
   object_ids              = module.function_app.identity_object_ids
@@ -349,7 +362,7 @@ module "func_keyvault_policy" {
 #-------------------------------
 
 module "storage_account" {
-  source              = "github.com/danielscholl/iac-terraform/modules/storage-account"
+  source              = "../../modules/storage-account"
   resource_group_name = module.resource_group.name
   name                = substr(local.storage_name, 0, 23)
   containers = [
@@ -358,7 +371,6 @@ module "storage_account" {
       access_type = "private"
     }
   ]
-  encryption_source = "Microsoft.Storage"
 }
 
 
@@ -367,7 +379,7 @@ module "storage_account" {
 #-------------------------------
 
 module "container_registry" {
-  source = "github.com/danielscholl/iac-terraform/modules/container-registry"
+  source = "../../modules/container-registry"
 
   name                = local.registry_name
   resource_group_name = module.resource_group.name
@@ -381,7 +393,7 @@ module "container_registry" {
 #-------------------------------
 module "service_plan" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source = "../../modules/service-plan"
 
   # Module Variables
   name                = local.service_plan_name
@@ -398,7 +410,7 @@ module "service_plan" {
 
 module "app_service" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/app-service"
+  source = "../../modules/app-service"
 
   # Module Variables
   name                = local.app_service_name
@@ -421,7 +433,7 @@ module "app_service" {
 }
 
 module "function_app" {
-  source               = "github.com/danielscholl/iac-terraform/modules/function-app"
+  source               = "../../modules/function-app"
   name                 = local.func_app_name
   resource_group_name  = module.resource_group.name
   service_plan_name    = module.service_plan.name
@@ -449,7 +461,7 @@ module "function_app" {
 # Service Principal with Role Assignments
 #-------------------------------
 module "service_principal" {
-  source = "github.com/danielscholl/iac-terraform/modules/service-principal"
+  source = "../../modules/service-principal"
 
   name = local.ad_principal_name
 
@@ -462,7 +474,7 @@ module "service_principal" {
 # Configure AD App
 #-------------------------------
 module "ad_application" {
-  source = "github.com/danielscholl/iac-terraform/modules/ad-application"
+  source = "../../modules/ad-application"
 
   ad_config = [
     {

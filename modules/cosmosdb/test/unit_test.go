@@ -11,7 +11,7 @@ import (
 
 var name = "cosmosdb-"
 var location = "eastus"
-var count = 6
+var count = 10
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",
@@ -42,13 +42,14 @@ func TestTemplate(t *testing.T) {
 	}`)
 
 	expectedDatabaseResult := asMap(t, `{
-		"name": "iac-terraform-database"
+		"name": "iac-terraform-database1",
+		"throughput": 400
 	}`)
 
 	expectedContainerResult := asMap(t, `{
-    "database_name": "iac-terraform-database",
-    "name": "iac-terraform-container",
-    "partition_key_path": "/definition/id"
+    "database_name": "iac-terraform-database1",
+    "name": "iac-terraform-container1",
+    "partition_key_path": "/id"
 	}`)
 
 	testFixture := infratests.UnitTestFixture{
@@ -58,9 +59,9 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: count,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"module.cosmosdb.azurerm_cosmosdb_account.account":         expectedAccountResult,
-			"module.cosmosdb.azurerm_cosmosdb_sql_database.database":   expectedDatabaseResult,
-			"module.cosmosdb.azurerm_cosmosdb_sql_container.container": expectedContainerResult,
+			"module.cosmosdb.azurerm_cosmosdb_account.account":            expectedAccountResult,
+			"module.cosmosdb.azurerm_cosmosdb_sql_database.database[0]":   expectedDatabaseResult,
+			"module.cosmosdb.azurerm_cosmosdb_sql_container.container[0]": expectedContainerResult,
 		},
 	}
 

@@ -1,12 +1,16 @@
+provider "azurerm" {
+  features {}
+}
+
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../resource-group"
 
   name     = "iac-terraform"
   location = "eastus2"
 }
 
 module "storage_account" {
-  source              = "github.com/danielscholl/iac-terraform/modules/storage-account"
+  source              = "../../storage-account"
   resource_group_name = module.resource_group.name
   name                = substr("iacterraform${module.resource_group.random}", 0, 23)
   containers = [
@@ -15,11 +19,10 @@ module "storage_account" {
       access_type = "private"
     }
   ]
-  encryption_source = "Microsoft.Storage"
 }
 
 module "service_plan" {
-  source              = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source              = "../../service-plan"
   name                = "iac-terraform-plan-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 

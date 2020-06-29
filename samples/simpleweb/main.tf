@@ -13,6 +13,26 @@ terraform {
 }
 
 #-------------------------------
+# Providers
+#-------------------------------
+provider "azurerm" {
+  version = "=2.16.0"
+  features {}
+}
+
+provider "null" {
+  version = "~>2.1.0"
+}
+
+provider "random" {
+  version = "~>2.2"
+}
+
+provider "azuread" {
+  version = "=0.10.0"
+}
+
+#-------------------------------
 # Application Variables  (variables.tf)
 #-------------------------------
 variable "name" {
@@ -94,19 +114,14 @@ resource "random_string" "workspace_scope" {
 }
 
 
-#-------------------------------
-# Azure Required Providers
-#-------------------------------
-module "provider" {
-  source = "github.com/danielscholl/iac-terraform/modules/provider"
-}
+
 
 
 #-------------------------------
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../modules/resource-group"
 
   name     = local.name
   location = local.location
@@ -122,7 +137,7 @@ module "resource_group" {
 #-------------------------------
 module "service_plan" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source = "../../modules/service-plan"
 
   # Module Variables
   name                = local.service_plan_name
@@ -135,7 +150,7 @@ module "service_plan" {
 
 module "app_service" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/app-service"
+  source = "../../modules/app-service"
 
   # Module Variables
   name                       = local.app_service_name

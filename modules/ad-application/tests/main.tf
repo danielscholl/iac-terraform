@@ -1,3 +1,7 @@
+provider "azuread" {
+
+}
+
 
 module "ad-application" {
   source = "../"

@@ -73,24 +73,6 @@ variable "app_settings" {
   description = "Application settings to insert on creating the function app. Following updates will be ignored, and has to be set manually. Updates done on application deploy or in portal will not affect terraform state file."
 }
 
-variable "is_vnet_isolated" {
-  description = "Determines whether or not a virtual network is being used."
-  type        = bool
-  default     = false
-}
-
-variable "vnet_name" {
-  description = "The integrated VNet name."
-  type        = string
-  default     = ""
-}
-
-variable "vnet_subnet_id" {
-  description = "The VNet integration subnet gateway identifier."
-  type        = string
-  default     = ""
-}
-
 locals {
   access_restriction_description = "blocking public traffic to function app"
   access_restriction_name        = "vnet_restriction"

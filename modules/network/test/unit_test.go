@@ -34,24 +34,35 @@ func TestTemplate(t *testing.T) {
 	}`)
 
 	expectedSubnet0 := asMap(t, `{
-		"address_prefix": "10.0.1.0/26"
+		"name": "Web-Tier",
+		"address_prefixes": [
+			"10.0.1.0/26"
+		]
 	}`)
 
 	expectedSubnet1 := asMap(t, `{
-		"address_prefix": "10.0.1.64/26"
+		"address_prefixes": [
+			"10.0.1.64/26"
+		]
 	}`)
 
 	expectedSubnet2 := asMap(t, `{
-		"address_prefix": "10.0.1.128/26"
+		"address_prefixes": [
+			"10.0.1.128/26"
+		]
 	}`)
 
 	expectedSubnet3 := asMap(t, `{
-		"address_prefix": "10.0.1.192/27"
+		"address_prefixes": [
+			"10.0.1.192/27"
+		]
 	}`)
 
 	expectedSubnet4 := asMap(t, `{
 		"name": "GatewaySubnet",
-		"address_prefix": "10.0.1.224/28"
+		"address_prefixes": [
+			"10.0.1.224/28"
+		]
 	}`)
 
 	testFixture := infratests.UnitTestFixture{

@@ -7,10 +7,31 @@
 
 terraform {
   required_version = ">= 0.12"
-  # backend "azurerm" {
-  #   key = "terraform.tfstate"
-  # }
+  backend "azurerm" {
+    key = "terraform.tfstate"
+  }
 }
+
+#-------------------------------
+# Providers
+#-------------------------------
+provider "azurerm" {
+  version = "=2.16.0"
+  features {}
+}
+
+provider "null" {
+  version = "~>2.1.0"
+}
+
+provider "random" {
+  version = "~>2.2"
+}
+
+provider "azuread" {
+  version = "=0.10.0"
+}
+
 
 #-------------------------------
 # Application Variables  (variables.tf)

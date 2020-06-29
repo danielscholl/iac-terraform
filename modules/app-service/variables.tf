@@ -100,23 +100,12 @@ variable "docker_registry_server_password" {
   default     = ""
 }
 
-variable "is_vnet_isolated" {
-  description = "Determines whether or not a virtual network is being used."
-  type        = bool
-  default     = false
+variable "allowed_ip_addresses" {
+  description = "List of allowed IP Addresses"
+  type        = list(string)
+  default     = []
 }
 
-variable "vnet_name" {
-  description = "The integrated VNet name."
-  type        = string
-  default     = ""
-}
-
-variable "vnet_subnet_id" {
-  description = "The VNet integration subnet gateway identifier."
-  type        = string
-  default     = ""
-}
 
 
 locals {
