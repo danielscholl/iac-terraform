@@ -6,8 +6,8 @@ steps:
     displayName: 'Run Unit Tests'
     condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skip }}))
     env:
-      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+      TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
+      TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'
       addSpnToEnvironment: true
@@ -22,8 +22,8 @@ steps:
         export ARM_CLIENT_ID=$servicePrincipalId
         export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv)
 
-        cd "$ARTIFACT_ROOT"/"$TERRAFORM_TEMPLATE_PATH"
+        cd "$ARTIFACT_ROOT"/
         
         # Setting the scripts to be run as executable
         chmod -fR 755 *.sh || true
-        go test -v $(go list ./... | grep "$TERRAFORM_TEMPLATE_PATH" | grep "test")
+        go test -v $(go list ./... | grep "test")

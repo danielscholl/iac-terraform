@@ -54,7 +54,7 @@ variables:
 
 ###   ** These are loaded in stage-build.yml and stage-deploy.yml **
 ## -------------------------------------------------------------------------------
-### Required Env Group Variables - `Infrastructure Pipeline Variables - {env_name}`
+### Required Env Group Variables - `{env_name} Environment Variables`
 ###    ARM_SUBSCRIPTION_ID
 ###    TF_VAR_remote_state_account
 ###    TF_VAR_remote_state_container
