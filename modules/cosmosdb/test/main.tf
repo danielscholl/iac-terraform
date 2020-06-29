@@ -16,7 +16,7 @@ module "cosmosdb" {
   automatic_failover       = false
   consistency_level        = "Session"
   primary_replica_location = module.resource_group.location
-  databases                = [
+  databases = [
     {
       name       = "iac-terraform-database1"
       throughput = 400
@@ -26,7 +26,7 @@ module "cosmosdb" {
       throughput = 400
     }
   ]
-  sql_collections          = [
+  sql_collections = [
     {
       name               = "iac-terraform-container1"
       database_name      = "iac-terraform-database1"

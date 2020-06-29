@@ -30,8 +30,8 @@ resource "azurerm_function_app" "main" {
   app_settings = merge(tomap(local.app_settings), var.function_app_config[local.app_names[count.index]].app_settings)
 
   site_config {
-    linux_fx_version     = local.app_linux_fx_versions[count.index]
-    always_on            = var.is_always_on
+    linux_fx_version = local.app_linux_fx_versions[count.index]
+    always_on        = var.is_always_on
   }
 
   identity {

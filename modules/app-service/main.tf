@@ -24,12 +24,12 @@ resource "azurerm_app_service" "main" {
   app_settings = local.app_settings
 
   site_config {
-    linux_fx_version     = local.app_linux_fx_versions[count.index]
-    always_on            = var.is_always_on
+    linux_fx_version = local.app_linux_fx_versions[count.index]
+    always_on        = var.is_always_on
     dynamic "ip_restriction" {
       for_each = var.allowed_ip_addresses
       content {
-        ip_address  = ip_restriction.value
+        ip_address = ip_restriction.value
         # virtual_network_subnet_id = "255.255.255.255"
       }
     }
@@ -93,12 +93,12 @@ resource "azurerm_app_service_slot" "staging" {
   app_settings = local.app_settings
 
   site_config {
-    linux_fx_version     = local.app_linux_fx_versions[count.index]
-    always_on            = var.is_always_on
+    linux_fx_version = local.app_linux_fx_versions[count.index]
+    always_on        = var.is_always_on
     dynamic "ip_restriction" {
       for_each = var.allowed_ip_addresses
       content {
-        ip_address  = ip_restriction.value
+        ip_address = ip_restriction.value
         # virtual_network_subnet_id = "255.255.255.255"
       }
     }

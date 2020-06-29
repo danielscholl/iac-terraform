@@ -176,14 +176,14 @@ module "cosmosdb" {
   automatic_failover       = false
   consistency_level        = "Session"
   primary_replica_location = local.location
-  databases                = [
+  databases = [
     {
       name       = local.cosmosdb_database_name
       throughput = 400
     }
   ]
 
-  sql_collections          = [
+  sql_collections = [
     {
       name               = var.cosmosdb_container_name
       database_name      = local.cosmosdb_database_name

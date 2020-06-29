@@ -33,7 +33,7 @@ module "network" {
 # }
 
 module "WindowsServer" {
-  source         = "../"
+  source = "../"
 
   resource_group_name = module.resource_group.name
   vm_hostname         = "server-vm"
@@ -44,7 +44,7 @@ module "WindowsServer" {
 }
 
 module "LinuxServer" {
-  source         = "../"
+  source = "../"
 
   resource_group_name = module.resource_group.name
   vm_hostname         = "linux-vm"

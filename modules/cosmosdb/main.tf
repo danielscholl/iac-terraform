@@ -37,14 +37,14 @@ resource "azurerm_cosmosdb_sql_database" "database" {
 }
 
 resource "azurerm_cosmosdb_sql_container" "container" {
-  depends_on          = [azurerm_cosmosdb_sql_database.database]
-  count               = length(var.sql_collections)
+  depends_on = [azurerm_cosmosdb_sql_database.database]
+  count      = length(var.sql_collections)
 
   name                = var.sql_collections[count.index].name
   resource_group_name = data.azurerm_resource_group.group.name
   account_name        = azurerm_cosmosdb_account.account.name
   database_name       = var.sql_collections[count.index].database_name
-  
-  partition_key_path  = var.sql_collections[count.index].partition_key_path
-  throughput          = var.sql_collections[count.index].throughput
+
+  partition_key_path = var.sql_collections[count.index].partition_key_path
+  throughput         = var.sql_collections[count.index].throughput
 }
