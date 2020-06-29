@@ -1,5 +1,4 @@
 provider "azurerm" {
-  version = "=2.7.0"
   features {}
 }
 
@@ -12,7 +11,7 @@ module "resource_group" {
 
 module "keyvault" {
   source              = "../../keyvault"
-  name                = "iac-terraform-kv-${module.resource_group.random}"
+  name                = substr("iac-terraform-kv-${module.resource_group.random}", 0, 23)
   resource_group_name = module.resource_group.name
 }
 

@@ -1,6 +1,9 @@
 provider "azurerm" {
-  version = "=2.7.0"
   features {}
+}
+
+provider "azuread" {
+
 }
 
 module "resource_group" {

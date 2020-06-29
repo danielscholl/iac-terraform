@@ -176,8 +176,21 @@ module "cosmosdb" {
   automatic_failover       = false
   consistency_level        = "Session"
   primary_replica_location = local.location
-  database_name            = local.cosmosdb_database_name
-  container_name           = var.cosmosdb_container_name
+  databases                = [
+    {
+      name       = local.cosmosdb_database_name
+      throughput = 400
+    }
+  ]
+
+  sql_collections          = [
+    {
+      name               = var.cosmosdb_container_name
+      database_name      = local.cosmosdb_database_name
+      partition_key_path = "/id"
+      throughput         = 400
+    }
+  ]
 
   resource_tags = {
     environment = local.ws_name

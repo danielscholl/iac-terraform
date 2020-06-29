@@ -16,7 +16,7 @@ terraform {
 # Providers
 #-------------------------------
 provider "azurerm" {
-  version = "=2.7.0"
+  version = "=2.16.0"
   features {}
 }
 
@@ -29,7 +29,7 @@ provider "random" {
 }
 
 provider "azuread" {
-  version = "=0.7.0"
+  version = "=0.10.0"
 }
 
 #-------------------------------
