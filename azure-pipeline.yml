@@ -92,6 +92,8 @@ stages:
       terraformTemplatePath: 'samples/simpleweb'
       terraformModulePath: 'modules'
       deploymentTimeoutInMinutes: 20
+      environmentsToTeardownAfterRelease:
+      - 'dev'
     
     # Only deploy this configuration when not using master branch.
     # - ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
