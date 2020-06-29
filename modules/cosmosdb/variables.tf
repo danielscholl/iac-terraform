@@ -40,12 +40,33 @@ variable "primary_replica_location" {
   type        = string
 }
 
-variable "database_name" {
-  description = "The database name that CosmosDB Sql will be created with."
-  type        = string
+# variable "database_name" {
+#   description = "The database name that CosmosDB Sql will be created with."
+#   type        = string
+# }
+
+# variable "container_name" {
+#   description = "The container name that CosmosDB Sql will be created with."
+#   type        = string
+# }
+
+variable "databases" {
+  description = "The list of Cosmos DB SQL Databases."
+  type = list(object({
+    name       = string
+    throughput = number
+  }))
+  default = []
 }
 
-variable "container_name" {
-  description = "The container name that CosmosDB Sql will be created with."
-  type        = string
+variable "sql_collections" {
+  description = "The list of cosmos collection names to create. Names must be unique per cosmos instance."
+  type = list(object({
+    name               = string
+    database_name      = string
+    partition_key_path = string
+    throughput         = number
+  }))
+  default = []
 }
+
