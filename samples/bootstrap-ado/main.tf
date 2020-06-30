@@ -46,16 +46,19 @@ variable "environments" {
 
 variable "project_name" {
   description = "The name of an existing project that will be provisioned to run the IaC CI/CD pipelines"
+  default = "IaC Terraform"
 }
 
 variable "name" {
   description = "An identifier used to construct the names of all resources in this template."
   type        = string
+  default     = "iac-tf"
 }
 
 variable "location" {
   description = "The Azure region where all resources in this template should be created."
   type        = string
+  default     = "centralus"
 }
 
 variable "randomization_level" {
@@ -66,7 +69,7 @@ variable "randomization_level" {
 
 variable "lock" {
   description = "Should the resource group be locked"
-  default     = true
+  default     = false
 }
 
 
@@ -232,7 +235,7 @@ resource "azuredevops_variable_group" "stage_vg" {
 
 resource "azuredevops_git_repository" "repo" {
   project_id = local.project_id
-  name       = "Infrastructure Repository"
+  name       = "Infrastructure"
   initialization {
     init_type = "Clean"  # Import not ready
     source_url = "https://github.com/danielscholl/iac-terraform.git"
@@ -241,7 +244,7 @@ resource "azuredevops_git_repository" "repo" {
 
 resource "azuredevops_build_definition" "build" {
   project_id = local.project_id
-  name       = "Infrastructure CICD"
+  name       = "Infrastructure"
 
   repository {
     repo_type   = "TfsGit"
