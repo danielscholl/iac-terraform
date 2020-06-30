@@ -1,0 +1,43 @@
+# -------HTTP REST CLIENT -------
+# settings.json
+# -------------------------------
+# "rest-client.environmentVariables": {
+#   "devint": {
+#     "TENANT_ID": "",
+#     "CLIENT_ID": "",
+#     "CLIENT_SECRET": "",
+#     "APP_ID": "",
+#     "BASE": ""
+#   }
+# }
+
+@HOST = {{BASE}}-webauth-web.azurewebsites.net
+
+
+# -----------------------
+# Get OAuth 2 Token
+###
+# @name login
+POST https://login.windows.net/{{TENANT_ID}}/oauth2/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id={{CLIENT_ID}}&client_secret={{CLIENT_SECRET}}&resource={{APP_ID}}
+
+@authToken = {{login.response.body.access_token}}
+
+
+# -----------------------
+# API: user-api
+###
+# @name createUser
+POST https://{{HOST}}/api/user
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "address": "1234 First St Dallas, TX 75038"
+}
+
+@userId = {{createUser.response.body.id}}

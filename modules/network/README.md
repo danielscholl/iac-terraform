@@ -17,7 +17,7 @@ module "resource_group" {
 
 
 module "network" {
-    source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+    source = "github.com/danielscholl/iac-terraform/modules/network"
 
     name                = "iac-terraform-vnet-${module.resource_group.random}"
     resource_group_name = module.resource_group.name

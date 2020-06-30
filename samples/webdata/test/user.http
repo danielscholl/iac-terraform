@@ -1,0 +1,26 @@
+# -------HTTP REST CLIENT -------
+# settings.json
+# -------------------------------
+# "rest-client.environmentVariables": {
+#   "devint": {
+#     "BASE": ""
+#   }
+# }
+
+@HOST = {{BASE}}-web.azurewebsites.net
+
+
+# -----------------------
+# API: user-api
+###
+# @name createUser
+POST https://{{HOST}}/api/user
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "address": "1234 First St Dallas, TX 75038"
+}
+
+@userId = {{createUser.response.body.id}}

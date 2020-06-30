@@ -26,7 +26,6 @@ module "storage_account" {
       access_type = "private"
     }
   ]
-  encryption_source         = "Microsoft.Storage"
 }
 ```
 
@@ -41,7 +40,6 @@ module "storage_account" {
 | `tier`                            | _string_   | The performance level of the Storage Account. |
 | `replication_type`                | _string_   | The type of replication for the Storage Account. Default: `LRS` |
 | `ensure_https`                    | _bool_     | Boolean flag which forces HTTPS in order to ensure secure connections. |
-| `encryption_source`               | _string_   | Determines the source that will manage encryption for the storage account. Default: `Microsoft.Storage` |
 | `containers`                      | _object_   | List of storage containers. |
 | `assign_identity`                 | _bool_     | Enable system-assigned managed identity. Default: `true` |
 

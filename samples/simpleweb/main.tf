@@ -13,6 +13,26 @@ terraform {
 }
 
 #-------------------------------
+# Providers
+#-------------------------------
+provider "azurerm" {
+  version = "=2.16.0"
+  features {}
+}
+
+provider "null" {
+  version = "~>2.1.0"
+}
+
+provider "random" {
+  version = "~>2.2"
+}
+
+provider "azuread" {
+  version = "=0.10.0"
+}
+
+#-------------------------------
 # Application Variables  (variables.tf)
 #-------------------------------
 variable "name" {
@@ -52,10 +72,10 @@ variable "docker_registry_server_url" {
 #-------------------------------
 locals {
   // Sanitized Names
-  app_id    = random_string.workspace_scope.keepers.app_id
-  location  = replace(trimspace(lower(var.location)), "_", "-")
-  ws_name   = random_string.workspace_scope.keepers.ws_name
-  suffix    = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
+  app_id   = random_string.workspace_scope.keepers.app_id
+  location = replace(trimspace(lower(var.location)), "_", "-")
+  ws_name  = random_string.workspace_scope.keepers.ws_name
+  suffix   = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // Base Names
   base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
@@ -94,26 +114,21 @@ resource "random_string" "workspace_scope" {
 }
 
 
-#-------------------------------
-# Azure Required Providers
-#-------------------------------
-module "provider" {
-  source = "github.com/danielscholl/iac-terraform/modules/provider"
-}
+
 
 
 #-------------------------------
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../modules/resource-group"
 
   name     = local.name
   location = local.location
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 
@@ -122,20 +137,20 @@ module "resource_group" {
 #-------------------------------
 module "service_plan" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source = "../../modules/service-plan"
 
   # Module Variables
   name                = local.service_plan_name
   resource_group_name = module.resource_group.name
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 module "app_service" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/app-service"
+  source = "../../modules/app-service"
 
   # Module Variables
   name                       = local.app_service_name
@@ -144,9 +159,9 @@ module "app_service" {
   app_service_config         = local.app_services
   docker_registry_server_url = local.reg_url
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 
@@ -154,5 +169,5 @@ module "app_service" {
 # Output Variables  (output.tf)
 #-------------------------------
 output "app_service_default_hostname" {
-  value = "https://${element(module.app_service.uris, 0)}"
+  value = "https://${module.app_service.uris.0}"
 }

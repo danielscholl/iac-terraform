@@ -1,0 +1,61 @@
+parameters:
+  environments: []
+  configurations: []
+  forceRun: false
+
+stages:
+
+- stage: publish_artifact
+  displayName: 'Initialize'
+  jobs:
+  - template: publish-artifact.yml
+
+- ${{ each environment in parameters.environments }}:
+
+  - stage: ${{ environment.name }}_Deployment
+    displayName: 'Environment: ${{ environment.name }}'
+    jobs:
+      - job: Environment_${{ environment.name }}_Build
+
+  - ${{ each config in parameters.configurations }}:
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Build
+      displayName: 'Build configuration: ${{ config.jobName }}'
+      dependsOn: ${{ environment.name }}_Deployment
+      jobs:
+      - job: TemplateChangeDetection_${{ config.jobName }}_Build
+        displayName: Analyze Changes
+        pool:
+          name: Azure Pipelines
+          vmImage: 'ubuntu-16.04'
+        steps:
+        - template: tasks/detect-cicd.yml
+          parameters:
+            terraformTemplatePath: ${{ config.terraformTemplatePath }}
+            jobName: ${{ config.jobName }}
+      - template: stage-build.yml
+        parameters:
+          environment: ${{ environment.name }}
+          enablePrIsolation: ${{ environment.enablePrIsolation }}
+          resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          configuration: ${{ config }}
+
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
+      displayName: 'Deploy configuration: ${{ config.jobName }}'
+      dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
+      jobs:
+      - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
+        displayName: Analyze Changes
+        pool:
+          name: Azure Pipelines
+          vmImage: 'ubuntu-16.04'
+        steps:
+        - template: tasks/detect-cicd.yml
+          parameters:
+            terraformTemplatePath: ${{ config.terraformTemplatePath }}
+            jobName: ${{ config.jobName }}
+      - template: stage-deploy.yml
+        parameters:
+          environment: ${{ environment.name }}
+          enablePrIsolation: ${{ environment.enablePrIsolation }}
+          resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          configuration: ${{ config }}

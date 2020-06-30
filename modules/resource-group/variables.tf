@@ -4,12 +4,12 @@
 
 variable "name" {
   description = "The name of the Resource Group."
-  type    = string
+  type        = string
 }
 
 variable "location" {
   description = "The location of the Resource Group."
-  type    = string
+  type        = string
 }
 
 variable "resource_tags" {
@@ -20,6 +20,12 @@ variable "resource_tags" {
 
 variable "environment" {
   description = "The environment tag for the Resource Group."
-  type    = string
-  default = "dev"
+  type        = string
+  default     = "dev"
+}
+
+variable "isLocked" {
+  description = "Does the Resource Group prevent deletion?"
+  type        = bool
+  default     = false
 }

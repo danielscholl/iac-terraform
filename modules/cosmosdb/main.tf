@@ -12,8 +12,8 @@ resource "azurerm_cosmosdb_account" "account" {
   resource_group_name = data.azurerm_resource_group.group.name
   tags                = var.resource_tags
 
-  offer_type          = "Standard"
-  kind                = var.kind
+  offer_type = "Standard"
+  kind       = var.kind
 
   enable_automatic_failover = var.automatic_failover
 
@@ -28,19 +28,23 @@ resource "azurerm_cosmosdb_account" "account" {
 }
 
 resource "azurerm_cosmosdb_sql_database" "database" {
-  name                = var.database_name
-  resource_group_name = data.azurerm_resource_group.group.name
+  depends_on          = [azurerm_cosmosdb_account.account]
+  count               = length(var.databases)
+  name                = var.databases[count.index].name
   account_name        = azurerm_cosmosdb_account.account.name
+  resource_group_name = data.azurerm_resource_group.group.name
+  throughput          = var.databases[count.index].throughput
 }
 
 resource "azurerm_cosmosdb_sql_container" "container" {
-  name                = var.container_name
+  depends_on = [azurerm_cosmosdb_sql_database.database]
+  count      = length(var.sql_collections)
+
+  name                = var.sql_collections[count.index].name
   resource_group_name = data.azurerm_resource_group.group.name
   account_name        = azurerm_cosmosdb_account.account.name
-  database_name       = azurerm_cosmosdb_sql_database.database.name
-  partition_key_path  = "/definition/id"
+  database_name       = var.sql_collections[count.index].database_name
 
-  unique_key {
-    paths = ["/definition/idlong", "/definition/idshort"]
-  }
+  partition_key_path = var.sql_collections[count.index].partition_key_path
+  throughput         = var.sql_collections[count.index].throughput
 }

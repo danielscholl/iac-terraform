@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  dockeragent:
+    env_file:
+      - .env
+    image: ${REGISTRY}/iac-terraform-agent
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      AZP_URL: ${AZP_URL}
+      AZP_TOKEN: ${AZP_TOKEN}
+      AZP_POOL: ${AZP_POOL}
+      AZP_AGENT_NAME: ${AZP_AGENT_NAME}

@@ -13,6 +13,26 @@ terraform {
 }
 
 #-------------------------------
+# Providers
+#-------------------------------
+provider "azurerm" {
+  version = "=2.7.0"
+  features {}
+}
+
+provider "null" {
+  version = "~>2.1.0"
+}
+
+provider "random" {
+  version = "~>2.2"
+}
+
+provider "azuread" {
+  version = "=0.7.0"
+}
+
+#-------------------------------
 # Application Variables  (variables.tf)
 #-------------------------------
 variable "name" {
@@ -58,10 +78,10 @@ variable "cosmosdb_container_name" {
 #-------------------------------
 locals {
   // Sanitized Names
-  app_id    = random_string.workspace_scope.keepers.app_id
-  location  = replace(trimspace(lower(var.location)), "_", "-")
-  ws_name   = random_string.workspace_scope.keepers.ws_name
-  suffix    = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
+  app_id   = random_string.workspace_scope.keepers.app_id
+  location = replace(trimspace(lower(var.location)), "_", "-")
+  ws_name  = random_string.workspace_scope.keepers.ws_name
+  suffix   = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // base name for resources, name constraints documented here: https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
   base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
@@ -72,13 +92,13 @@ locals {
   base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name                  = "${local.base_name_83}"
-  keyvault_name         = "${local.base_name_21}-kv"
-  cosmosdb_account_name = "${local.base_name_83}-db"
+  name                   = "${local.base_name_83}"
+  keyvault_name          = "${local.base_name_21}-kv"
+  cosmosdb_account_name  = "${local.base_name_83}-db"
   cosmosdb_database_name = "${local.base_name_83}"
-  service_plan_name     = "${local.base_name_83}-plan"
-  app_service_name      = "${local.base_name_83}"
-  insights_name         = "${local.base_name_83}-insights"
+  service_plan_name      = "${local.base_name_83}-plan"
+  app_service_name       = "${local.base_name_83}"
+  insights_name          = "${local.base_name_83}-insights"
 
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url
@@ -107,28 +127,21 @@ resource "random_string" "workspace_scope" {
 }
 
 
-#-------------------------------
-# Azure Required Providers
-#-------------------------------
-module "provider" {
-  source = "../../modules/provider"
-}
-
 
 #-------------------------------
 # Resource Group
 #-------------------------------
 module "resource_group" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../modules/resource-group"
 
   # Module variable
   name     = local.name
   location = local.location
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
-  } 
+  }
 }
 
 
@@ -137,13 +150,13 @@ module "resource_group" {
 #-------------------------------
 module "keyvault" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault"
+  source = "../../modules/keyvault"
 
   # Module variable
-  name           = local.keyvault_name
+  name                = local.keyvault_name
   resource_group_name = module.resource_group.name
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }
@@ -154,7 +167,7 @@ module "keyvault" {
 #-------------------------------
 module "cosmosdb" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/cosmosdb"
+  source = "../../modules/cosmosdb"
 
   # Module variable
   name                     = local.cosmosdb_account_name
@@ -163,10 +176,23 @@ module "cosmosdb" {
   automatic_failover       = false
   consistency_level        = "Session"
   primary_replica_location = local.location
-  database_name            = local.cosmosdb_database_name
-  container_name           = var.cosmosdb_container_name
+  databases = [
+    {
+      name       = local.cosmosdb_database_name
+      throughput = 400
+    }
+  ]
 
-  resource_tags          = {
+  sql_collections = [
+    {
+      name               = var.cosmosdb_container_name
+      database_name      = local.cosmosdb_database_name
+      partition_key_path = "/id"
+      throughput         = 400
+    }
+  ]
+
+  resource_tags = {
     environment = local.ws_name
   }
 }
@@ -176,11 +202,11 @@ module "cosmosdb" {
 #-------------------------------
 module "keyvault-secret" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/keyvault-secret"
+  source = "../../modules/keyvault-secret"
 
   # Module variable
-  keyvault_id          = module.keyvault.id
-  secrets              = {
+  keyvault_id = module.keyvault.id
+  secrets = {
     "cosmosdb-key" = module.cosmosdb.primary_master_key
   }
 }
@@ -190,7 +216,7 @@ module "keyvault-secret" {
 #-------------------------------
 module "app_insights" {
   # Module Path
-  source              = "github.com/danielscholl/iac-terraform/modules/app-insights"
+  source = "../../modules/app-insights"
 
   # Module variable
   name                = local.insights_name
@@ -206,20 +232,20 @@ module "app_insights" {
 #-------------------------------
 module "service_plan" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/service-plan"
+  source = "../../modules/service-plan"
 
   # Module Variables
   name                = local.service_plan_name
   resource_group_name = module.resource_group.name
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }
 
 module "app_service" {
   # Module Path
-  source = "github.com/danielscholl/iac-terraform/modules/app-service"
+  source = "../../modules/app-service"
 
   # Module Variables
   name                       = local.app_service_name
@@ -229,14 +255,14 @@ module "app_service" {
   docker_registry_server_url = local.reg_url
   vault_uri                  = module.keyvault.uri
   instrumentation_key        = module.app_insights.instrumentation_key
-  app_settings               = {
-    cosmosdb_database        = module.cosmosdb.name
-    cosmosdb_account         = module.cosmosdb.endpoint
-    cosmosdb_key             = module.cosmosdb.primary_master_key
+  app_settings = {
+    cosmosdb_database = module.cosmosdb.name
+    cosmosdb_account  = module.cosmosdb.endpoint
+    cosmosdb_key      = module.cosmosdb.primary_master_key
   }
-  secure_app_settings        = module.keyvault.references
+  secure_app_settings = module.keyvault.references
 
-  resource_tags          = {
+  resource_tags = {
     environment = local.ws_name
   }
 }
@@ -245,9 +271,9 @@ module "app_service" {
 # Access Policies
 #-------------------------------
 module "keyvault_policy" {
-  source                  = "github.com/danielscholl/iac-terraform/modules/keyvault-policy"
+  source                  = "../../modules/keyvault-policy"
   vault_id                = module.keyvault.id
-  tenant_id               = module.app_service.identity_tenant_id
+  tenant_id               = module.app_service.identity_tenant_ids.0
   object_ids              = module.app_service.identity_object_ids
   key_permissions         = ["get"]
   secret_permissions      = ["get"]

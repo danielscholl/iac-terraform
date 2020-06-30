@@ -1,5 +1,9 @@
+provider "azurerm" {
+  features {}
+}
+
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../resource-group"
 
   name     = "iac-terraform"
   location = "eastus2"
@@ -12,7 +16,7 @@ module "service_bus" {
 
   topics = [
     {
-      name = "terraform-topic"
+      name                = "terraform-topic"
       enable_partitioning = true
       authorization_rules = [
         {

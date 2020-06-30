@@ -1,4 +1,4 @@
-# Module storage-account
+# Module service-bus
 
 A terraform module that provisions a service namespace with the following characteristics: 
 
@@ -17,17 +17,39 @@ module "resource_group" {
   location = "eastus2"
 }
 
-module "storage_account" {
-  source                    = "github.com/danielscholl/iac-terraform/modules/storage-account"
-  resource_group_name       = module.resource_group.name
-  name                      = substr("iacterraform${module.resource_group.random}", 0, 23)
-  containers = [
+module "service_bus" {
+  source              = "github.com/danielscholl/iac-terraform/modules/service-bus"
+  name                = "iac-terraform-servicebus-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
+
+  topics = [
     {
-      name  = "iac-container",
-      access_type = "private"
+      name = "terraform-topic"
+      enable_partitioning = true
+      authorization_rules = [
+        {
+          name   = "iac"
+          rights = ["listen", "send"]
+        }
+      ]
     }
   ]
-  encryption_source         = "Microsoft.Storage"
+
+  queues = [
+    {
+      name = "terraform-queue"
+      authorization_rules = [
+        {
+          name   = "iac"
+          rights = ["listen", "send"]
+        }
+      ]
+    }
+  ]
+
+  resource_tags = {
+    iac = "terraform"
+  }
 }
 ```
 

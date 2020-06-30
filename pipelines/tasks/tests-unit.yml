@@ -1,0 +1,29 @@
+parameters:
+  skip: false
+
+steps:
+  - task: AzureCLI@1
+    displayName: 'Run Unit Tests'
+    condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skip }}))
+    env:
+      TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
+      TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        export ARM_SUBSCRIPTION_ID=$(az account show --query id -otsv)
+        export ARM_TENANT_ID=$tenantId
+        export ARM_CLIENT_SECRET=$servicePrincipalKey
+        export ARM_CLIENT_ID=$servicePrincipalId
+        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv)
+
+        cd "$ARTIFACT_ROOT"/
+        
+        # Setting the scripts to be run as executable
+        chmod -fR 755 *.sh || true
+        go test -v $(go list ./... | grep "test")

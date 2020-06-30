@@ -46,7 +46,7 @@ module "deployment_service_principal_keyvault_access_policies" {
   source                  = "../keyvault-policy"
   vault_id                = azurerm_key_vault.main.id
   tenant_id               = data.azurerm_client_config.current.tenant_id
-  object_ids              = [data.azurerm_client_config.current.service_principal_object_id]
+  object_ids              = [data.azurerm_client_config.current.object_id]
   key_permissions         = var.key_permissions
   secret_permissions      = var.secret_permissions
   certificate_permissions = var.certificate_permissions

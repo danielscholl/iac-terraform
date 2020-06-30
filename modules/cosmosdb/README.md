@@ -25,8 +25,20 @@ module "cosmosdb" {
   automatic_failover        = false
   consistency_level         = "Session"
   primary_replica_location  = module.resource_group.location
-  database_name             = "iac-terraform-database"
-  container_name            = "iac-terraform-container"
+  databases                = [
+    {
+      name       = "iac-terraform-database"
+      throughput = 400
+    }
+  ]
+  sql_collections          = [
+    {
+      name               = "iac-terraform-container"
+      database_name      = "iac-terraform-database"
+      partition_key_path = "/id"
+      throughput         = 400
+    }
+  ]
 }
 ```
 
@@ -40,8 +52,8 @@ module "cosmosdb" {
 | `automatic_failover`              | _bool_     | Determines if automatic failover is enabled. Default: `true` |
 | `consitency_level`                | _string_   | The consistancy level to use. Default: `true`       |
 | `primary_replica_location`        | _string_   | The location to host replicated data.|
-| `database_name`                   | _string_   | The name of the cosmosdb database.   |
-| `container_name`                  | _string_   | The name of the cosmosdb container.  |
+| `databases`                       | __Object__   | The list of the cosmosdb databases.   |
+| `sql_collections`                 | __Object__   | The lsit of the cosmosdb containers.  |
 
 
 ## Outputs

@@ -8,6 +8,12 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
+}
+
 variable "service_plan_name" {
   description = "The name of the service plan."
   type        = string
@@ -34,12 +40,6 @@ variable "secure_app_settings" {
   description = "Map of sensitive app settings. Uses Key Vault references as values for app settings."
 }
 
-variable "resource_tags" {
-  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
-  type        = map(string)
-  default     = {}
-}
-
 variable "vault_uri" {
   description = "Specifies the URI of the Key Vault resource. Providing this will create a new app setting called KEYVAULT_URI containing the uri value."
   type        = string
@@ -56,6 +56,30 @@ variable "is_always_on" {
   description = "Is the app is loaded at all times. Defaults to true."
   type        = string
   default     = true
+}
+
+variable "auth" {
+  type        = any
+  default     = {}
+  description = "Auth settings for the web app. This should be `auth` object."
+}
+
+variable "identity" {
+  type        = any
+  default     = {}
+  description = "Managed service identity properties. This should be `identity` object."
+}
+
+variable "custom_hostnames" {
+  type        = list(string)
+  default     = []
+  description = "List of custom hostnames to use for the web app ActiveDirectory Provider."
+}
+
+variable "oauth_scopes" {
+  type        = list(string)
+  default     = []
+  description = "List of oauth_scopes to use for the web app Microsoft Provider."
 }
 
 variable "docker_registry_server_url" {
@@ -76,23 +100,12 @@ variable "docker_registry_server_password" {
   default     = ""
 }
 
-variable "is_vnet_isolated" {
-  description = "Determines whether or not a virtual network is being used."
-  type        = bool
-  default     = false
+variable "allowed_ip_addresses" {
+  description = "List of allowed IP Addresses"
+  type        = list(string)
+  default     = []
 }
 
-variable "vnet_name" {
-  description = "The integrated VNet name."
-  type        = string
-  default     = ""
-}
-
-variable "vnet_subnet_id" {
-  description = "The VNet integration subnet gateway identifier."
-  type        = string
-  default     = ""
-}
 
 
 locals {
@@ -101,22 +114,25 @@ locals {
   acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
-  
+
+  identity = merge({
+    enabled = true
+    ids     = null
+  }, var.identity)
 
   docker_settings = var.docker_registry_server_url != "" ? {
-    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
+    DOCKER_REGISTRY_SERVER_URL      = format("https://%s", var.docker_registry_server_url)
+    DOCKER_REGISTRY_SERVER_USERNAME = var.docker_registry_server_username
+    DOCKER_REGISTRY_SERVER_PASSWORD = var.docker_registry_server_password
   } : {}
 
   keyvault_settings = var.vault_uri != "" ? {
-    KEYVAULT_URI                        = var.vault_uri
+    KEYVAULT_URI = var.vault_uri
   } : {}
 
   insights_settings = var.instrumentation_key != "" ? {
-    APPINSIGHTS_INSTRUMENTATIONKEY      = var.instrumentation_key
+    APPINSIGHTS_INSTRUMENTATIONKEY = var.instrumentation_key
   } : {}
-
 
   app_settings = merge(
     var.app_settings,
@@ -125,9 +141,19 @@ locals {
     local.insights_settings,
     {
       WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-    },
+    }
   )
 
+  auth = merge(
+    var.auth,
+    {
+      enabled = false
+      active_directory = {
+        client_id     = ""
+        client_secret = ""
+      }
+      token_store_enabled = true
+  })
 
   app_linux_fx_versions = [
     for config in values(var.app_service_config) :

@@ -4,7 +4,7 @@
 docker-compose.yaml
 deployment.yaml
 
-.envrc
+.envrc*
 .env
 
 # Terraform Files
