@@ -4,6 +4,7 @@ provider "azurerm" {
 
 locals {
   ssl_cert_name = "test-ssl"
+  location = "eastus2"
 }
 
 
@@ -11,7 +12,7 @@ module "resource_group" {
   source = "../../resource-group"
 
   name     = "iac-terraform"
-  location = "eastus2"
+  location = local.location
 }
 
 module "keyvault" {
@@ -66,7 +67,7 @@ resource "azurerm_key_vault_certificate" "test" {
       ]
 
       subject_alternative_names {
-        dns_names = ["internal.contoso.com", "iac-terraform-gw-${module.resource_group.random}.${location}.cloudapp.azure.com"]
+        dns_names = ["internal.contoso.com", "iac-terraform-gw-${module.resource_group.random}.${local.location}.cloudapp.azure.com"]
       }
 
       subject            = "CN=*.contoso.com"
