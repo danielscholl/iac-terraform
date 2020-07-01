@@ -4,7 +4,7 @@ provider "azurerm" {
 
 locals {
   ssl_cert_name = "test-ssl"
-  location = "eastus2"
+  location      = "eastus2"
 }
 
 
@@ -78,20 +78,20 @@ resource "azurerm_key_vault_certificate" "test" {
 
 
 module "network" {
-    source = "../../network"
+  source = "../../network"
 
-    name                = "iac-terraform-vnet-${module.resource_group.random}"
-    resource_group_name = module.resource_group.name
+  name                = "iac-terraform-vnet-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
 
-    address_space       = "10.10.0.0/16"
-    dns_servers         = ["8.8.8.8"]
-    subnet_prefixes     = ["10.10.1.0/24", "10.10.2.0/24"]
-    subnet_names        = ["frontend", "backend"]
+  address_space   = "10.10.0.0/16"
+  dns_servers     = ["8.8.8.8"]
+  subnet_prefixes = ["10.10.1.0/24", "10.10.2.0/24"]
+  subnet_names    = ["frontend", "backend"]
 
-    # Tags
-    resource_tags = {
-      iac = "terraform"
-    }
+  # Tags
+  resource_tags = {
+    iac = "terraform"
+  }
 }
 
 module "appgateway" {

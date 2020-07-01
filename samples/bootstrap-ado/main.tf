@@ -46,7 +46,7 @@ variable "environments" {
 
 variable "project_name" {
   description = "The name of an existing project that will be provisioned to run the IaC CI/CD pipelines"
-  default = "IaC Terraform"
+  default     = "IaC Terraform"
 }
 
 variable "name" {
@@ -84,13 +84,13 @@ locals {
   suffix   = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // Base Names
-  base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
+  base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name                   = local.base_name
-  storage_name           = "${replace(local.base_name_21, "-", "")}"
-  ad_principal_name      = "${local.base_name}-principal"
+  name                    = local.base_name
+  storage_name            = "${replace(local.base_name_21, "-", "")}"
+  ad_principal_name       = "${local.base_name}-principal"
   tf_state_container_name = "remote-state-container"
 
   // Service Principal Scopes
@@ -237,7 +237,7 @@ resource "azuredevops_git_repository" "repo" {
   project_id = local.project_id
   name       = "Infrastructure"
   initialization {
-    init_type = "Clean"  # Import not ready
+    init_type  = "Clean" # Import not ready
     source_url = "https://github.com/danielscholl/iac-terraform.git"
   }
 }
@@ -264,7 +264,7 @@ resource "azuredevops_serviceendpoint_azurerm" "endpointazure" {
   project_id            = local.project_id
   service_endpoint_name = "iac-terraform Service Connection"
   credentials {
-    serviceprincipalid = module.service_principal.client_id
+    serviceprincipalid  = module.service_principal.client_id
     serviceprincipalkey = module.service_principal.client_secret
   }
   azurerm_spn_tenantid      = data.azurerm_subscription.sub.tenant_id

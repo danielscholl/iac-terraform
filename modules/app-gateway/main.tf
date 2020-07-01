@@ -24,12 +24,12 @@ resource "azurerm_public_ip" "main" {
   name                = local.public_ip_name
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
-  
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  domain_name_label   = var.name
 
-  tags                = var.resource_tags
+  allocation_method = "Static"
+  sku               = "Standard"
+  domain_name_label = var.name
+
+  tags = var.resource_tags
 }
 
 resource "azurerm_user_assigned_identity" "main" {
@@ -37,7 +37,7 @@ resource "azurerm_user_assigned_identity" "main" {
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
 
-  tags                = var.resource_tags
+  tags = var.resource_tags
 }
 
 module "app_gw_keyvault_access_policy" {
@@ -61,8 +61,8 @@ resource "azurerm_application_gateway" "main" {
   tags                = var.resource_tags
 
   sku {
-    name     = "WAF_v2"
-    tier     = "WAF_v2"
+    name = "WAF_v2"
+    tier = "WAF_v2"
   }
 
   waf_configuration {
@@ -95,27 +95,27 @@ resource "azurerm_application_gateway" "main" {
   ########
 
   http_listener {
-    name                           = format("http-%s",local.listener_name)
+    name                           = format("http-%s", local.listener_name)
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = format("http-%s",local.frontend_port_name)
+    frontend_port_name             = format("http-%s", local.frontend_port_name)
     protocol                       = "Http"
   }
-  
+
   frontend_port {
-    name = format("http-%s",local.frontend_port_name)
+    name = format("http-%s", local.frontend_port_name)
     port = 80
   }
 
   request_routing_rule {
     name                       = format("http-%s", local.request_routing_rule_name)
     rule_type                  = "Basic"
-    http_listener_name         = format("http-%s",local.listener_name)
+    http_listener_name         = format("http-%s", local.listener_name)
     backend_address_pool_name  = format("http-%s", local.backend_address_pool_name)
-    backend_http_settings_name = format("http-%s",local.backend_http_settings)
+    backend_http_settings_name = format("http-%s", local.backend_http_settings)
   }
 
   backend_http_settings {
-    name                  = format("http-%s",local.backend_http_settings)
+    name                  = format("http-%s", local.backend_http_settings)
     cookie_based_affinity = "Disabled"
     port                  = 80
     protocol              = "Http"
@@ -131,15 +131,15 @@ resource "azurerm_application_gateway" "main" {
   ########
 
   http_listener {
-    name                           = format("https-%s",local.listener_name)
+    name                           = format("https-%s", local.listener_name)
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = format("https-%s",local.frontend_port_name)
+    frontend_port_name             = format("https-%s", local.frontend_port_name)
     protocol                       = "Https"
     ssl_certificate_name           = var.ssl_certificate_name
   }
 
   frontend_port {
-    name = format("https-%s",local.frontend_port_name)
+    name = format("https-%s", local.frontend_port_name)
     port = 443
   }
 
@@ -151,13 +151,13 @@ resource "azurerm_application_gateway" "main" {
   request_routing_rule {
     name                       = format("https-%s", local.request_routing_rule_name)
     rule_type                  = "Basic"
-    http_listener_name         = format("https-%s",local.listener_name)
+    http_listener_name         = format("https-%s", local.listener_name)
     backend_address_pool_name  = format("https-%s", local.backend_address_pool_name)
-    backend_http_settings_name = format("https-%s",local.backend_http_settings)
+    backend_http_settings_name = format("https-%s", local.backend_http_settings)
   }
 
   backend_http_settings {
-    name                  = format("https-%s",local.backend_http_settings)
+    name                  = format("https-%s", local.backend_http_settings)
     cookie_based_affinity = "Disabled"
     port                  = 443
     protocol              = "Https"
