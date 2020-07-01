@@ -47,7 +47,12 @@ variable "vnet_subnet_id" {
 }
 
 variable "keyvault_id" {
-  description = "Key Vault resource ID holding the ssl certificate used for enabling tls termination."
+  description = "Key Vault ID holding the ssl certificate used for enabling tls termination."
+  type        = string
+}
+
+variable "keyvault_secret_id" {
+  description = "Key Vault secret ID holding the ssl certificate used for enabling tls termination."
   type        = string
 }
 

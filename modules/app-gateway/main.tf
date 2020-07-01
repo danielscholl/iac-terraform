@@ -40,6 +40,18 @@ resource "azurerm_user_assigned_identity" "main" {
   tags                = var.resource_tags
 }
 
+module "app_gw_keyvault_access_policy" {
+  source    = "../keyvault-policy"
+  vault_id  = var.keyvault_id
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_ids = [
+    azurerm_user_assigned_identity.main.principal_id
+  ]
+  key_permissions         = []
+  secret_permissions      = ["get"]
+  certificate_permissions = ["get"]
+}
+
 
 ## Reference Configuration:  https://docs.microsoft.com/en-us/azure/application-gateway/configuration-overview
 resource "azurerm_application_gateway" "main" {
@@ -118,58 +130,56 @@ resource "azurerm_application_gateway" "main" {
   ### Listener 2 https://mygateway.com
   ########
 
-  # http_listener {
-  #   name                           = format("https-%s",local.listener_name)
-  #   frontend_ip_configuration_name = local.frontend_ip_configuration_name
-  #   frontend_port_name             = format("https-%s",local.frontend_port_name)
-  #   protocol                       = "Https"
-  #   ssl_certificate_name           = var.ssl_certificate_name
-  # }
-
-  # frontend_port {
-  #   name = format("https-%s",local.frontend_port_name)
-  #   port = 443
-  # }
-
-  # ssl_certificate {
-  #   name                = var.ssl_certificate_name
-  #   key_vault_secret_id = var.keyvault_id
-  # }
-
-  # request_routing_rule {
-  #   name                       = format("https-%s", local.request_routing_rule_name)
-  #   rule_type                  = "Basic"
-  #   http_listener_name         = format("https-%s",local.listener_name)
-  #   backend_address_pool_name  = format("https-%s", local.backend_address_pool_name)
-  #   backend_http_settings_name = format("https-%s",local.backend_http_settings)
-  # }
-
-  # backend_http_settings {
-  #   name                  = format("https-%s",local.backend_http_settings)
-  #   cookie_based_affinity = "Disabled"
-  #   port                  = 443
-  #   protocol              = "Https"
-  #   request_timeout       = 1
-  # }
-
-  # backend_address_pool {
-  #   name = format("https-%s", local.backend_address_pool_name)
-  # }
-
-
-
-  lifecycle {
-    ignore_changes = [
-      ssl_certificate,
-      request_routing_rule,
-      http_listener,
-      backend_http_settings,
-      backend_address_pool,
-      probe,
-      tags,
-      frontend_port,
-      redirect_configuration,
-      url_path_map
-    ]
+  http_listener {
+    name                           = format("https-%s",local.listener_name)
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = format("https-%s",local.frontend_port_name)
+    protocol                       = "Https"
+    ssl_certificate_name           = var.ssl_certificate_name
   }
+
+  frontend_port {
+    name = format("https-%s",local.frontend_port_name)
+    port = 443
+  }
+
+  ssl_certificate {
+    name                = var.ssl_certificate_name
+    key_vault_secret_id = var.keyvault_secret_id
+  }
+
+  request_routing_rule {
+    name                       = format("https-%s", local.request_routing_rule_name)
+    rule_type                  = "Basic"
+    http_listener_name         = format("https-%s",local.listener_name)
+    backend_address_pool_name  = format("https-%s", local.backend_address_pool_name)
+    backend_http_settings_name = format("https-%s",local.backend_http_settings)
+  }
+
+  backend_http_settings {
+    name                  = format("https-%s",local.backend_http_settings)
+    cookie_based_affinity = "Disabled"
+    port                  = 443
+    protocol              = "Https"
+    request_timeout       = 1
+  }
+
+  backend_address_pool {
+    name = format("https-%s", local.backend_address_pool_name)
+  }
+
+  # lifecycle {
+  #   ignore_changes = [
+  #     ssl_certificate,
+  #     request_routing_rule,
+  #     http_listener,
+  #     backend_http_settings,
+  #     backend_address_pool,
+  #     probe,
+  #     tags,
+  #     frontend_port,
+  #     redirect_configuration,
+  #     url_path_map
+  #   ]
+  # }
 }

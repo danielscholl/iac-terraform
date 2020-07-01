@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 locals {
-  ssl_cert_name                 = "ssl-cert"
+  ssl_cert_name = "test-ssl"
 }
 
 
@@ -21,7 +21,7 @@ module "keyvault" {
   resource_group_name = module.resource_group.name
 }
 
-resource "azurerm_key_vault_certificate" "example" {
+resource "azurerm_key_vault_certificate" "test" {
   name         = local.ssl_cert_name
   key_vault_id = module.keyvault.id
 
@@ -66,10 +66,10 @@ resource "azurerm_key_vault_certificate" "example" {
       ]
 
       subject_alternative_names {
-        dns_names = ["internal.contoso.com", "domain.hello.world"]
+        dns_names = ["internal.contoso.com", "iac-terraform-gw-${module.resource_group.random}.${location}.cloudapp.azure.com"]
       }
 
-      subject            = "CN=hello-world"
+      subject            = "CN=*.contoso.com"
       validity_in_months = 12
     }
   }
@@ -101,6 +101,7 @@ module "appgateway" {
   vnet_name            = module.network.name
   vnet_subnet_id       = module.network.subnets[1]
   keyvault_id          = module.keyvault.id
+  keyvault_secret_id   = azurerm_key_vault_certificate.test.secret_id
   ssl_certificate_name = local.ssl_cert_name
 
   # Tags
