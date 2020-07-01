@@ -2,6 +2,10 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  ssl_cert_name                 = "ssl-cert"
+}
+
 
 module "resource_group" {
   source = "../../resource-group"
@@ -11,13 +15,14 @@ module "resource_group" {
 }
 
 module "keyvault" {
-  source              = "../../keyvault"
+  source = "../../keyvault"
+
   name                = substr("iac-terraform-kv-${module.resource_group.random}", 0, 24)
   resource_group_name = module.resource_group.name
 }
 
 resource "azurerm_key_vault_certificate" "example" {
-  name         = "generated-cert"
+  name         = local.ssl_cert_name
   key_vault_id = module.keyvault.id
 
   certificate_policy {
@@ -89,13 +94,14 @@ module "network" {
 }
 
 module "appgateway" {
-  source                                    = "../"
+  source = "../"
 
-  name                                      = "iac-terraform-gw-${module.resource_group.random}"
-  resource_group_name                       = module.resource_group.name
-  vnet_name                                 = module.network.name
-  vnet_subnet_id                            = module.network.subnets[1]
-  ssl_certificate_name                      = "ssl_cert"
+  name                 = "iac-terraform-gw-${module.resource_group.random}"
+  resource_group_name  = module.resource_group.name
+  vnet_name            = module.network.name
+  vnet_subnet_id       = module.network.subnets[1]
+  keyvault_id          = module.keyvault.id
+  ssl_certificate_name = local.ssl_cert_name
 
   # Tags
   resource_tags = {

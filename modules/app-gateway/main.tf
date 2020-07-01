@@ -133,7 +133,7 @@ resource "azurerm_application_gateway" "main" {
 
   # ssl_certificate {
   #   name                = var.ssl_certificate_name
-  #   key_vault_secret_id = var.ssl_key_vault_secret_id
+  #   key_vault_secret_id = var.keyvault_id
   # }
 
   # request_routing_rule {

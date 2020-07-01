@@ -30,10 +30,10 @@ variable "tier" {
   default     = "WAF_v2"
 }
 
-variable "capacity" {
-  description = "The capacity of application gateway to be created"
-  type        = number
-  default     = 2
+variable "waf_config_firewall_mode" {
+  description = "The firewall mode on the waf gateway"
+  type        = string
+  default     = "Prevention"
 }
 
 variable "vnet_name" {
@@ -46,14 +46,13 @@ variable "vnet_subnet_id" {
   type        = string
 }
 
-variable "waf_config_firewall_mode" {
-  description = "The firewall mode on the waf gateway"
+variable "keyvault_id" {
+  description = "Key Vault resource ID holding the ssl certificate used for enabling tls termination."
   type        = string
-  default     = "Prevention"
 }
 
 variable "ssl_certificate_name" {
   description = "The Name of the SSL certificate that is unique within this Application Gateway"
   type        = string
-  default     = "ssl_cert"
+  default     = "ssl-cert"
 }
