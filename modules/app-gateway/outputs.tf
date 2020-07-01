@@ -7,6 +7,11 @@ output "name" {
   value       = azurerm_application_gateway.main.name
 }
 
+output "id" {
+  description = "The resource id of the Application Gateway created"
+  value       = azurerm_application_gateway.main.id
+}
+
 output "ipconfig" {
   description = "The Application Gateway IP Configuration"
   value       = azurerm_application_gateway.main.gateway_ip_configuration
@@ -17,10 +22,12 @@ output "frontend_ip_configuration" {
   value       = azurerm_application_gateway.main.frontend_ip_configuration
 }
 
-output "health_probe_backend_status" {
-  value = data.external.app_gw_health.result["health"]
+output "managed_identity_resource_id" {
+  description = "The resource id of the managed user identity"
+  value       = azurerm_user_assigned_identity.main.id
 }
 
-output "health_probe_backend_address" {
-  value = data.external.app_gw_health.result["address"]
+output "managed_identity_principal_id" {
+  description = "The resource id of the managed user identity"
+  value       = azurerm_user_assigned_identity.main.principal_id
 }

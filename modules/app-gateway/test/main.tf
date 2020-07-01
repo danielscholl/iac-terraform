@@ -1,8 +1,73 @@
+provider "azurerm" {
+  features {}
+}
+
+
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform/modules/resource-group"
+  source = "../../resource-group"
 
   name     = "iac-terraform"
   location = "eastus2"
+}
+
+module "keyvault" {
+  source              = "../../keyvault"
+  name                = substr("iac-terraform-kv-${module.resource_group.random}", 0, 24)
+  resource_group_name = module.resource_group.name
+}
+
+resource "azurerm_key_vault_certificate" "example" {
+  name         = "generated-cert"
+  key_vault_id = module.keyvault.id
+
+  certificate_policy {
+    issuer_parameters {
+      name = "Self"
+    }
+
+    key_properties {
+      exportable = true
+      key_size   = 2048
+      key_type   = "RSA"
+      reuse_key  = true
+    }
+
+    lifetime_action {
+      action {
+        action_type = "AutoRenew"
+      }
+
+      trigger {
+        days_before_expiry = 30
+      }
+    }
+
+    secret_properties {
+      content_type = "application/x-pkcs12"
+    }
+
+    x509_certificate_properties {
+      # Server Authentication = 1.3.6.1.5.5.7.3.1
+      # Client Authentication = 1.3.6.1.5.5.7.3.2
+      extended_key_usage = ["1.3.6.1.5.5.7.3.1"]
+
+      key_usage = [
+        "cRLSign",
+        "dataEncipherment",
+        "digitalSignature",
+        "keyAgreement",
+        "keyCertSign",
+        "keyEncipherment",
+      ]
+
+      subject_alternative_names {
+        dns_names = ["internal.contoso.com", "domain.hello.world"]
+      }
+
+      subject            = "CN=hello-world"
+      validity_in_months = 12
+    }
+  }
 }
 
 
@@ -11,10 +76,11 @@ module "network" {
 
     name                = "iac-terraform-vnet-${module.resource_group.random}"
     resource_group_name = module.resource_group.name
-    address_space       = "10.0.1.0/24"
+
+    address_space       = "10.10.0.0/16"
     dns_servers         = ["8.8.8.8"]
-    subnet_prefixes     = ["10.0.1.0/26", "10.0.1.224/28"]
-    subnet_names        = ["Web-Tier", "GatewaySubnet"]
+    subnet_prefixes     = ["10.10.1.0/24", "10.10.2.0/24"]
+    subnet_names        = ["frontend", "backend"]
 
     # Tags
     resource_tags = {
@@ -27,14 +93,12 @@ module "appgateway" {
 
   name                                      = "iac-terraform-gw-${module.resource_group.random}"
   resource_group_name                       = module.resource_group.name
-  location                                  = module.resource_group.location
   vnet_name                                 = module.network.name
-  subnet_name                               = module.network.subnet_names[0]
-  appgateway_ipconfig_name                  = "iac-terraform-ipconfig" 
-  appgateway_frontend_port_name             = "iac-terraform-frontend-port"
-  appgateway_frontend_ip_configuration_name = "iac-terraform-frontend-ipconfig"
-  appgateway_backend_address_pool_name      = "iac-terraform-backend-address-pool"
-  appgateway_backend_http_setting_name      = "iac-terraform-backend-http-setting"
-  appgateway_listener_name                  = "iac-terraform-appgateway-listener"
-  appgateway_request_routing_rule_name      = "iac-terraform-appgateway-request-routing-rule"
+  vnet_subnet_id                            = module.network.subnets[1]
+  ssl_certificate_name                      = "ssl_cert"
+
+  # Tags
+  resource_tags = {
+    iac = "terraform"
+  }
 }

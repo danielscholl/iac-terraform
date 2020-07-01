@@ -8,13 +8,40 @@ data "azurerm_resource_group" "main" {
   name = var.resource_group_name
 }
 
-
-
 locals {
-  authentication_certificate_name = "gateway-public-key"
-  backend_probe_name              = "probe-1"
+  public_ip_name                 = format("%s-ip", var.name)
+  gateway_ip_configuration_name  = format("%s-config", var.vnet_name)
+  backend_address_pool_name      = format("%s-beap", var.vnet_name)
+  frontend_port_name             = format("%s-feport", var.vnet_name)
+  frontend_ip_configuration_name = format("%s-feip", var.vnet_name)
+  backend_http_settings          = format("%s-be-htst", var.vnet_name)
+  listener_name                  = format("%s-httplstn", var.vnet_name)
+  request_routing_rule_name      = format("%s-rqrt", var.vnet_name)
+  identity_name                  = format("%s-pod-identity", var.name)
 }
 
+resource "azurerm_public_ip" "main" {
+  name                = local.public_ip_name
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  domain_name_label   = var.name
+
+  tags                = var.resource_tags
+}
+
+resource "azurerm_user_assigned_identity" "main" {
+  name                = local.identity_name
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+
+  tags                = var.resource_tags
+}
+
+
+## Reference Configuration:  https://docs.microsoft.com/en-us/azure/application-gateway/configuration-overview
 resource "azurerm_application_gateway" "main" {
   name                = var.name
   resource_group_name = data.azurerm_resource_group.main.name
@@ -22,91 +49,127 @@ resource "azurerm_application_gateway" "main" {
   tags                = var.resource_tags
 
   sku {
-    name     = var.sku_name
-    tier     = var.tier
-    capacity = var.capacity
-  }
-
-  gateway_ip_configuration {
-    name      = var.ipconfig_name
-    subnet_id = var.virtual_network_subnet_id
-  }
-
-  frontend_port {
-    name = var.frontend_port_name
-    port = var.frontend_http_port
-  }
-
-  frontend_ip_configuration {
-    name                 = var.frontend_ip_configuration_name
-    public_ip_address_id = var.public_pip_id
-  }
-
-  authentication_certificate {
-    name = local.authentication_certificate_name
-    data = var.ssl_public_cert
-  }
-
-  backend_address_pool {
-    name  = var.backend_address_pool_name
-    fqdns = var.backendpool_fqdns
-  }
-
-  backend_http_settings {
-    name                                = var.backend_http_setting_name
-    cookie_based_affinity               = var.backend_http_cookie_based_affinity
-    port                                = var.backend_http_port
-    protocol                            = var.backend_http_protocol
-    probe_name                          = local.backend_probe_name
-    request_timeout                     = 1
-    pick_host_name_from_backend_address = true
-  }
-
-  # TODO This is locked into a single api endpoint... We'll need to eventually support multiple endpoints
-  # but the count property is only supported at the resource level. 
-  probe {
-    name                                      = local.backend_probe_name
-    protocol                                  = var.backend_http_protocol
-    path                                      = "/"
-    interval                                  = 30
-    timeout                                   = 30
-    unhealthy_threshold                       = 3
-    pick_host_name_from_backend_http_settings = true
-  }
-
-  http_listener {
-    name                           = var.listener_name
-    frontend_ip_configuration_name = var.frontend_ip_configuration_name
-    frontend_port_name             = var.frontend_port_name
-    protocol                       = var.http_listener_protocol
-    ssl_certificate_name           = local.ssl_certificate_name
+    name     = "WAF_v2"
+    tier     = "WAF_v2"
   }
 
   waf_configuration {
-    enabled          = true
+    enabled          = var.tier == "WAF" ? true : false
     firewall_mode    = var.waf_config_firewall_mode
     rule_set_type    = "OWASP"
-    rule_set_version = "3.0"
+    rule_set_version = "3.1"
+  }
+
+  identity {
+    identity_ids = [azurerm_user_assigned_identity.main.id]
+  }
+
+  autoscale_configuration {
+    min_capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = local.gateway_ip_configuration_name
+    subnet_id = var.vnet_subnet_id
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name
+    public_ip_address_id = azurerm_public_ip.main.id
+  }
+
+  ########
+  ### Listener 1 http://mygateway.com
+  ########
+
+  http_listener {
+    name                           = format("http-%s",local.listener_name)
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = format("http-%s",local.frontend_port_name)
+    protocol                       = "Http"
+  }
+  
+  frontend_port {
+    name = format("http-%s",local.frontend_port_name)
+    port = 80
   }
 
   request_routing_rule {
-    name                       = var.request_routing_rule_name
-    http_listener_name         = var.listener_name
-    rule_type                  = var.request_routing_rule_type
-    backend_address_pool_name  = var.backend_address_pool_name
-    backend_http_settings_name = var.backend_http_setting_name
+    name                       = format("http-%s", local.request_routing_rule_name)
+    rule_type                  = "Basic"
+    http_listener_name         = format("http-%s",local.listener_name)
+    backend_address_pool_name  = format("http-%s", local.backend_address_pool_name)
+    backend_http_settings_name = format("http-%s",local.backend_http_settings)
   }
-}
 
-data "external" "app_gw_health" {
-  depends_on = [azurerm_application_gateway.main]
+  backend_http_settings {
+    name                  = format("http-%s",local.backend_http_settings)
+    cookie_based_affinity = "Disabled"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 1
+  }
 
-  program = [
-    "az", "network", "application-gateway", "show-backend-health",
-    "--subscription", data.azurerm_client_config.current.subscription_id,
-    "--resource-group", data.azurerm_resource_group.main.name,
-    "--name", var.name,
-    "--output", "json",
-    "--query", "backendAddressPools[0].backendHttpSettingsCollection[0].servers[0].{address:address,health:health}"
-  ]
+  backend_address_pool {
+    name = format("http-%s", local.backend_address_pool_name)
+  }
+
+  ########
+  ### Listener 2 https://mygateway.com
+  ########
+
+  # http_listener {
+  #   name                           = format("https-%s",local.listener_name)
+  #   frontend_ip_configuration_name = local.frontend_ip_configuration_name
+  #   frontend_port_name             = format("https-%s",local.frontend_port_name)
+  #   protocol                       = "Https"
+  #   ssl_certificate_name           = var.ssl_certificate_name
+  # }
+
+  # frontend_port {
+  #   name = format("https-%s",local.frontend_port_name)
+  #   port = 443
+  # }
+
+  # ssl_certificate {
+  #   name                = var.ssl_certificate_name
+  #   key_vault_secret_id = var.ssl_key_vault_secret_id
+  # }
+
+  # request_routing_rule {
+  #   name                       = format("https-%s", local.request_routing_rule_name)
+  #   rule_type                  = "Basic"
+  #   http_listener_name         = format("https-%s",local.listener_name)
+  #   backend_address_pool_name  = format("https-%s", local.backend_address_pool_name)
+  #   backend_http_settings_name = format("https-%s",local.backend_http_settings)
+  # }
+
+  # backend_http_settings {
+  #   name                  = format("https-%s",local.backend_http_settings)
+  #   cookie_based_affinity = "Disabled"
+  #   port                  = 443
+  #   protocol              = "Https"
+  #   request_timeout       = 1
+  # }
+
+  # backend_address_pool {
+  #   name = format("https-%s", local.backend_address_pool_name)
+  # }
+
+
+
+  lifecycle {
+    ignore_changes = [
+      ssl_certificate,
+      request_routing_rule,
+      http_listener,
+      backend_http_settings,
+      backend_address_pool,
+      probe,
+      tags,
+      frontend_port,
+      redirect_configuration,
+      url_path_map
+    ]
+  }
 }
