@@ -349,7 +349,7 @@ module "aks" {
   
   acr_enabled          = true
   gc_enabled           = true
-  msi_enabled          = true
+  msi_enabled          = false
 
   gitops_ssh_url       = var.gitops_ssh_url
   gitops_ssh_key       = var.gitops_ssh_key_file

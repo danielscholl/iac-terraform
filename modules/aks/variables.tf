@@ -120,5 +120,5 @@ variable "oms_agent_enabled" {
 
 variable "msi_enabled" {
   type = bool
-  default = true
+  default = false
 }
