@@ -40,9 +40,14 @@ variable "agent_vm_size" {
   default = "Standard_D2s_v3"
 }
 
+variable "max_pods" {
+  type    = string
+  default = 30
+}
+
 variable "kubernetes_version" {
   type    = string
-  default = "1.15.7"
+  default = "1.16.9"
 }
 
 variable "admin_user" {
@@ -111,4 +116,9 @@ variable "oms_agent_enabled" {
   default     = "false"
   description = "Enable Azure Monitoring for AKS"
   type        = string
+}
+
+variable "msi_enabled" {
+  type = bool
+  default = true
 }

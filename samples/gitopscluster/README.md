@@ -1,6 +1,6 @@
-# Simple Cluster Template
+# GitOps Cluster Template
 
-The `simplecluster` template provisions a kubernetes cluster with access to a container registry and keyvault.
+The `gitopscluster` template provisions a kubernetes cluster with a gitops workflow.
 
 
 ## Provisioned Resources

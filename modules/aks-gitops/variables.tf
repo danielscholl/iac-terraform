@@ -1,5 +1,15 @@
+##############################################################
+# This module allows the creation of a Kubernetes Cluster
+##############################################################
+
 variable "name" {
-  type = string
+  description = "The name of the Kubernetes Cluster."
+  type        = string
+}
+
+variable "resource_group_name" {
+  description = "The name of an existing resource group."
+  type        = string
 }
 
 variable "resource_tags" {
@@ -8,14 +18,31 @@ variable "resource_tags" {
   default     = {}
 }
 
+variable "dns_prefix" {
+  type = string
+}
+
+variable "service_principal_id" {
+  type = string
+}
+
+variable "service_principal_secret" {
+  type = string
+}
+
+variable "agent_vm_count" {
+  type    = string
+  default = "2"
+}
+
 variable "agent_vm_size" {
   type    = string
   default = "Standard_D2s_v3"
 }
 
-variable "agent_vm_count" {
+variable "max_pods" {
   type    = string
-  default = "3"
+  default = 30
 }
 
 variable "acr_enabled" {
@@ -28,9 +55,72 @@ variable "gc_enabled" {
   default = "true"
 }
 
-variable "dns_prefix" {
+variable "msi_enabled" {
+  type = bool
+  default = true
+}
+
+variable "kubernetes_version" {
+  type    = string
+  default = "1.16.9"
+}
+
+variable "admin_user" {
+  type    = string
+  default = "k8sadmin"
+}
+
+variable "ssh_public_key" {
   type = string
 }
+
+variable "output_directory" {
+  type    = string
+  default = "./output"
+}
+
+variable "vnet_subnet_id" {
+  type = string
+}
+
+variable "kubeconfig_filename" {
+  description = "Name of the kube config file saved to disk."
+  type        = string
+  default     = "bedrock_kube_config"
+}
+
+variable "service_cidr" {
+  default     = "10.0.0.0/16"
+  description = "Used to assign internal services in the AKS cluster an IP address. This IP address range should be an address space that isn't in use elsewhere in your network environment. This includes any on-premises network ranges if you connect, or plan to connect, your Azure virtual networks using Express Route or a Site-to-Site VPN connections."
+  type        = string
+}
+
+variable "dns_ip" {
+  default     = "10.0.0.10"
+  description = "should be the .10 address of your service IP address range"
+  type        = string
+}
+
+variable "docker_cidr" {
+  default     = "172.17.0.1/16"
+  description = "IP address (in CIDR notation) used as the Docker bridge IP address on nodes. Default of 172.17.0.1/16."
+}
+
+variable "network_plugin" {
+  default     = "azure"
+  description = "Network plugin used by AKS. Either azure or kubenet."
+}
+variable "network_policy" {
+  default     = "azure"
+  description = "Network policy to be used with Azure CNI. Either azure or calico."
+}
+
+variable "oms_agent_enabled" {
+  type    = string
+  default = "true"
+  description = "Enable Azure Monitoring for AKS"
+}
+
 
 variable "enable_flux" {
   type    = string
@@ -39,7 +129,7 @@ variable "enable_flux" {
 
 variable "flux_recreate" {
   type    = string
-  default = ""
+  default = "false"
 }
 
 variable "gitops_ssh_url" {
@@ -68,66 +158,4 @@ variable "gitops_label" {
 variable "gitops_url_branch" {
   type    = string
   default = "master"
-}
-
-variable "kubernetes_version" {
-  type    = string
-  default = "1.15.7"
-}
-
-variable "resource_group_name" {
-  type = string
-}
-
-variable "service_principal_id" {
-  type = string
-}
-
-variable "service_principal_secret" {
-  type = string
-}
-
-variable "ssh_public_key" {
-  type = string
-}
-
-variable "vnet_subnet_id" {
-  type = string
-}
-
-variable "service_cidr" {
-  default     = "10.0.0.0/16"
-  description = "Used to assign internal services in the AKS cluster an IP address. This IP address range should be an address space that isn't in use elsewhere in your network environment. This includes any on-premises network ranges if you connect, or plan to connect, your Azure virtual networks using Express Route or a Site-to-Site VPN connections."
-  type        = string
-}
-
-variable "dns_ip" {
-  default     = "10.0.0.10"
-  description = "should be the .10 address of your service IP address range"
-  type        = string
-}
-
-variable "docker_cidr" {
-  default     = "172.17.0.1/16"
-  description = "IP address (in CIDR notation) used as the Docker bridge IP address on nodes. Default of 172.17.0.1/16."
-}
-
-variable "kubeconfig_filename" {
-  description = "Name of the kube config file saved to disk."
-  type        = string
-  default     = "bedrock_kube_config"
-}
-
-variable "network_plugin" {
-  default     = "azure"
-  description = "Network plugin used by AKS. Either azure or kubenet."
-}
-variable "network_policy" {
-  default     = "azure"
-  description = "Network policy to be used with Azure CNI. Either azure or calico."
-}
-
-variable "oms_agent_enabled" {
-  type    = string
-  default = "false"
 }

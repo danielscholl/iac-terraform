@@ -100,7 +100,7 @@ module "appgateway" {
   name                 = "iac-terraform-gw-${module.resource_group.random}"
   resource_group_name  = module.resource_group.name
   vnet_name            = module.network.name
-  vnet_subnet_id       = module.network.subnets[1]
+  vnet_subnet_id       = module.network.subnets[0]
   keyvault_id          = module.keyvault.id
   keyvault_secret_id   = azurerm_key_vault_certificate.test.secret_id
   ssl_certificate_name = local.ssl_cert_name

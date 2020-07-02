@@ -7,9 +7,9 @@
 
 terraform {
   required_version = ">= 0.12"
-  backend "azurerm" {
-    key = "terraform.tfstate"
-  }
+  # backend "azurerm" {
+  #   key = "terraform.tfstate"
+  # }
 }
 
 #-------------------------------
@@ -30,6 +30,10 @@ provider "random" {
 
 provider "azuread" {
   version = "=0.10.0"
+}
+
+provider "tls" {
+  version = "=2.1"
 }
 
 #-------------------------------
@@ -61,6 +65,49 @@ variable "agent_vm_size" {
   default = "Standard_D2s_v3"
 }
 
+###
+# Begin: AKS configuration
+###
+variable "gitops_ssh_url" {
+  type        = string
+  description = "(Required) ssh git clone repository URL with Kubernetes manifests including services which runs in the cluster. Flux monitors this repo for Kubernetes manifest additions/changes periodically and apply them in the cluster."
+}
+
+# generate a SSH key named identity: ssh-keygen -q -N "" -f ./identity
+# or use existing ssh public/private key pair
+# add deploy key in gitops repo using public key with read/write access
+# assign/specify private key to "gitops_ssh_key" variable that will be used to create kubernetes secret object
+# flux uses this key to read manifests in the git repo
+
+variable "gitops_ssh_key_file" {
+  type        = string
+  description = "(Required) SSH key used to establish a connection to a private git repo containing the HLD manifest."
+}
+
+variable "gitops_path" {
+  type        = string
+  description = "Path within git repo to locate Kubernetes manifests"
+  default     = "dev"
+}
+
+variable "gitops_poll_interval" {
+  type        = string
+  default     = "10s"
+  description = "Controls how often Flux will apply what’s in git, to the cluster, absent new commits"
+}
+
+variable "gitops_label" {
+  type        = string
+  default     = "flux-sync"
+  description = "Label to keep track of Flux sync progress, used to tag the Git branch"
+}
+
+variable "gitops_url_branch" {
+  type        = string
+  description = "Branch of git repo to use for Kubernetes manifests."
+  default     = "master"
+}
+
 #-------------------------------
 # Private Variables  (common.tf)
 #-------------------------------
@@ -78,10 +125,12 @@ locals {
   // Resolved resource names
   name              = "${local.base_name}"
   vnet_name         = "${local.base_name}-vnet"
+  gateway_name      = "${local.base_name}-gw"
   cluster_name      = "${local.base_name}-cluster"
   registry_name     = "${replace(local.base_name_21, "-", "")}"
   keyvault_name     = "${local.base_name_21}-kv"
   ad_principal_name = "${local.base_name}-principal"
+  ssl_cert_name     = "default-cert"
 }
 
 
@@ -104,24 +153,13 @@ resource "random_string" "workspace_scope" {
 #-------------------------------
 # SSH Key
 #-------------------------------
-resource "tls_private_key" "key" {
-  algorithm = "RSA"
+module "node_key" {
+  source                = "../../modules/ssh-key"
+  name                  = "node-ssh-key"
+  ssh_public_key_path   = "./.ssh"
+  public_key_extension  = ".pub"
+  chmod_command         = "chmod 600 %v"
 }
-
-resource "null_resource" "save-key" {
-  triggers = {
-    key = tls_private_key.key.private_key_pem
-  }
-
-  provisioner "local-exec" {
-    command = <<EOF
-      mkdir -p ${path.module}/.ssh
-      echo "${tls_private_key.key.private_key_pem}" > ${path.module}/.ssh/id_rsa
-      chmod 0600 ${path.module}/.ssh/id_rsa
-    EOF
-  }
-}
-
 
 #-------------------------------
 # Resource Group
@@ -148,8 +186,9 @@ module "network" {
   resource_group_name = module.resource_group.name
   address_space       = "10.10.0.0/16"
   dns_servers         = ["8.8.8.8"]
-  subnet_prefixes     = ["10.10.1.0/24"]
-  subnet_names        = ["Cluster-Subnet"]
+  subnet_prefixes     = ["10.10.1.0/24", "10.10.2.0/24", "10.10.3.0/24"]
+  subnet_names        = ["Frontend-Subnet", "Cluster-Subnet", "Backend-Subnet"]
+
 }
 
 
@@ -188,9 +227,85 @@ module "keyvault_secret" {
 
   keyvault_id = module.keyvault.id
   secrets = {
-    "sshKey"       = tls_private_key.key.private_key_pem
-    "clientId"     = module.service_principal.client_id
-    "clientSecret" = module.service_principal.client_secret
+    "nodeKey"        = module.node_key.private_key
+    "nodeKeyPub"     = module.node_key.public_key
+    "gitopsKeyPub"   = var.gitops_ssh_key_file
+    "clientId"       = module.service_principal.client_id
+    "clientSecret"   = module.service_principal.client_secret
+  }
+}
+
+resource "azurerm_key_vault_certificate" "main" {
+  name         = local.ssl_cert_name
+  key_vault_id = module.keyvault.id
+
+  certificate_policy {
+    issuer_parameters {
+      name = "Self"
+    }
+
+    key_properties {
+      exportable = true
+      key_size   = 2048
+      key_type   = "RSA"
+      reuse_key  = true
+    }
+
+    lifetime_action {
+      action {
+        action_type = "AutoRenew"
+      }
+
+      trigger {
+        days_before_expiry = 30
+      }
+    }
+
+    secret_properties {
+      content_type = "application/x-pkcs12"
+    }
+
+    x509_certificate_properties {
+      # Server Authentication = 1.3.6.1.5.5.7.3.1
+      # Client Authentication = 1.3.6.1.5.5.7.3.2
+      extended_key_usage = ["1.3.6.1.5.5.7.3.1"]
+
+      key_usage = [
+        "cRLSign",
+        "dataEncipherment",
+        "digitalSignature",
+        "keyAgreement",
+        "keyCertSign",
+        "keyEncipherment",
+      ]
+
+      subject_alternative_names {
+        dns_names = ["internal.contoso.com", "iac-terraform-gw-${module.resource_group.random}.${local.location}.cloudapp.azure.com"]
+      }
+
+      subject            = "CN=*.contoso.com"
+      validity_in_months = 12
+    }
+  }
+}
+
+#-------------------------------
+# Azure App Gateway
+#-------------------------------
+module "appgateway" {
+  source = "../../modules/aks-appgw"
+
+  name                 = local.gateway_name
+  resource_group_name  = module.resource_group.name
+  vnet_name            = module.network.name
+  vnet_subnet_id       = module.network.subnets.0
+  keyvault_id          = module.keyvault.id
+  keyvault_secret_id   = azurerm_key_vault_certificate.main.secret_id
+  ssl_certificate_name = local.ssl_cert_name
+
+  # Tags
+  resource_tags = {
+    iac = "terraform"
   }
 }
 
@@ -207,10 +322,11 @@ module "service_principal" {
   role = "Contributor"
 
   scopes = concat(
+    [module.keyvault.id],
     [module.network.id],
     [module.container_registry.id],
-    [module.aks.id],
-    [module.keyvault.id]
+    [module.appgateway.id],
+    [module.aks.id]
   )
 }
 
@@ -219,7 +335,7 @@ module "service_principal" {
 # Azure Kubernetes Service
 #-------------------------------
 module "aks" {
-  source = "../../modules/aks"
+  source = "../../modules/aks-gitops"
 
   name                     = local.cluster_name
   resource_group_name      = module.resource_group.name
@@ -228,12 +344,19 @@ module "aks" {
   service_principal_secret = module.service_principal.client_secret
   agent_vm_count           = var.agent_vm_count
   agent_vm_size            = var.agent_vm_size
+  vnet_subnet_id           = module.network.subnets.1
+  ssh_public_key           = "${trimspace(module.node_key.public_key)} k8sadmin"
+  
+  acr_enabled          = true
+  gc_enabled           = true
+  msi_enabled          = true
 
-  max_pods                 = 100
-  oms_agent_enabled        = true
-
-  ssh_public_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
-  vnet_subnet_id = module.network.subnets.0
+  gitops_ssh_url       = var.gitops_ssh_url
+  gitops_ssh_key       = var.gitops_ssh_key_file
+  gitops_path          = var.gitops_path
+  gitops_poll_interval = var.gitops_poll_interval
+  gitops_label         = var.gitops_label
+  gitops_url_branch    = var.gitops_url_branch
 
   resource_tags = {
     iac = "terraform"
@@ -265,6 +388,6 @@ output "PRINCIPAL_SECRET" {
   value = module.service_principal.client_secret
 }
 
-output "id_rsa" {
-  value = tls_private_key.key.private_key_pem
+output "node_key" {
+  value = module.node_key.public_key
 }

@@ -1,7 +1,3 @@
-module "common-provider" {
-  source = "../provider"
-}
-
 resource "null_resource" "deploy_flux" {
   count = var.enable_flux ? 1 : 0
 
