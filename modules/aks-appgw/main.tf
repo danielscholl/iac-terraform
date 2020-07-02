@@ -168,18 +168,18 @@ resource "azurerm_application_gateway" "main" {
     name = format("https-%s", local.backend_address_pool_name)
   }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     ssl_certificate,
-  #     request_routing_rule,
-  #     http_listener,
-  #     backend_http_settings,
-  #     backend_address_pool,
-  #     probe,
-  #     tags,
-  #     frontend_port,
-  #     redirect_configuration,
-  #     url_path_map
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      ssl_certificate,
+      request_routing_rule,
+      http_listener,
+      backend_http_settings,
+      backend_address_pool,
+      probe,
+      tags,
+      frontend_port,
+      redirect_configuration,
+      url_path_map
+    ]
+  }
 }
