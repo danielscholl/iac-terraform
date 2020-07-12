@@ -389,5 +389,5 @@ output "PRINCIPAL_SECRET" {
 }
 
 output "node_key" {
-  value = module.node_key.public_key
+  value = module.node_key.private_key
 }
