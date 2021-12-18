@@ -12,3 +12,8 @@ output "instrumentation_key" {
   value       = azurerm_application_insights.main.instrumentation_key
   sensitive   = true
 }
+
+output "name" {
+  description = "The name of the appinsights resource"
+  value       = azurerm_application_insights.main.name
+}

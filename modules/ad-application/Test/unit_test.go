@@ -28,8 +28,8 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 func TestTemplate(t *testing.T) {
 
 	expectedResult := asMap(t, `{
-		"available_to_other_tenants": false,
-		"type": "webapp/api",
+		"display_name": "iac-terraform-ad-app",
+		"fallback_public_client_enabled": false,
 		"required_resource_access": [{
 			"resource_app_id": "00000003-0000-0000-c000-000000000000",
 			"resource_access": [{
@@ -42,6 +42,16 @@ func TestTemplate(t *testing.T) {
 				"id": "7ab1d382-f21e-4acd-a863-ba3e13f7da61",
 				"type": "Role"
 			}]
+		}],
+		"app_role": [{
+			"description": "test",
+			"display_name": "test",
+			"enabled": true,
+			"id": "497406e4-012a-4267-bf18-45a1cb148a01",
+			"value": "test"
+		}],
+		"web": [{
+			"homepage_url": "https://iac-terraform-ad-app"
 		}]
 	}`)
 

@@ -3,18 +3,18 @@
 ##############################################################
 
 provider "azurerm" {
-  version = "=2.16.0"
+  version = "=2.29.0"
   features {}
 }
 
 provider "null" {
-  version = "~>2.1.2"
+  version = "~>3.1.0"
 }
 
 provider "random" {
-  version = "~>2.2.1"
+  version = "~>3.1.0"
 }
 
 provider "azuread" {
-  version = "=0.10.0"
+  version = "=2.13.0"
 }

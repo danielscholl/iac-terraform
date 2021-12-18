@@ -3,8 +3,11 @@
 ##############################################################
 
 terraform {
-  required_version = "~> 0.12.20"
+  required_version = "~> 1.1.1"
   required_providers {
-    azuread = "~> 0.7"
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "2.13.0"
+    }
   }
 }

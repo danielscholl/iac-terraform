@@ -77,6 +77,19 @@ function CreateResourceGroup() {
       tput setaf 3;  echo "Resource Group $1 already exists."; tput sgr0
     fi
 }
+function GetRandom() {
+  # Required Argument $1 = RESOURCE_GROUP
+
+  if [ -z $1 ]; then
+    tput setaf 1; echo 'ERROR: Argument $1 (RESOURCE_GROUP) not received'; tput sgr0
+    exit 1;
+  fi
+
+  local _id=$(az group show -g $1 --query id -otsv | cut -d/ -f3 | cut -d- -f5)
+  local _result=$(echo $_id | cut -c1-15)
+
+  echo ${_result}
+}
 function CreateKeyVault() {
   # Required Argument $1 = KV_NAME
   # Required Argument $2 = RESOURCE_GROUP
@@ -122,6 +135,7 @@ function CreateStorageAccount() {
   fi
 
   local _storage=$(az storage account show --name $1 --resource-group $2 --query name -otsv)
+  
   if [ "$_storage"  == "" ]
       then
       OUTPUT=$(az storage account create \
@@ -147,6 +161,8 @@ function GetStorageAccountKey() {
     tput setaf 1; echo 'ERROR: Argument $2 (RESOURCE_GROUP) not received'; tput sgr0
     exit 1;
   fi
+
+  local _storage=$(az storage account show --name $1 --resource-group $2 --query name -otsv)
 
   local _result=$(az storage account keys list \
     --account-name $1 \
@@ -175,18 +191,15 @@ function CreateBlobContainer() {
     exit 1;
   fi
 
-  local _container=$(az storage container show --name $1 --account-name $2 --account-key $3 --query name -otsv)
+  local _container=$(az storage container show --name $1 --account-name $2 --account-key $3 --query name -otsv 2>/dev/null)
+
   if [ "$_container"  == "" ]
       then
       OUTPUT=$(az storage container create \
               --name $1 \
               --account-name $2 \
               --account-key $3 -otsv)
-        if [ $OUTPUT == true ]; then
-          tput setaf 3;  echo "Storage Container $1 created."; tput sgr0
-        else
-          tput setaf 1;  echo "Storage Container $1 not created."; tput sgr0
-        fi
+        tput setaf 3;  echo "Storage Container $1 created."; tput sgr0
       else
         tput setaf 3;  echo "Storage Container $1 already exists."; tput sgr0
       fi
@@ -229,32 +242,37 @@ az account set --subscription ${ARM_SUBSCRIPTION_ID}
 tput setaf 2; echo 'Creating the Resource Group...' ; tput sgr0
 CreateResourceGroup $AZURE_GROUP $AZURE_LOCATION
 
+tput setaf 2; echo 'Retrieving the Group Id...' ; tput sgr0
+UNIQUE=$(GetRandom $AZURE_GROUP)
+
 tput setaf 2; echo "Creating the Storage Account..." ; tput sgr0
-CreateStorageAccount $AZURE_STORAGE $AZURE_GROUP $AZURE_LOCATION
+STORAGE_NAME=$(echo $AZURE_STORAGE$UNIQUE | cut -c1-24)
+CreateStorageAccount $STORAGE_NAME $AZURE_GROUP $AZURE_LOCATION
 
 tput setaf 2; echo "Retrieving the Storage Account Key..." ; tput sgr0
-STORAGE_KEY=$(GetStorageAccountKey $AZURE_STORAGE $AZURE_GROUP)
+STORAGE_KEY=$(GetStorageAccountKey $STORAGE_NAME $AZURE_GROUP)
 
 tput setaf 2; echo "Creating the Storage Account Container..." ; tput sgr0
-CreateBlobContainer $REMOTE_STATE_CONTAINER $AZURE_STORAGE $STORAGE_KEY
+CreateBlobContainer $REMOTE_STATE_CONTAINER $STORAGE_NAME $STORAGE_KEY
 
 tput setaf 2; echo "Creating the Key Vault..." ; tput sgr0
-CreateKeyVault $AZURE_VAULT $AZURE_GROUP $AZURE_LOCATION
+VAULT_NAME=$(echo $AZURE_VAULT$UNIQUE | cut -c1-24)
+CreateKeyVault $VAULT_NAME $AZURE_GROUP $AZURE_LOCATION
 
 tput setaf 2; echo "Adding Storage Key to Vault..." ; tput sgr0
-SECRET=$(AddKeyToVault $AZURE_VAULT $AZURE_VAULT_SECRET $STORAGE_KEY)
+SECRET=$(AddKeyToVault $VAULT_NAME $AZURE_VAULT_SECRET $STORAGE_KEY)
 
 tput setaf 3; echo "------------------------------------" ; tput sgr0
 printf "\n"
 
 # Display information
 tput setaf 3; echo "Run the following command to initialize Terraform to store its state into Azure Storage:" ; tput sgr0
-tput setaf 6; echo "TF_VAR_remote_state_account=$AZURE_STORAGE" ; tput sgr0
+tput setaf 6; echo "TF_VAR_remote_state_account=$STORAGE_NAME" ; tput sgr0
 tput setaf 6; echo "TF_VAR_remote_state_container=$REMOTE_STATE_CONTAINER" ; tput sgr0
 printf "\n"
 
 tput setaf 6; echo "terraform init \\" ; tput sgr0
-tput setaf 6; echo "  -backend-config=\"storage_account_name=$AZURE_STORAGE\" \\"
+tput setaf 6; echo "  -backend-config=\"storage_account_name=$STORAGE_NAME\" \\"
 tput setaf 6; echo "  -backend-config=\"container_name=$REMOTE_STATE_CONTAINER\" \\"
-tput setaf 6; echo "  -backend-config=\"access_key=\$(az keyvault secret show --name $AZURE_VAULT_SECRET --vault-name $AZURE_VAULT --query value -o tsv)\" \\"
+tput setaf 6; echo "  -backend-config=\"access_key=\$(az keyvault secret show --name $AZURE_VAULT_SECRET --vault-name $VAULT_NAME --query value -o tsv)\" \\"
 tput setaf 6; echo "  -backend-config=\"key=terraform-ref-architecture-tfstate\"" ; tput sgr0

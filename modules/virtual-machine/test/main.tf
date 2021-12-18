@@ -9,7 +9,8 @@ module "resource_group" {
 }
 
 module "network" {
-  source = "../../network"
+  source     = "../../network"
+  depends_on = [module.resource_group]
 
   name                = "iac-terraform-vnet"
   resource_group_name = module.resource_group.name
@@ -21,6 +22,7 @@ module "network" {
 
 # module "windows10desktop" {
 #   source = "../"
+# depends_on = [module.resource_group, module.network]
 
 #   resource_group_name = module.resource_group.name
 #   vm_hostname         = "desktop-vm"
@@ -33,7 +35,8 @@ module "network" {
 # }
 
 module "WindowsServer" {
-  source = "../"
+  source     = "../"
+  depends_on = [module.resource_group, module.network]
 
   resource_group_name = module.resource_group.name
   vm_hostname         = "server-vm"
@@ -44,7 +47,8 @@ module "WindowsServer" {
 }
 
 module "LinuxServer" {
-  source = "../"
+  source     = "../"
+  depends_on = [module.resource_group, module.network]
 
   resource_group_name = module.resource_group.name
   vm_hostname         = "linux-vm"

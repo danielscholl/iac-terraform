@@ -2,29 +2,33 @@
 # This module allows the creation of a Cosmos Database
 ##############################################################
 
-output "endpoint" {
-  description = "The endpoint used to connect to the CosmosDB account."
-  value       = azurerm_cosmosdb_account.account.endpoint
+output "properties" {
+  description = "Properties of the deployed CosmosDB account."
+  value = {
+    cosmosdb = {
+      id                 = azurerm_cosmosdb_account.cosmosdb.id
+      endpoint           = azurerm_cosmosdb_account.cosmosdb.endpoint
+      primary_master_key = azurerm_cosmosdb_account.cosmosdb.primary_master_key
+      connection_strings = azurerm_cosmosdb_account.cosmosdb.connection_strings
+    }
+  }
+  sensitive = true
 }
 
-output "name" {
-  description = "The ComosDB Account Name."
-  value       = azurerm_cosmosdb_account.account.name
+# This output is required for proper integration testing.
+output "resource_group_name" {
+  description = "The resource group name for the CosmosDB account."
+  value       = data.azurerm_resource_group.cosmosdb.name
 }
 
-output "id" {
-  description = "The ComosDB Account Id."
-  value       = azurerm_cosmosdb_account.account.id
+# This output is required for proper integration testing.
+output "account_name" {
+  description = "The name of the CosmosDB account."
+  value       = azurerm_cosmosdb_account.cosmosdb.name
 }
 
-output "primary_master_key" {
-  description = "The Primary master key for the CosmosDB Account."
-  value       = azurerm_cosmosdb_account.account.primary_master_key
-  sensitive   = true
-}
-
-output "connection_strings" {
-  description = "A list of connection strings available for this CosmosDB account."
-  value       = azurerm_cosmosdb_account.account.connection_strings
-  sensitive   = true
+# This output is required for proper integration testing.
+output "account_id" {
+  description = "The name of the CosmosDB account."
+  value       = azurerm_cosmosdb_account.cosmosdb.id
 }

@@ -3,7 +3,7 @@
 ##############################################################
 
 output "name" {
-  value       = azuread_application.main.name
+  value       = azuread_application.main.display_name
   description = "The display name of the application."
 }
 
@@ -25,7 +25,7 @@ output "roles" {
       name        = r.display_name
       value       = r.value
       description = r.description
-      enabled     = r.is_enabled
+      enabled     = r.enabled
     }
   }
   description = "The application roles."

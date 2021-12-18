@@ -11,7 +11,8 @@ module "resource_group" {
 
 
 module "network" {
-  source = "../"
+  source     = "../"
+  depends_on = [module.resource_group]
 
   name                = "iac-terraform-vnet-${module.resource_group.random}"
   resource_group_name = module.resource_group.name

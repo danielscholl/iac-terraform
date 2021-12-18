@@ -6,12 +6,12 @@ provider "azuread" {
 module "ad-application" {
   source = "../"
 
-  name                    = "iac-terraform-ad-app"
-  group_membership_claims = "All"
+  name = "iac-terraform-ad-app"
+
 
   reply_urls = [
-    "https://iac-terraform.com",
-    "https://iac-terraform.com/.auth/login/aad/callback"
+    "https://iac-terraform.com/",
+    "https://iac-terraform.com/.auth/login/aad/callback/"
   ]
 
   api_permissions = [
@@ -29,10 +29,11 @@ module "ad-application" {
 
   app_roles = [
     {
+      id          = "497406e4-012a-4267-bf18-45a1cb148a01"
       name        = "test"
       description = "test"
       member_types = [
-        "Application"
+        "User"
       ]
     }
   ]

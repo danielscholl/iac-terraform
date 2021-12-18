@@ -10,7 +10,9 @@ module "resource_group" {
 }
 
 module "storage_account" {
-  source              = "../../storage-account"
+  source     = "../../storage-account"
+  depends_on = [module.resource_group]
+
   resource_group_name = module.resource_group.name
   name                = substr("iacterraform${module.resource_group.random}", 0, 23)
   containers = [
@@ -22,7 +24,9 @@ module "storage_account" {
 }
 
 module "service_plan" {
-  source              = "../../service-plan"
+  source     = "../../service-plan"
+  depends_on = [module.resource_group]
+
   name                = "iac-terraform-plan-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 
@@ -37,6 +41,7 @@ module "service_plan" {
 
 module "function_app" {
   source               = "../"
+  depends_on           = [module.resource_group, module.storage_account, module.service_plan]
   name                 = "iac-terraform-func-${module.resource_group.random}"
   resource_group_name  = module.resource_group.name
   storage_account_name = module.storage_account.name

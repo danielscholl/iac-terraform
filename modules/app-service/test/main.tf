@@ -29,13 +29,16 @@ module "resource_group" {
 # }
 
 module "service_plan" {
-  source              = "../../service-plan"
+  source     = "../../service-plan"
+  depends_on = [module.resource_group]
+
   name                = "iac-terraform-plan-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 }
 
 module "app_service" {
   source                     = "../"
+  depends_on                 = [module.resource_group, module.service_plan]
   name                       = "iac-terraform-web-${module.resource_group.random}"
   resource_group_name        = module.resource_group.name
   service_plan_name          = module.service_plan.name

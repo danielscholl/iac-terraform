@@ -8,15 +8,18 @@ data "azuread_service_principal" "main" {
 }
 
 resource "azuread_application" "main" {
-  name                       = var.name
-  homepage                   = coalesce(var.homepage, local.homepage)
-  identifier_uris            = local.identifier_uris
-  reply_urls                 = var.reply_urls
-  available_to_other_tenants = var.available_to_other_tenants
-  public_client              = local.public_client
-  oauth2_allow_implicit_flow = var.oauth2_allow_implicit_flow
-  group_membership_claims    = var.group_membership_claims
-  type                       = local.type
+  display_name = var.name
+  # identifier_uris                = local.identifier_uris
+  fallback_public_client_enabled = local.public_client
+
+  web {
+    homepage_url  = coalesce(var.homepage, local.homepage)
+    redirect_uris = var.reply_urls
+
+    implicit_grant {
+      access_token_issuance_enabled = var.oauth2_allow_implicit_flow
+    }
+  }
 
   dynamic "required_resource_access" {
     for_each = local.required_resource_access
@@ -39,11 +42,12 @@ resource "azuread_application" "main" {
     for_each = local.app_roles
 
     content {
+      id                   = app_role.value.id
       allowed_member_types = app_role.value.member_types
       display_name         = app_role.value.name
       description          = app_role.value.description
       value                = coalesce(app_role.value.value, app_role.value.name)
-      is_enabled           = app_role.value.enabled
+      enabled              = app_role.value.enabled
     }
   }
 }
@@ -58,7 +62,6 @@ resource "azuread_application_password" "main" {
   count                 = var.password != null ? 1 : 0
   application_object_id = azuread_application.main.id
 
-  value             = coalesce(var.password, random_password.main[0].result)
   end_date          = local.end_date
   end_date_relative = local.end_date_relative
 

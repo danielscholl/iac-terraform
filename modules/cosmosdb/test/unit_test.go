@@ -11,7 +11,7 @@ import (
 
 var name = "cosmosdb-"
 var location = "eastus"
-var count = 10
+var count = 12
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",
@@ -28,28 +28,48 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 
 func TestTemplate(t *testing.T) {
 
-	expectedAccountResult := asMap(t, `{
+	expectedSqlAccountResult := asMap(t, `{
     "kind": "GlobalDocumentDB",
-    "enable_automatic_failover": false,
+    "enable_automatic_failover": true,
     "enable_multiple_write_locations": false,
     "is_virtual_network_filter_enabled": false,
 		"offer_type": "Standard",
     "consistency_policy": [{
-      "consistency_level": "Session",
-      "max_interval_in_seconds": 5,
-      "max_staleness_prefix": 100
+      "consistency_level": "Session"
+    }]
+  }`)
+
+	expectedGraphAccountResult := asMap(t, `{
+    "kind": "GlobalDocumentDB",
+    "enable_automatic_failover": true,
+    "enable_multiple_write_locations": false,
+    "is_virtual_network_filter_enabled": false,
+		"offer_type": "Standard",
+    "consistency_policy": [{
+      "consistency_level": "Session"
+    }],
+    "capabilities": [{
+      "name": "EnableGremlin"
     }]
 	}`)
 
 	expectedDatabaseResult := asMap(t, `{
-		"name": "iac-terraform-database1",
-		"throughput": 400
+		"name": "iac-terraform-database",
+		"autoscale_settings": [{
+      "max_throughput": 4000
+    }]
 	}`)
 
 	expectedContainerResult := asMap(t, `{
-    "database_name": "iac-terraform-database1",
+    "database_name": "iac-terraform-database",
     "name": "iac-terraform-container1",
     "partition_key_path": "/id"
+  }`)
+
+	expectedGraphResult := asMap(t, `{
+    "database_name": "iac-terraform-database",
+    "name": "iac-terraform-graph1",
+    "partition_key_path": "/mypartition"
 	}`)
 
 	testFixture := infratests.UnitTestFixture{
@@ -59,9 +79,12 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: count,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"module.cosmosdb.azurerm_cosmosdb_account.account":            expectedAccountResult,
-			"module.cosmosdb.azurerm_cosmosdb_sql_database.database[0]":   expectedDatabaseResult,
-			"module.cosmosdb.azurerm_cosmosdb_sql_container.container[0]": expectedContainerResult,
+			"module.cosmosdb_sql.azurerm_cosmosdb_account.cosmosdb":                    expectedSqlAccountResult,
+			"module.cosmosdb_graph.azurerm_cosmosdb_account.cosmosdb":                  expectedGraphAccountResult,
+			"module.cosmosdb_sql.azurerm_cosmosdb_sql_database.cosmos_dbs[0]":          expectedDatabaseResult,
+			"module.cosmosdb_graph.azurerm_cosmosdb_gremlin_database.cosmos_dbs[0]":    expectedDatabaseResult,
+			"module.cosmosdb_graph.azurerm_cosmosdb_gremlin_graph.cosmos_graphs[0]":    expectedGraphResult,
+			"module.cosmosdb_sql.azurerm_cosmosdb_sql_container.cosmos_collections[0]": expectedContainerResult,
 		},
 	}
 

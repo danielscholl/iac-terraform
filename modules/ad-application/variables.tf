@@ -37,11 +37,6 @@ variable "oauth2_allow_implicit_flow" {
   description = "Whether to allow implicit grant flow for OAuth2."
 }
 
-variable "group_membership_claims" {
-  type        = string
-  default     = "SecurityGroup"
-  description = "Configures the groups claim issued in a user or OAuth 2.0 access token that the app expects."
-}
 
 variable "password" {
   type        = string
@@ -86,10 +81,10 @@ locals {
 
   api_permissions = [
     for p in var.api_permissions : merge({
-      id                 = ""
-      name               = ""
-      app_roles          = []
-      oauth2_permissions = []
+      id              = ""
+      name            = ""
+      app_roles       = []
+      api_permissions = []
     }, p)
   ]
 
@@ -100,7 +95,7 @@ locals {
       application_id     = s.application_id
       display_name       = s.display_name
       app_roles          = { for p in s.app_roles : p.value => p.id }
-      oauth2_permissions = { for p in s.oauth2_permissions : p.value => p.id }
+      oauth2_permissions = { for p in s.oauth2_permission_scopes : p.value => p.id }
     }
   }
 
@@ -122,6 +117,7 @@ locals {
 
   app_roles = [
     for r in var.app_roles : merge({
+      id           = ""
       name         = ""
       description  = ""
       member_types = []

@@ -18,6 +18,9 @@ resource "azurerm_key_vault" "main" {
   resource_group_name = data.azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
+  soft_delete_retention_days = 90
+  purge_protection_enabled   = false
+
   sku_name = var.sku
 
   # This block configures VNET integration if a subnet whitelist is specified
@@ -40,6 +43,8 @@ resource "azurerm_key_vault_secret" "main" {
   name         = each.key
   value        = each.value
   key_vault_id = azurerm_key_vault.main.id
+
+  depends_on = [module.deployment_service_principal_keyvault_access_policies]
 }
 
 module "deployment_service_principal_keyvault_access_policies" {

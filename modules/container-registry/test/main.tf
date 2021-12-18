@@ -9,7 +9,9 @@ module "resource_group" {
 }
 
 module "container_registry" {
-  source              = "../"
+  source     = "../"
+  depends_on = [module.resource_group]
+
   name                = substr("iacterraform${module.resource_group.random}", 0, 23)
   resource_group_name = module.resource_group.name
 

@@ -9,13 +9,17 @@ module "resource_group" {
 }
 
 module "service_plan" {
-  source              = "../../service-plan"
+  source     = "../../service-plan"
+  depends_on = [module.resource_group]
+
   name                = "iac-terraform-plan-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 }
 
 module "app_service" {
-  source                     = "../../app-service"
+  source     = "../../app-service"
+  depends_on = [module.resource_group, module.service_plan]
+
   name                       = "iac-terraform-web-${module.resource_group.random}"
   resource_group_name        = module.resource_group.name
   service_plan_name          = module.service_plan.name
@@ -29,13 +33,17 @@ module "app_service" {
 }
 
 module "keyvault" {
-  source              = "../../keyvault"
+  source     = "../../keyvault"
+  depends_on = [module.resource_group]
+
   name                = substr("iac-terraform-kv-${module.resource_group.random}", 0, 23)
   resource_group_name = module.resource_group.name
 }
 
 module "keyvault_policy" {
-  source                  = "../"
+  source     = "../"
+  depends_on = [module.resource_group, module.service_plan]
+
   vault_id                = module.keyvault.id
   tenant_id               = module.app_service.identity_tenant_ids[0]
   object_ids              = module.app_service.identity_object_ids

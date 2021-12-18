@@ -11,7 +11,7 @@ import (
 
 var name = "app-service-"
 var location = "eastus"
-var count = 10
+var count = 11
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",

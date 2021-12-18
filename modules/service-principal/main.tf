@@ -14,9 +14,8 @@ data "azuread_service_principal" "main" {
 }
 
 resource "azuread_application" "main" {
-  count                      = local.create_count
-  name                       = var.name
-  available_to_other_tenants = false
+  count        = local.create_count
+  display_name = var.name
 
   dynamic "required_resource_access" {
     for_each = local.required_resource_access
@@ -51,10 +50,6 @@ resource "azurerm_role_assignment" "main" {
 resource "azuread_service_principal_password" "main" {
   count                = var.password != null ? 1 : 0
   service_principal_id = azuread_service_principal.main[0].id
-
-  value             = coalesce(var.password, random_password.main[0].result)
-  end_date          = local.end_date
-  end_date_relative = local.end_date_relative
 
   lifecycle {
     ignore_changes = all

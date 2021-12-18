@@ -8,12 +8,14 @@ __Prerequisites__
 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) installed.
 
-  >Assumes CLI Version = azure-cli (2.0.75)
+  >Assumes CLI Version = azure-cli (2.31.0)
 
 * HashiCorp [Terraform](https://terraform.io/downloads.html) installed.
 
+  >Version Manager: [tfenv](https://github.com/tfutils/tfenv)
+
   ```bash
-  export VER="0.12.18"
+  export VER="1.1.1"
   wget https://releases.hashicorp.com/terraform/${VER}/terraform_${VER}_linux_amd64.zip
   unzip terraform_${VER}_linux_amd64.zip
   sudo mv terraform /usr/local/bin/
@@ -30,7 +32,7 @@ Generate Azure client id and secret.
 ```bash
 # Create a Service Principal
 Subscription=$(az account show --query id -otsv)
-az ad sp create-for-rbac --name "Terraform-Principal" --role="Owner" --scopes="/subscriptions/$Subscription"
+az ad sp create-for-rbac --name "Terraform-Principal" --role="Owner" --scopes="/subscriptions/$Subscription" -ojson
 
 # Expected Result
 {
@@ -76,7 +78,7 @@ Execute the init-backend-state.sh script to create the required Azure Resources.
 
 ```bash
 ResourceGroup="tfstate"
-StorageAccount="tfstatestorage"  # Must be unique
+StorageAccount="tfstate"  # Must be unique
 KeyVault="tfstate"
 ./scripts/init-backend-state.sh $ResourceGroup $StorageAccount $KeyVault
 

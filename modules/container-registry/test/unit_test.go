@@ -11,7 +11,7 @@ import (
 
 var name = "container-registry"
 var location = "eastus"
-var count = 4
+var count = 5
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",

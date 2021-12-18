@@ -11,7 +11,7 @@ import (
 
 var name = "keyvault-"
 var location = "eastus"
-var count = 5
+var count = 6
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",

@@ -10,6 +10,7 @@ deployment.yaml
 # Terraform Files
 terraform.tfstate*
 .terraform
+.terraform.lock.hcl
 
 node_modules
 
