@@ -63,6 +63,12 @@ variable "app_roles" {
   description = "List of App roles."
 }
 
+variable "native" {
+  type        = bool
+  default     = false
+  description = "Whether the application can be installed on a user's device or computer."
+}
+
 locals {
   homepage = format("https://%s", var.name)
 
