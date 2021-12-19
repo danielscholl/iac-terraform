@@ -2,6 +2,13 @@
 # This module allows the creation of a AD Application
 ##############################################################
 
+variable "aad_client_id" {
+  description = "Existing Application AppId."
+  type        = string
+  default     = ""
+}
+
+
 variable "name" {
   type        = string
   description = "The display name of the application"
@@ -23,12 +30,6 @@ variable "identifier_uris" {
   type        = list(string)
   default     = []
   description = "List of unique URIs that Azure AD can use for the application."
-}
-
-variable "available_to_other_tenants" {
-  type        = bool
-  default     = false
-  description = "Whether the application can be used from any Azure AD tenants."
 }
 
 variable "oauth2_allow_implicit_flow" {
@@ -60,12 +61,6 @@ variable "app_roles" {
   type        = any
   default     = []
   description = "List of App roles."
-}
-
-variable "native" {
-  type        = bool
-  default     = false
-  description = "Whether the application can be installed on a user's device or computer."
 }
 
 locals {

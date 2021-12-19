@@ -43,6 +43,13 @@ variable "object_id" {
   default     = ""
 }
 
+variable "principal" {
+  description = "Bring your own Principal metainformation. Optional: {name, appId, password}"
+  type        = map(string)
+  default     = {}
+}
+
+
 variable "api_permissions" {
   type        = any
   default     = []

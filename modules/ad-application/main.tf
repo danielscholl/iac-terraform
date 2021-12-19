@@ -3,13 +3,13 @@
 ##############################################################
 
 data "azuread_service_principal" "main" {
-  count        = length(local.api_names)
+  count        = var.aad_client_id != "" ? 0 : length(local.api_names)
   display_name = local.api_names[count.index]
 }
 
 resource "azuread_application" "main" {
-  display_name = var.name
-  # identifier_uris                = local.identifier_uris
+  count                          = var.aad_client_id != "" ? 0 : 1
+  display_name                   = var.name
   fallback_public_client_enabled = local.public_client
 
   web {
@@ -53,14 +53,14 @@ resource "azuread_application" "main" {
 }
 
 resource "random_password" "main" {
-  count   = var.password == "" ? 1 : 0
+  count   = var.aad_client_id == "" && var.password == "" ? 1 : 0
   length  = 32
   special = false
 }
 
 resource "azuread_application_password" "main" {
-  count                 = var.password != null ? 1 : 0
-  application_object_id = azuread_application.main.id
+  count                 = var.aad_client_id == "" && var.password != null ? 1 : 0
+  application_object_id = var.aad_client_id != "" ? null : azuread_application.main[0].object_id
 
   end_date          = local.end_date
   end_date_relative = local.end_date_relative
