@@ -3,15 +3,28 @@ provider "azuread" {
 }
 
 
+locals {
+  name = "iac-osdu"
+}
+
+resource "random_id" "main" {
+  keepers = {
+    name = local.name
+  }
+
+  byte_length = 8
+}
+
+
 module "ad-application" {
   source = "../"
 
-  name = "iac-terraform-ad-app"
-
+  name = format("${local.name}-%s-ad-app-management", random_id.main.hex)
+  # aad_client_id = "10465c52-d094-4340-867d-c976ea1b1b14"
 
   reply_urls = [
-    "https://iac-terraform.com/",
-    "https://iac-terraform.com/.auth/login/aad/callback/"
+    "https://iac-osdu.com/",
+    "https://iac-osdu.com/.auth/login/aad/callback/"
   ]
 
   api_permissions = [
@@ -29,38 +42,12 @@ module "ad-application" {
 
   app_roles = [
     {
-      id          = "497406e4-012a-4267-bf18-45a1cb148a01"
+      id          = "c672d818-eed1-44e4-9832-5dfbe6c1116f"
       name        = "test"
       description = "test"
       member_types = [
-        "User"
+        "Application"
       ]
     }
   ]
 }
-
-# resource "null_resource" "changed_reply_urls" {
-#   /* Orchestrates the destroy and create process of null_resource.auth dependencies
-#   /  during subsequent deployments that require new resources.
-#   */
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-
-#   triggers = {
-#     app_service = join(",", local.reply_urls)
-#   }
-#   provisioner "local-exec" {
-#     environment = {
-#       URLS = join(" ", local.reply_urls)
-#       ID   = module.ad_application.azuread_config_data[local.name].application_id
-#     }
-
-#     command = <<EOF
-# az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
-# az account set --subscription $ARM_SUBSCRIPTION_ID
-# az ad app update --id "$ID" --reply-urls $URLS
-# az logout
-# EOF
-#   }
-# }

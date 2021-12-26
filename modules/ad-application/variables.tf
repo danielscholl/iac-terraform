@@ -8,7 +8,6 @@ variable "aad_client_id" {
   default     = ""
 }
 
-
 variable "name" {
   type        = string
   description = "The display name of the application"
@@ -32,12 +31,23 @@ variable "identifier_uris" {
   description = "List of unique URIs that Azure AD can use for the application."
 }
 
+variable "sign_in_audience" {
+  type        = string
+  default     = "AzureADMyOrg"
+  description = "Whether the application can be used from any Azure AD tenants."
+}
+
 variable "oauth2_allow_implicit_flow" {
   type        = bool
   default     = false
   description = "Whether to allow implicit grant flow for OAuth2."
 }
 
+variable "group_membership_claims" {
+  type        = list(string)
+  default     = ["All"]
+  description = "Configures the groups claim issued in a user or OAuth 2.0 access token that the app expects."
+}
 
 variable "password" {
   type        = string
@@ -47,7 +57,7 @@ variable "password" {
 
 variable "end_date" {
   type        = string
-  default     = "1Y"
+  default     = "2Y"
   description = "The RFC3339 date after which credentials expire."
 }
 
@@ -82,10 +92,10 @@ locals {
 
   api_permissions = [
     for p in var.api_permissions : merge({
-      id              = ""
-      name            = ""
-      app_roles       = []
-      api_permissions = []
+      id                 = ""
+      name               = ""
+      app_roles          = []
+      oauth2_permissions = []
     }, p)
   ]
 
@@ -100,7 +110,7 @@ locals {
     }
   }
 
-  required_resource_access = [
+  required_resource_access = var.aad_client_id != "" ? [] : [
     for a in local.api_permissions : {
       resource_app_id = local.service_principals[a.name].application_id
       resource_access = concat(
@@ -118,7 +128,6 @@ locals {
 
   app_roles = [
     for r in var.app_roles : merge({
-      id           = ""
       name         = ""
       description  = ""
       member_types = []

@@ -1,3 +1,8 @@
+##############################################################
+# This module allows the creation of a AD Application
+##############################################################
+
+
 output "name" {
   value       = var.aad_client_id != "" ? null : azuread_application.main[0].display_name
   description = "The display name of the application."
@@ -21,7 +26,6 @@ output "roles" {
       name        = r.display_name
       value       = r.value
       description = r.description
-      enabled     = r.enabled
     }
   }
   description = "The application roles."

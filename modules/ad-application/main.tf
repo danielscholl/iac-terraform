@@ -8,9 +8,12 @@ data "azuread_service_principal" "main" {
 }
 
 resource "azuread_application" "main" {
-  count                          = var.aad_client_id != "" ? 0 : 1
-  display_name                   = var.name
+  count        = var.aad_client_id != "" ? 0 : 1
+  display_name = var.name
+
+  sign_in_audience               = var.sign_in_audience
   fallback_public_client_enabled = local.public_client
+  group_membership_claims        = var.group_membership_claims
 
   web {
     homepage_url  = coalesce(var.homepage, local.homepage)
@@ -47,7 +50,6 @@ resource "azuread_application" "main" {
       display_name         = app_role.value.name
       description          = app_role.value.description
       value                = coalesce(app_role.value.value, app_role.value.name)
-      enabled              = app_role.value.enabled
     }
   }
 }
