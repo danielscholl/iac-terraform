@@ -20,39 +20,56 @@ resource "null_resource" "save-key" {
   }
 }
 
+resource "random_password" "admin" {
+  length  = 14
+  special = true
+}
+
 module "resource_group" {
   source   = "../../resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }
 
-module "network" {
-  source     = "../../network"
-  depends_on = [module.resource_group]
-
-  name                = format("iac-terraform-vnet-%s", module.resource_group.random)
-  resource_group_name = module.resource_group.name
-  address_space       = "10.10.0.0/16"
-  dns_servers         = ["8.8.8.8"]
-  subnet_prefixes     = ["10.10.1.0/24"]
-  subnet_names        = ["Cluster-Subnet"]
-}
-
-
 data "azurerm_client_config" "current" {}
 
 module "aks" {
-  source = "../"
-  depends_on = [module.resource_group, module.network]
+  source     = "../"
+  depends_on = [module.resource_group]
 
-  name                     = format("iac-terraform-cluster-%s", module.resource_group.random)
-  resource_group_name      = module.resource_group.name
-  dns_prefix               = format("iac-terraform-cluster-%s", module.resource_group.random)
+  name                = format("iac-terraform-cluster-%s", module.resource_group.random)
+  resource_group_name = module.resource_group.name
+  dns_prefix          = format("iac-terraform-cluster-%s", module.resource_group.random)
 
-  ssh_public_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
-  vnet_subnet_id = module.network.subnets.0
+  linux_profile = {
+    admin_username = "k8sadmin"
+    ssh_key        = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
+  }
 
-  identity_type = "UserAssigned"
+  default_node_pool = "default"
+  node_pools = {
+    default = {
+      vm_size                = "Standard_B2s"
+      enable_host_encryption = true
+
+      node_count = 3
+    }
+    spotpool = {
+      vm_size                = "Standard_D2_v2"
+      enable_host_encryption = false
+      eviction_policy        = "Delete"
+      spot_max_price         = -1
+      priority               = "Spot"
+
+      enable_auto_scaling = true
+      min_count           = 2
+      max_count           = 5
+
+      node_labels = {
+        "pool" = "spotpool"
+      }
+    }
+  }
 
   resource_tags = {
     iac = "terraform"

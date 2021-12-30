@@ -7,19 +7,146 @@ data "azurerm_resource_group" "main" {
   name = var.resource_group_name
 }
 
-resource "azurerm_virtual_network" "main" {
+resource "azurerm_virtual_network" "vnet" {
   name                = var.name
-  resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
-  address_space       = [var.address_space]
-  dns_servers         = var.dns_servers
+  resource_group_name = data.azurerm_resource_group.main.name
+  address_space       = var.address_space
   tags                = var.resource_tags
+  dns_servers         = var.dns_servers
 }
 
-resource "azurerm_subnet" "main" {
-  name                 = var.subnet_names[count.index]
-  virtual_network_name = azurerm_virtual_network.main.name
-  resource_group_name  = data.azurerm_resource_group.main.name
-  address_prefixes     = [var.subnet_prefixes[count.index]]
-  count                = length(var.subnet_names)
+module "subnet" {
+  source   = "./subnet"
+  for_each = local.subnets
+
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  resource_tags       = var.resource_tags
+
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  subnet_type          = each.key
+  cidrs                = each.value.cidrs
+
+  enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
+  enforce_private_link_service_network_policies  = each.value.enforce_private_link_service_network_policies
+
+  service_endpoints = each.value.service_endpoints
+  delegations       = each.value.delegations
+
+  create_network_security_group = each.value.create_network_security_group
+  configure_nsg_rules           = each.value.configure_nsg_rules
+  allow_internet_outbound       = each.value.allow_internet_outbound
+  allow_lb_inbound              = each.value.allow_lb_inbound
+  allow_vnet_inbound            = each.value.allow_vnet_inbound
+  allow_vnet_outbound           = each.value.allow_vnet_outbound
+}
+
+resource "azurerm_route_table" "route_table" {
+  for_each = var.route_tables
+
+  name                          = "${var.resource_group_name}-${each.key}-routetable"
+  location                      = data.azurerm_resource_group.main.location
+  resource_group_name           = data.azurerm_resource_group.main.name
+  disable_bgp_route_propagation = each.value.disable_bgp_route_propagation
+
+  dynamic "route" {
+    for_each = (each.value.use_inline_routes ? each.value.routes : {})
+    content {
+      name                   = route.key
+      address_prefix         = route.value.address_prefix
+      next_hop_type          = route.value.next_hop_type
+      next_hop_in_ip_address = try(route.value.next_hop_in_ip_address, null)
+    }
+  }
+
+  tags = var.resource_tags
+}
+
+resource "azurerm_route" "non_inline_route" {
+  for_each = local.non_inline_routes
+
+  name                   = each.value.name
+  resource_group_name    = data.azurerm_resource_group.main.name
+  route_table_name       = azurerm_route_table.route_table[each.value.table].name
+  address_prefix         = each.value.address_prefix
+  next_hop_type          = each.value.next_hop_type
+  next_hop_in_ip_address = try(each.value.next_hop_in_ip_address, null)
+}
+
+module "aks_subnet" {
+  source   = "./subnet"
+  for_each = local.aks_subnets
+
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  resource_tags       = var.resource_tags
+
+  enforce_subnet_names = false
+
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  subnet_type          = each.key
+  cidrs                = each.value.cidrs
+
+  enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
+  enforce_private_link_service_network_policies  = each.value.enforce_private_link_service_network_policies
+
+  service_endpoints = each.value.service_endpoints
+  delegations       = each.value.delegations
+
+  create_network_security_group = false
+  configure_nsg_rules           = false
+}
+
+resource "azurerm_subnet_route_table_association" "association" {
+  depends_on = [module.aks_subnet, azurerm_route_table.route_table]
+  for_each   = local.route_table_associations
+
+  subnet_id      = module.subnet[each.key].id
+  route_table_id = azurerm_route_table.route_table[each.value].id
+}
+
+resource "azurerm_route_table" "aks_route_table" {
+  for_each = local.aks_route_tables
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  name                          = "${var.resource_group_name}-aks-${each.key}-routetable"
+  resource_group_name           = data.azurerm_resource_group.main.name
+  location                      = data.azurerm_resource_group.main.location
+  disable_bgp_route_propagation = each.value.disable_bgp_route_propagation
+}
+
+resource "azurerm_route" "aks_route" {
+  for_each = local.aks_routes
+
+  name                   = each.value.name
+  resource_group_name    = data.azurerm_resource_group.main.name
+  route_table_name       = azurerm_route_table.aks_route_table[each.value.aks_id].name
+  address_prefix         = each.value.address_prefix
+  next_hop_type          = each.value.next_hop_type
+  next_hop_in_ip_address = try(each.value.next_hop_in_ip_address, null)
+}
+
+resource "azurerm_subnet_route_table_association" "aks" {
+  depends_on = [module.aks_subnet, azurerm_route_table.aks_route_table]
+  for_each   = local.aks_subnets
+
+  subnet_id      = module.aks_subnet[each.key].id
+  route_table_id = azurerm_route_table.aks_route_table[each.value.aks_id].id
+}
+
+resource "azurerm_virtual_network_peering" "peer" {
+  for_each = local.peers
+
+  name                         = each.key
+  resource_group_name          = data.azurerm_resource_group.main.name
+  virtual_network_name         = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id    = each.value.id
+  allow_virtual_network_access = each.value.allow_virtual_network_access
+  allow_forwarded_traffic      = each.value.allow_forwarded_traffic
+  allow_gateway_transit        = each.value.allow_gateway_transit
+  use_remote_gateways          = each.value.use_remote_gateways
 }

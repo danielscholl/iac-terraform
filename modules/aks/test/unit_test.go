@@ -11,7 +11,7 @@ import (
 
 var name = "cluster-"
 var location = "eastus"
-var count = 18
+var count = 13
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",
@@ -29,7 +29,7 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 func TestTemplate(t *testing.T) {
 
 	expectedResult := asMap(t, `{
-		"kubernetes_version": "1.15.7"
+		"sku_tier": "Free"
 	}`)
 
 	testFixture := infratests.UnitTestFixture{
