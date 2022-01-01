@@ -6,31 +6,45 @@
 */
 
 terraform {
-  required_version = ">= 0.12"
-  backend "azurerm" {
-    key = "terraform.tfstate"
+  required_version = ">= 0.14.11"
+
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=2.90.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "=3.1.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "=3.1.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "=2.7.1"
+    }
   }
 }
+
+
 
 #-------------------------------
 # Providers
 #-------------------------------
 provider "azurerm" {
-  version = "=2.16.0"
   features {}
 }
 
-provider "null" {
-  version = "~>2.1.0"
-}
+# provider "null" {
+#   version = "~>3.1.0"
+# }
 
-provider "random" {
-  version = "~>2.2"
-}
+# provider "random" {
+#   version = "~>3.1.0"
+# }
 
-provider "azuread" {
-  version = "=0.10.0"
-}
 
 #-------------------------------
 # Application Variables  (variables.tf)
@@ -76,12 +90,11 @@ locals {
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name              = "${local.base_name}"
+  name              = local.base_name
   vnet_name         = "${local.base_name}-vnet"
   cluster_name      = "${local.base_name}-cluster"
-  registry_name     = "${replace(local.base_name_21, "-", "")}"
+  registry_name     = replace(local.base_name_21, "-", "")
   keyvault_name     = "${local.base_name_21}-kv"
-  ad_principal_name = "${local.base_name}-principal"
 }
 
 
@@ -98,6 +111,13 @@ resource "random_string" "workspace_scope" {
   length  = max(1, var.randomization_level) // error for zero-length
   special = false
   upper   = false
+}
+
+data "http" "my_ip" {
+  url = "http://ipv4.icanhazip.com"
+}
+
+data "azurerm_subscription" "current" {
 }
 
 
@@ -122,6 +142,30 @@ resource "null_resource" "save-key" {
   }
 }
 
+module "subscription" {
+  source = "../../modules/subscription-data"
+  subscription_id = data.azurerm_subscription.current.subscription_id
+}
+
+module "naming" {
+  source = "../../modules/naming"
+}
+
+module "metadata" {
+  source = "../../modules/metadata"
+
+  naming_rules = module.naming.yaml
+
+  project             = "https://github.com/danielscholl/iac-terraform/simplecluster/"
+  location            = "eastus2"
+  environment         = "sandbox"
+  product_name        = random_string.workspace_scope.result
+  contact             = "Daniel Scholl"
+  product_group       = "contoso"
+  subscription_id     = module.subscription.output.subscription_id
+  subscription_type   = "dev"
+  resource_group_type = "app"
+}
 
 #-------------------------------
 # Resource Group
@@ -132,24 +176,7 @@ module "resource_group" {
   name     = local.name
   location = local.location
 
-  resource_tags = {
-    environment = local.ws_name
-  }
-}
-
-
-#-------------------------------
-# Virtual Network
-#-------------------------------
-module "network" {
-  source = "../../modules/network"
-
-  name                = local.vnet_name
-  resource_group_name = module.resource_group.name
-  address_space       = "10.10.0.0/16"
-  dns_servers         = ["8.8.8.8"]
-  subnet_prefixes     = ["10.10.1.0/24"]
-  subnet_names        = ["Cluster-Subnet"]
+  resource_tags = module.metadata.tags
 }
 
 
@@ -158,11 +185,14 @@ module "network" {
 #-------------------------------
 module "container_registry" {
   source = "../../modules/container-registry"
+  depends_on = [module.resource_group]
 
   name                = local.registry_name
   resource_group_name = module.resource_group.name
 
   is_admin_enabled = false
+
+  resource_tags = module.metadata.tags
 }
 
 
@@ -172,70 +202,138 @@ module "container_registry" {
 module "keyvault" {
   # Module Path
   source = "../../modules/keyvault"
+  depends_on = [module.resource_group]
 
   # Module variable
   name                = local.keyvault_name
   resource_group_name = module.resource_group.name
 
-  resource_tags = {
-    environment = local.ws_name
-  }
+  resource_tags = module.metadata.tags
 }
 
 module "keyvault_secret" {
   # Module Path
   source = "../../modules/keyvault-secret"
+  depends_on = [module.keyvault]
 
   keyvault_id = module.keyvault.id
   secrets = {
     "sshKey"       = tls_private_key.key.private_key_pem
-    "clientId"     = module.service_principal.client_id
-    "clientSecret" = module.service_principal.client_secret
   }
 }
 
 
 #-------------------------------
-# Service Principal with Scope
+# Virtual Network
 #-------------------------------
-module "service_principal" {
-  # Module Path
-  source = "../../modules/service-principal"
+module "network" {
+  source     = "../../modules/network"
+  depends_on = [module.resource_group]
 
-  # Module Variables
-  name = local.ad_principal_name
-  role = "Contributor"
+  name                = local.vnet_name
+  resource_group_name = module.resource_group.name
 
-  scopes = concat(
-    [module.network.id],
-    [module.container_registry.id],
-    [module.aks.id],
-    [module.keyvault.id]
-  )
+  dns_servers = ["8.8.8.8"]
+
+  address_space = ["10.1.0.0/22"]
+
+  subnets = {
+    iaas-private = {
+      cidrs                   = ["10.1.0.0/24"]
+      route_table_association = "aks"
+      configure_nsg_rules     = false
+    }
+    iaas-public  = {
+       cidrs                   = ["10.1.1.0/24"]
+       route_table_association = "aks"
+       configure_nsg_rules     = false
+    }
+  }
+
+  route_tables = {
+    aks = {
+      disable_bgp_route_propagation = true
+      use_inline_routes             = false
+      routes = {
+        internet = {
+          address_prefix         = "0.0.0.0/0"
+          next_hop_type          = "Internet"
+        }
+        local-vnet = {
+          address_prefix         = "10.1.0.0/22"
+          next_hop_type          = "vnetlocal"
+        }
+      }
+    }
+  }  
+
+
+  # Tags
+  resource_tags = module.metadata.tags
 }
-
 
 #-------------------------------
 # Azure Kubernetes Service
 #-------------------------------
 module "aks" {
-  source = "../../modules/aks"
+  source     = "../../modules/aks"
+  depends_on = [module.resource_group]
 
-  name                     = local.cluster_name
-  resource_group_name      = module.resource_group.name
-  dns_prefix               = local.cluster_name
-  service_principal_id     = module.service_principal.client_id
-  service_principal_secret = module.service_principal.client_secret
-  agent_vm_count           = var.agent_vm_count
-  agent_vm_size            = var.agent_vm_size
+  name                 = local.cluster_name
+  resource_group_name = module.resource_group.name
 
-  ssh_public_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
-  vnet_subnet_id = module.network.subnets.0
+  identity_type       = "UserAssigned"
+  dns_prefix          = local.cluster_name
 
-  resource_tags = {
-    iac = "terraform"
+  virtual_network = { 
+    subnets = {
+      private = {
+        id = module.network.subnets["iaas-private"].id
+      }
+      public = {
+        id = module.network.subnets["iaas-public"].id
+      }
+    }
+    route_table_id = module.network.route_tables["aks"].id
   }
+
+  linux_profile = {
+    admin_username = "k8sadmin"
+    ssh_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
+  }
+
+  default_node_pool = "default"
+  node_pools = {
+    default = {
+      vm_size                = "Standard_B2s"
+      enable_host_encryption = true
+
+      node_count = 3
+    }
+  }
+
+  resource_tags = module.metadata.tags
 }
+
+
+# module "aks" {
+#   source = "../../modules/aks"
+
+#   name                     = local.cluster_name
+#   resource_group_name      = module.resource_group.name
+#   dns_prefix               = local.cluster_name
+#   service_principal_id     = module.service_principal.client_id
+#   service_principal_secret = module.service_principal.client_secret
+#   agent_vm_count           = var.agent_vm_count
+#   agent_vm_size            = var.agent_vm_size
+
+#   ssh_public_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
+#   vnet_subnet_id = module.network.subnets.0
+
+#   resource_tags = {
+#     iac = "terraform"
+#   }
+# }
 
 
 #-------------------------------
@@ -252,14 +350,6 @@ output "REGISTRY_NAME" {
 
 output "CLUSTER_NAME" {
   value = local.cluster_name
-}
-
-output "PRINCIPAL_ID" {
-  value = module.service_principal.client_id
-}
-
-output "PRINCIPAL_SECRET" {
-  value = module.service_principal.client_secret
 }
 
 output "id_rsa" {

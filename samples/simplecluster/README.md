@@ -12,8 +12,7 @@ This deployment creates the following:
  3. Kubernetes Cluster (AKS)
  4. Virtual Network
  5. Keyvault
- 6. Service Principal
- 7. AD Application
+ 6. Managed Identity
 
 
 ## Example Usage
