@@ -1,5 +1,6 @@
 name: Generate Naming Rules
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'modules/name/**'
