@@ -225,15 +225,7 @@ def exportMarkdown(title,custom,entities):
         "with the existing json and adds new resources.  It also generates this README doc "
         "from the custom and entity json."
     )
-    mdf.new_header(level=2, title='How to Update')
-    mdf.new_paragraph(
-        "This information is meant to be a living source of truth for applications and "
-        "policy and as such is expected to be versioned and updated.  If you wish to add "
-        "allowed values for any of the variables or need a naming convention that is not "
-        "provided in this data, open an issue request agains this repo. Upon review the "
-        "information will be updated and the policy engines will reflect the changes "
-        "immediately."
-    )
+
 
     # Create the Custom Entity Section
     mdf.new_header(level=1, title='Custom Entities')
@@ -242,9 +234,7 @@ def exportMarkdown(title,custom,entities):
         "variables and allowed values that describe our business and purpose "
         "at the company and are the only approved values to be used in names and tags. "
         "This assures consistency and data integrity across all resources being "
-        "named and tagged in Azure.  If you would like to add additional allowed "
-        "values, simply open an issue request against this repo and upon review "
-        "the value will be added. "
+        "named and tagged in Azure."
     )
 
     # Role through the custom dictionary
