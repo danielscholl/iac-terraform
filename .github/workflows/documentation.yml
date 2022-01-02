@@ -1,7 +1,8 @@
 name: Generate terraform docs
 on: [push, pull_request]
 jobs:
-  docs:
+
+  naming-doc:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -18,23 +19,28 @@ jobs:
         if [ -f modules/naming/bin/requirements.txt ]; then pip install -r modules/naming/bin/requirements.txt; fi
     - name: Create local changes
       run: |
-        python modules/naming/bin/run.py
+        cd modules/naming
+        python bin/run.py
+    - name: CheckIn
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: 'Update Naming Conventions'
+          add: '.'
 
-    - name: Naming Module
-      uses: terraform-docs/gh-actions@v0.11.0
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
       with:
-        working-dir: ./modules/naming
-        output-file: README.md
-        output-method: inject
-        git-push: "true"
+        ref: ${{ github.event.pull_request.head.ref }}
 
-    - name: Metadata Module
-      uses: terraform-docs/gh-actions@v0.11.0
-      with:
-        working-dir: ./modules/metadata
-        output-file: README.md
-        output-method: inject
-        git-push: "true"
+    # - name: Metadata Module
+    #   uses: terraform-docs/gh-actions@v0.11.0
+    #   with:
+    #     working-dir: ./modules/metadata
+    #     output-file: README.md
+    #     output-method: inject
+    #     git-push: "true"
 
     - name: Network Module
       uses: terraform-docs/gh-actions@v0.11.0
