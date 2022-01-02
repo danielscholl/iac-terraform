@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'modules/name/**'
+      - 'modules/naming-rules/**'
 jobs:
 
   naming-doc:
