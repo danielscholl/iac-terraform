@@ -1,6 +1,6 @@
 name: Generate terraform docs
-on: 
-  push
+on:
+  push:
     paths:
       - 'modules/**'
       - '!modules/naming/**'

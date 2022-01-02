@@ -1,8 +1,8 @@
 name: Generate Naming Rules
-on: 
-  push
+on:
+  push:
     paths:
-      - 'modules/naming/**'
+      - 'modules/name/**'
 jobs:
 
   naming-doc:
