@@ -7,7 +7,34 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.ref }}
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f modules/naming/bin/requirements.txt ]; then pip install -r modules/naming/bin/requirements.txt; fi
+    - name: Create local changes
+      run: |
+        python modules/naming/bin/run.py
 
+    - name: Naming Module
+      uses: terraform-docs/gh-actions@v0.11.0
+      with:
+        working-dir: ./modules/naming
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
+
+    - name: Metadata Module
+      uses: terraform-docs/gh-actions@v0.11.0
+      with:
+        working-dir: ./modules/metadata
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
 
     - name: Network Module
       uses: terraform-docs/gh-actions@v0.11.0
@@ -17,11 +44,10 @@ jobs:
         output-method: inject
         git-push: "true"
 
-
-    # - name: Submodule
-    #   uses: Dirrk/terraform-docs@v1.0.8
-    #   with:
-    #     tf_docs_working_dir: ./modules/network/subnet/
-    #     tf_docs_output_file: README.md
-    #     tf_docs_output_method: inject
-    #     tf_docs_git_push: 'true'
+    - name: Subnet Module
+      uses: Dirrk/terraform-docs@v1.0.8
+      with:
+        tf_docs_working_dir: ./modules/network/subnet/
+        tf_docs_output_file: README.md
+        tf_docs_output_method: inject
+        tf_docs_git_push: 'true'
