@@ -22,29 +22,12 @@ variable names that developers will reference when creating inputs for modules a
 conventions, scope and approved naming conventions.  The readme is generated automatically from this data.  
 * **bin/run.py** - A python script that scrapes the latest data from Microsoft merges with the existing json and adds 
 new resources.  It also generates this README doc from the custom and entity json.
-## How to Update
-
-
-This information is meant to be a living source of truth for applications and policy and as such is expected to be 
-versioned and updated.  If you wish to add allowed values for any of the variables or need a naming convention that is 
-not provided in this data, open an issue request agains this repo. Upon review the information will be updated and the 
-policy engines will reflect the changes immediately.
 # Custom Entities
 
 
 Custom entities are variables and allowed values that describe our business and purpose at the company and are the only 
 approved values to be used in names and tags. This assures consistency and data integrity across all resources being 
-named and tagged in Azure.  If you would like to add additional allowed values, simply open an issue request against 
-this repo and upon review the value will be added. 
-## custom.applicationName
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Contoso</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>contoso</sub>|
-|<sub>Kubernetes</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>k8s</sub>|
-|<sub>Secure Shell</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>ssh</sub>|
-|<sub>Docker</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>docker</sub>|
-
+named and tagged in Azure.
 ## custom.azureRegion
 
 |<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
@@ -97,16 +80,10 @@ this repo and upon review the value will be added.
 |<sub>US Gov Texas</sub>|<sub>global</sub>|<sub>az[20]</sub>|<sub>usgovtexas</sub>|
 |<sub>US Gov Arizona</sub>|<sub>global</sub>|<sub>az[20]</sub>|<sub>usgovarizona</sub>|
 
-## custom.businessUnit
+## custom.contact
 
 |<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
 | ------ | ------ | ------ | ------ |
-|<sub>Back Office</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>backoffice</sub>|
-|<sub>Commercial</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>commercial</sub>|
-|<sub>Government</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>government</sub>|
-|<sub>Human Resources</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>hr</sub>|
-|<sub>Infrastructure</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>infra</sub>|
-|<sub>Security</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>security</sub>|
 
 ## custom.environment
 
@@ -117,91 +94,6 @@ this repo and upon review the value will be added.
 |<sub>Quality Assurance</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>qa</sub>|
 |<sub>User Acceptance Testing</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>uat</sub>|
 |<sub>Production</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>prod</sub>|
-
-## custom.market
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>United States</sub>|<sub>global</sub>|<sub>az[2]</sub>|<sub>us</sub>|
-|<sub>United Kingdom</sub>|<sub>global</sub>|<sub>az[2]</sub>|<sub>uk</sub>|
-|<sub>India</sub>|<sub>global</sub>|<sub>az[2]</sub>|<sub>in</sub>|
-|<sub>Brazil</sub>|<sub>global</sub>|<sub>az[2]</sub>|<sub>br</sub>|
-|<sub>China</sub>|<sub>global</sub>|<sub>az[2]</sub>|<sub>cn</sub>|
-
-## custom.onPrem
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Denver, CO</sub>|<sub>global</sub>|<sub>az[16]</sub>|<sub>denver</sub>|
-|<sub>New York, NY</sub>|<sub>global</sub>|<sub>az[16]</sub>|<sub>nyc</sub>|
-|<sub>Seattle, WA</sub>|<sub>global</sub>|<sub>az[16]</sub>|<sub>seattle</sub>|
-
-## custom.productGroup
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Contoso</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>contoso</sub>|
-|<sub>Information Security</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>infosec</sub>|
-|<sub>Core Networking</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>networks</sub>|
-
-## custom.productName
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Contoso Web</sub>|<sub>global</sub>|<sub>az[16]</sub>|<sub>contosoweb</sub>|
-|<sub>Contoso API</sub>|<sub>global</sub>|<sub>az[16]</sub>|<sub>contosoapi</sub>|
-
-## custom.resourceGroupType
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Shared Services</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>shared</sub>|
-|<sub>Application</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>app</sub>|
-
-## custom.serviceName
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Apache Webserver</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>apache</sub>|
-|<sub>Cassandra</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>cassandra</sub>|
-|<sub>Elasticsearch</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>es</sub>|
-|<sub>Monolith</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>mono</sub>|
-|<sub>Oracle</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>oracle</sub>|
-
-## custom.subnetType
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Application Gateway</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-appgateway</sub>|
-|<sub>VPN Gateway</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-vpngateway</sub>|
-|<sub>Azure Firewall</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-firewall</sub>|
-|<sub>Redis Cache</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-rediscache</sub>|
-|<sub>Azure SQL Database</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-sqldatabase</sub>|
-|<sub>Azure Container Instance</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-containers</sub>|
-|<sub>API Management</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-apimanagement</sub>|
-|<sub>App Service Environment</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-appservice</sub>|
-|<sub>Azure Logic Apps</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-logicapps</sub>|
-|<sub>Azure Dedicated HSM</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-dedicatedhsm</sub>|
-|<sub>Azure Netapp Files</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-netappfiles</sub>|
-|<sub>IaaS Public</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>iaas-public</sub>|
-|<sub>IaaS Outbound</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>iaas-outbound</sub>|
-|<sub>IaaS Private</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>iaas-private</sub>|
-|<sub>Azure Bastion Service</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>AzureBastionSubnet</sub>|
-
-## custom.subscriptionType
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Development</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>dev</sub>|
-|<sub>Non-Production</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>nonprod</sub>|
-|<sub>Production</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>production</sub>|
-
-## custom.virtualNetGwType
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-|<sub>Express Route Connection</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>expressroute</sub>|
-|<sub>Virtual Private Network</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>vpn</sub>|
 
 # Azure Entities
 
@@ -220,39 +112,39 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>service</sub>|<sub>global</sub>|<sub>a9[50]</sub>|<sub></sub>|<sub></sub>|
-|<sub>api-version-sets</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>apis</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>issues</sub>|<sub>api</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>attachments</sub>|<sub>issue</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>comments</sub>|<sub>issue</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>operations</sub>|<sub>api</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>tags</sub>|<sub>operation</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
+|<sub>service</sub>|<sub>global</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
+|<sub>api-version-sets</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>apis</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>issues</sub>|<sub>api</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>attachments</sub>|<sub>issue</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>comments</sub>|<sub>issue</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>operations</sub>|<sub>api</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>tags</sub>|<sub>operation</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>releases</sub>|<sub>api</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
-|<sub>schemas</sub>|<sub>api</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>tagDescriptions</sub>|<sub>api</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>tags</sub>|<sub>api</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>authorizationServers</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>backends</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>certificates</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>diagnostics</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>groups</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>users</sub>|<sub>group</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>identityProviders</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>loggers</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>notifications</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>recipientEmails</sub>|<sub>notification</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>openidConnectProviders</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>policies</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>products</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>apis</sub>|<sub>product</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>groups</sub>|<sub>product</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>tags</sub>|<sub>product</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>properties</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>subscriptions</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>tags</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>templates</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
-|<sub>users</sub>|<sub>service</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
+|<sub>schemas</sub>|<sub>api</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>tagDescriptions</sub>|<sub>api</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>tags</sub>|<sub>api</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>authorizationServers</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>backends</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>certificates</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>diagnostics</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>groups</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>users</sub>|<sub>group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>identityProviders</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>loggers</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>notifications</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>recipientEmails</sub>|<sub>notification</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>openidConnectProviders</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>policies</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>products</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>apis</sub>|<sub>product</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>groups</sub>|<sub>product</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>tags</sub>|<sub>product</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>properties</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>subscriptions</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>tags</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>templates</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>users</sub>|<sub>service</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.AppConfiguration
 
@@ -265,11 +157,9 @@ most pertinent information about the resource to the reader.  Examples are provi
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
 |<sub>locks</sub>|<sub>scope of assignment</sub>|<sub>a-9[90]</sub>|<sub></sub>|<sub></sub>|
-|<sub>policyAssignments</sub>|<sub>scope of assignment</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
+|<sub>policyAssignments</sub>|<sub>scope of assignment</sub>|<sub>a-9[255]</sub>|<sub></sub>|<sub></sub>|
 |<sub>policyDefinitions</sub>|<sub>scope of definition</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
 |<sub>policySetDefinitions</sub>|<sub>scope of definition</sub>|<sub>a-9[255]</sub>|<sub></sub>|<sub></sub>|
-|<sub>policyassignments</sub>|<sub>scope of assignment</sub>|<sub>a-9[255]</sub>|<sub></sub>|<sub></sub>|
-|<sub>policydefinitions</sub>|<sub>scope of definition</sub>|<sub>a-9[255]</sub>|<sub></sub>|<sub></sub>|
 |<sub>roleAssignments</sub>|<sub>tenant</sub>|<sub>must be a globally unique identifier (guid).[36]</sub>|<sub></sub>|<sub></sub>|
 |<sub>roleDefinitions</sub>|<sub>tenant</sub>|<sub>must be a globally unique identifier (guid).[36]</sub>|<sub></sub>|<sub></sub>|
 
@@ -277,7 +167,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>automationAccounts</sub>|<sub>resource group</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
+|<sub>automationAccounts</sub>|<sub>resource group & region <br>(See note below)</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
 |<sub>certificates</sub>|<sub>automation account</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
 |<sub>connections</sub>|<sub>automation account</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
 |<sub>credentials</sub>|<sub>automation account</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
@@ -349,8 +239,8 @@ most pertinent information about the resource to the reader.  Examples are provi
 | ------ | ------ | ------ | ------ | ------ |
 |<sub>availabilitySets</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>cloudservices</sub>|<sub>resource group</sub>|<sub>a-9[15 <br><br>See note below.]</sub>|<sub></sub>|<sub></sub>|
-|<sub>diskEncryptionSets</sub>|<sub>resource group</sub>|<sub>a9[80]</sub>|<sub></sub>|<sub></sub>|
-|<sub>disks</sub>|<sub>resource group</sub>|<sub>a9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>diskEncryptionSets</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>disks</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>galleries</sub>|<sub>resource group</sub>|<sub>a9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>applications</sub>|<sub>gallery</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>versions</sub>|<sub>application</sub>|<sub>0.9[64]</sub>|<sub></sub>|<sub></sub>|
@@ -359,7 +249,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 |<sub>images</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>snapshots</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualMachineScaleSets</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
-|<sub>virtualMachines</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub><[custom.productName[16]](README.md#customproductName)>-<[custom.serviceName[12]](README.md#customserviceName)>-<[custom.applicationName[12]](README.md#customapplicationName)>##</sub>|<sub>contosoweb-mono-docker01</sub>|
+|<sub>virtualMachines</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.Consumption
 
@@ -390,7 +280,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>managedClusters</sub>|<sub>resource group</sub>|<sub>a-9[63]</sub>|<sub>aks-<[custom.resourceGroupType[12]](README.md#customresourceGroupType)>-<[custom.productName[16]](README.md#customproductName)>-<[custom.environment[7]](README.md#customenvironment)>-<[custom.azureRegion[20]](README.md#customazureRegion)></sub>|<sub>aks-app-contosoweb-dev-eastus2</sub>|
+|<sub>managedClusters</sub>|<sub>resource group</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>openShiftManagedClusters</sub>|<sub>resource group</sub>|<sub>a9[30]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.CustomProviders
@@ -422,7 +312,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>servers</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub><[custom.productName[16]](README.md#customproductName)>-<[custom.environment[7]](README.md#customenvironment)>-mariadb##</sub>|<sub>contosoweb-prod-mariadb01</sub>|
+|<sub>servers</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>databases</sub>|<sub>servers</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>firewallRules</sub>|<sub>servers</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualNetworkRules</sub>|<sub>servers</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
@@ -431,7 +321,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>servers</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub><[custom.productName[16]](README.md#customproductName)>-<[custom.environment[7]](README.md#customenvironment)>-mysql##</sub>|<sub>contosoweb-prod-mysql01</sub>|
+|<sub>servers</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>databases</sub>|<sub>servers</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>firewallRules</sub>|<sub>servers</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualNetworkRules</sub>|<sub>servers</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
@@ -440,7 +330,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>servers</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub><[custom.productName[16]](README.md#customproductName)>-<[custom.environment[7]](README.md#customenvironment)>##</sub>|<sub>contosoweb-prod01</sub>|
+|<sub>servers</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>databases</sub>|<sub>servers</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>firewallRules</sub>|<sub>servers</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualNetworkRules</sub>|<sub>servers</sub>|<sub>a-9[128]</sub>|<sub></sub>|<sub></sub>|
@@ -493,7 +383,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>workspaces</sub>|<sub>resource group</sub>|<sub>a-9[30]</sub>|<sub></sub>|<sub></sub>|
+|<sub>workspaces</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.DevTestLab
 
@@ -518,7 +408,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>databaseAccounts</sub>|<sub>global</sub>|<sub>a-9[31]</sub>|<sub></sub>|<sub></sub>|
+|<sub>databaseAccounts</sub>|<sub>global</sub>|<sub>a-9[44]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.EventGrid
 
@@ -536,7 +426,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 |<sub>clusters</sub>|<sub>resource group</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
 |<sub>namespaces</sub>|<sub>global</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
 |<sub>AuthorizationRules</sub>|<sub>namespace</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
-|<sub>disasterRecoveryConfigs</sub>|<sub>namespace</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
+|<sub>disasterRecoveryConfigs</sub>|<sub>global</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
 |<sub>eventhubs</sub>|<sub>namespace</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
 |<sub>authorizationRules</sub>|<sub>event hub</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
 |<sub>consumergroups</sub>|<sub>event hub</sub>|<sub>a-9[50]</sub>|<sub></sub>|<sub></sub>|
@@ -573,7 +463,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>vaults</sub>|<sub>global</sub>|<sub>a-9[24]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)><[custom.subscriptionType[12]](README.md#customsubscriptionType)></sub>|<sub>contosoproduction</sub>|
+|<sub>vaults</sub>|<sub>global</sub>|<sub>a-9[24]</sub>|<sub></sub>|<sub></sub>|
 |<sub>secrets</sub>|<sub>Vault</sub>|<sub>a-9[127]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.Kusto
@@ -642,27 +532,27 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>applicationGateways</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-<[custom.azureRegion[20]](README.md#customazureRegion)>-appgateway<##></sub>|<sub>contoso-production-useast2-appgateway01</sub>|
-|<sub>applicationSecurityGroups</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.serviceName[12]](README.md#customserviceName)>-app-security-group<##></sub>|<sub>apache-app-security-group01</sub>|
-|<sub>azureFirewalls</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-<[custom.azureRegion[20]](README.md#customazureRegion)>-firewall<##></sub>|<sub>contoso-production-useast2-firewall01</sub>|
-|<sub>bastionHosts</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-bastion<##></sub>|<sub>contoso-production-useast2-bastion01</sub>|
-|<sub>connections</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-to-<[custom.onPrem[16]](README.md#customonPrem)>-connection</sub>|<sub>contoso-production-to-nyc-connection</sub>|
-|<sub>dnsZones</sub>|<sub>resource group</sub>|<sub>a-9[63]</sub>|<sub><[custom.serviceName[12]](README.md#customserviceName)>.<[custom.productName[16]](README.md#customproductName)>.<[custom.productGroup[12]](README.md#customproductGroup)>.<[custom.subscriptionType[12]](README.md#customsubscriptionType)>.<[custom.market[2]](README.md#custommarket)>.<root domain></sub>|<sub>es01.contosoapi.contoso.prod.us.<root domain></sub>|
-|<sub>expressRouteCircuits</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-expressroute-circuit<##></sub>|<sub>contoso-production-useast2-expressroute-circuit01</sub>|
-|<sub>firewallPolicies</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-<[custom.azureRegion[20]](README.md#customazureRegion)>-waf-policy<##></sub>|<sub>contoso-production-useast2-waf-policy01</sub>|
-|<sub>ruleGroups</sub>|<sub>firewall policy</sub>|<sub>a-9[80]</sub>|<sub><rule_group_purpose[64]>-rule-group</sub>|<sub>permitwebservers-rule-group</sub>|
+|<sub>applicationGateways</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>applicationSecurityGroups</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>azureFirewalls</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>bastionHosts</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>connections</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>dnsZones</sub>|<sub>resource group</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
+|<sub>expressRouteCircuits</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>firewallPolicies</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>ruleGroups</sub>|<sub>firewall policy</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>frontDoors</sub>|<sub>global</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
 |<sub>frontdoorWebApplicationFirewallPolicies</sub>|<sub>resource group</sub>|<sub>a9[128]</sub>|<sub></sub>|<sub></sub>|
-|<sub>loadBalancers</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.serviceName[12]](README.md#customserviceName)>-<[custom.environment[7]](README.md#customenvironment)>-loadbalancer<##></sub>|<sub>apache-prod-loadbalancer01</sub>|
+|<sub>loadBalancers</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>inboundNatRules</sub>|<sub>load balancer</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
-|<sub>localNetworkGateways</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.onPrem[16]](README.md#customonPrem)>-<[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-local-network-gateway</sub>|<sub>nyc-contoso-nonprod-local-network-gateway</sub>|
-|<sub>networkInterfaces</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productName[16]](README.md#customproductName)>-<[custom.serviceName[12]](README.md#customserviceName)>-<[custom.applicationName[12]](README.md#customapplicationName)>-<[custom.environment[7]](README.md#customenvironment)>##-<[custom.subnetType[24]](README.md#customsubnetType)>-interface##</sub>|<sub>contosoweb-mono-docker-prod01-iaas-public-interface01</sub>|
-|<sub>networkSecurityGroups</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.resourceGroupType[12]](README.md#customresourceGroupType)>-<[custom.productName[16]](README.md#customproductName)>-<[custom.subnetType[24]](README.md#customsubnetType)>-security-group</sub>|<sub>app-contoso-private-security-group</sub>|
+|<sub>localNetworkGateways</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>networkInterfaces</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>networkSecurityGroups</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>securityRules</sub>|<sub>network security group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>networkWatchers</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>privateDnsZones</sub>|<sub>resource group</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualNetworkLinks</sub>|<sub>private DNS zone</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
-|<sub>publicIPAddresses</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.serviceName[12]](README.md#customserviceName)>-<[custom.environment[7]](README.md#customenvironment)>-publicip<##></sub>|<sub>apache-prod-publicip01</sub>|
+|<sub>publicIPAddresses</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>publicIPPrefixes</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>routeFilters</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>routeFilterRules</sub>|<sub>route filter</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
@@ -671,11 +561,11 @@ most pertinent information about the resource to the reader.  Examples are provi
 |<sub>serviceEndpointPolicies</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>trafficmanagerprofiles</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualNetworkGateways</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
-|<sub>virtualNetworks</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub><[custom.resourceGroupType[12]](README.md#customresourceGroupType)>-<[custom.productName[16]](README.md#customproductName)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-<[custom.azureRegion[20]](README.md#customazureRegion)>-vnet</sub>|<sub>app-contoso-nonprod-useast2-vnet</sub>|
+|<sub>virtualNetworks</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualNetworkPeerings</sub>|<sub>virtual network</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>virtualWans</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
-|<sub>subnets</sub>|<sub>virtual network</sub>|<sub>a-9[80]</sub>|<sub><[custom.subnetType[24]](README.md#customsubnetType)>-subnet<##></sub>|<sub>private-subnet01</sub>|
-|<sub>vpnGateways</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-<[custom.virtualNetGwType[12]](README.md#customvirtualNetGwType)></sub>|<sub>contoso-nonprod-expressroute</sub>|
+|<sub>subnets</sub>|<sub>virtual network</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
+|<sub>vpnGateways</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>vpnConnections</sub>|<sub>VPN gateway</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 |<sub>vpnSites</sub>|<sub>resource group</sub>|<sub>a-9[80]</sub>|<sub></sub>|<sub></sub>|
 
@@ -693,7 +583,7 @@ most pertinent information about the resource to the reader.  Examples are provi
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
 |<sub>clusters</sub>|<sub>resource group</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
-|<sub>workspaces</sub>|<sub>resource group</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
+|<sub>workspaces</sub>|<sub>global</sub>|<sub>a-9[63]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.OperationsManagement
 
@@ -741,10 +631,10 @@ most pertinent information about the resource to the reader.  Examples are provi
 
 |<sub>Entity</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Convention</sub>|<sub>Example</sub>|
 | ------ | ------ | ------ | ------ | ------ |
-|<sub>deployments</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub><[custom.productGroup[12]](README.md#customproductGroup)>-<[custom.subscriptionType[12]](README.md#customsubscriptionType)>-<[custom.azureRegion[20]](README.md#customazureRegion)>-deployment<###></sub>|<sub>contoso-nonprod-useast2-deployment001</sub>|
-|<sub>resourcegroups</sub>|<sub>subscription</sub>|<sub>a-9[90]</sub>|<sub><[custom.resourceGroupType[12]](README.md#customresourceGroupType)>-<[custom.productName[16]](README.md#customproductName)>-<[custom.environment[7]](README.md#customenvironment)>-<[custom.azureRegion[20]](README.md#customazureRegion)></sub>|<sub>app-contosoweb-dev-useast2</sub>|
-|<sub>tagNames</sub>|<sub>resource</sub>|<sub>a-9[512]</sub>|<sub><custom.tagName></sub>|<sub>environment</sub>|
-|<sub>tagValues</sub>|<sub>tag name</sub>|<sub>a-9[256]</sub>|<sub><custom.* value></sub>|<sub>production</sub>|
+|<sub>deployments</sub>|<sub>resource group</sub>|<sub>a-9[64]</sub>|<sub></sub>|<sub></sub>|
+|<sub>resourcegroups</sub>|<sub>subscription</sub>|<sub>a-9[90]</sub>|<sub></sub>|<sub></sub>|
+|<sub>tagNames</sub>|<sub>resource</sub>|<sub>a-9[512]</sub>|<sub></sub>|<sub></sub>|
+|<sub>tagValues</sub>|<sub>tag name</sub>|<sub>a-9[256]</sub>|<sub></sub>|<sub></sub>|
 |<sub>templateSpecs</sub>|<sub>resource group</sub>|<sub>a-9[90]</sub>|<sub></sub>|<sub></sub>|
 
 ## azure.Security
@@ -863,5 +753,5 @@ most pertinent information about the resource to the reader.  Examples are provi
 | ------ | ------ | ------ | ------ | ------ |
 |<sub>certificates</sub>|<sub>resource group</sub>|<sub>can't use:<br>`/` <br><br>can't end with space or period.[260]</sub>|<sub></sub>|<sub></sub>|
 |<sub>serverfarms</sub>|<sub>resource group</sub>|<sub>a-9[40]</sub>|<sub></sub>|<sub></sub>|
-|<sub>sites</sub>|<sub>global</sub>|<sub>a-9[60]</sub>|<sub></sub>|<sub></sub>|
+|<sub>sites</sub>|<sub>global or per domain. See note below.</sub>|<sub>a-9[60]</sub>|<sub></sub>|<sub></sub>|
 |<sub>slots</sub>|<sub>site</sub>|<sub>a-9[59]</sub>|<sub></sub>|<sub></sub>|

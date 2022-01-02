@@ -15,8 +15,8 @@
             "scope": "global",
             "maxlength": "63",
             "rule": "a-9",
-            "convention": "<custom.productName>-<custom.environment>-mariadb##",
-            "example": "contosoweb-prod-mariadb01"
+            "convention": "",
+            "example": ""
         },
         {
             "category": "DBforMySQL",
@@ -24,8 +24,8 @@
             "scope": "global",
             "maxlength": "63",
             "rule": "a-9",
-            "convention": "<custom.productName>-<custom.environment>-mysql##",
-            "example": "contosoweb-prod-mysql01"
+            "convention": "",
+            "example": ""
         },
         {
             "category": "DBforPostgreSQL",
@@ -33,8 +33,8 @@
             "scope": "global",
             "maxlength": "63",
             "rule": "a-9",
-            "convention": "<custom.productName>-<custom.environment>##",
-            "example": "contosoweb-prod01"
+            "convention": "",
+            "example": ""
         },
         {
             "category": "Sql",
@@ -52,7 +52,7 @@
             "entity": "service",
             "scope": "global",
             "maxlength": "50",
-            "rule": "a9",
+            "rule": "a-9",
             "convention": "",
             "example": ""
         }
@@ -62,7 +62,7 @@
             "category": "ApiManagement",
             "entity": "apis",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -73,7 +73,7 @@
             "category": "ApiManagement",
             "entity": "issues",
             "scope": "api",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -84,7 +84,7 @@
             "category": "ApiManagement",
             "entity": "attachments",
             "scope": "issue",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -95,7 +95,7 @@
             "category": "ApiManagement",
             "entity": "comments",
             "scope": "issue",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -106,7 +106,7 @@
             "category": "ApiManagement",
             "entity": "operations",
             "scope": "api",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -117,7 +117,7 @@
             "category": "ApiManagement",
             "entity": "tags",
             "scope": "operation",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -139,7 +139,7 @@
             "category": "ApiManagement",
             "entity": "schemas",
             "scope": "api",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -150,7 +150,7 @@
             "category": "ApiManagement",
             "entity": "tagDescriptions",
             "scope": "api",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -161,7 +161,7 @@
             "category": "ApiManagement",
             "entity": "tags",
             "scope": "api",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -172,7 +172,7 @@
             "category": "ApiManagement",
             "entity": "api-version-sets",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -183,7 +183,7 @@
             "category": "ApiManagement",
             "entity": "authorizationServers",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -194,7 +194,7 @@
             "category": "ApiManagement",
             "entity": "backends",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -205,7 +205,7 @@
             "category": "ApiManagement",
             "entity": "certificates",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -216,7 +216,7 @@
             "category": "ApiManagement",
             "entity": "diagnostics",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -227,7 +227,7 @@
             "category": "ApiManagement",
             "entity": "groups",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -238,7 +238,7 @@
             "category": "ApiManagement",
             "entity": "users",
             "scope": "group",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -249,7 +249,7 @@
             "category": "ApiManagement",
             "entity": "identityProviders",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -260,7 +260,7 @@
             "category": "ApiManagement",
             "entity": "loggers",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -271,7 +271,7 @@
             "category": "ApiManagement",
             "entity": "notifications",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -282,7 +282,7 @@
             "category": "ApiManagement",
             "entity": "recipientEmails",
             "scope": "notification",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -293,7 +293,7 @@
             "category": "ApiManagement",
             "entity": "openidConnectProviders",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -304,7 +304,7 @@
             "category": "ApiManagement",
             "entity": "policies",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -315,7 +315,7 @@
             "category": "ApiManagement",
             "entity": "products",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -326,7 +326,7 @@
             "category": "ApiManagement",
             "entity": "apis",
             "scope": "product",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -337,7 +337,7 @@
             "category": "ApiManagement",
             "entity": "groups",
             "scope": "product",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -348,7 +348,7 @@
             "category": "ApiManagement",
             "entity": "tags",
             "scope": "product",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -359,7 +359,7 @@
             "category": "ApiManagement",
             "entity": "properties",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -370,7 +370,7 @@
             "category": "ApiManagement",
             "entity": "subscriptions",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -381,7 +381,7 @@
             "category": "ApiManagement",
             "entity": "tags",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -392,7 +392,7 @@
             "category": "ApiManagement",
             "entity": "templates",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -403,7 +403,7 @@
             "category": "ApiManagement",
             "entity": "users",
             "scope": "service",
-            "maxlength": "256",
+            "maxlength": "80",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -436,7 +436,7 @@
             "category": "Authorization",
             "entity": "policyAssignments",
             "scope": "scope of assignment",
-            "maxlength": "64",
+            "maxlength": "255",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -490,7 +490,7 @@
         {
             "category": "Automation",
             "entity": "automationAccounts",
-            "scope": "resource group",
+            "scope": "resource group & region <br>(See note below)",
             "maxlength": "50",
             "rule": "a-9",
             "convention": "",
@@ -805,7 +805,7 @@
             "entity": "diskEncryptionSets",
             "scope": "resource group",
             "maxlength": "80",
-            "rule": "a9",
+            "rule": "a-9",
             "convention": "",
             "example": ""
         }
@@ -816,7 +816,7 @@
             "entity": "disks",
             "scope": "resource group",
             "maxlength": "80",
-            "rule": "a9",
+            "rule": "a-9",
             "convention": "",
             "example": ""
         }
@@ -905,8 +905,8 @@
             "scope": "resource group",
             "maxlength": "64",
             "rule": "a-9",
-            "convention": "<custom.productName>-<custom.serviceName>-<custom.applicationName>##",
-            "example": "contosoweb-mono-docker01"
+            "convention": "",
+            "example": ""
         }
     ],
     "virtualMachineScaleSets": [
@@ -1048,8 +1048,8 @@
             "scope": "resource group",
             "maxlength": "63",
             "rule": "a-9",
-            "convention": "aks-<custom.resourceGroupType>-<custom.productName>-<custom.environment>-<custom.azureRegion>",
-            "example": "aks-app-contosoweb-dev-eastus2"
+            "convention": "",
+            "example": ""
         }
     ],
     "openShiftManagedClusters": [
@@ -1253,7 +1253,7 @@
             "category": "Databricks",
             "entity": "workspaces",
             "scope": "resource group",
-            "maxlength": "30",
+            "maxlength": "64",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -1279,7 +1279,7 @@
         {
             "category": "OperationalInsights",
             "entity": "workspaces",
-            "scope": "resource group",
+            "scope": "global",
             "maxlength": "63",
             "rule": "a-9",
             "convention": "",
@@ -1669,7 +1669,7 @@
             "category": "DocumentDB",
             "entity": "databaseAccounts",
             "scope": "global",
-            "maxlength": "31",
+            "maxlength": "44",
             "rule": "a-9",
             "convention": "",
             "example": ""
@@ -1846,7 +1846,7 @@
         {
             "category": "EventHub",
             "entity": "disasterRecoveryConfigs",
-            "scope": "namespace",
+            "scope": "global",
             "maxlength": "50",
             "rule": "a-9",
             "convention": "",
@@ -1968,8 +1968,8 @@
             "scope": "global",
             "maxlength": "24",
             "rule": "a-9",
-            "convention": "<custom.productGroup><custom.subscriptionType>",
-            "example": "contosoproduction"
+            "convention": "",
+            "example": ""
         },
         {
             "category": "RecoveryServices",
@@ -2252,8 +2252,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-<custom.azureRegion>-appgateway<##>",
-            "example": "contoso-production-useast2-appgateway01"
+            "convention": "",
+            "example": ""
         }
     ],
     "applicationSecurityGroups": [
@@ -2263,8 +2263,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.serviceName>-app-security-group<##>",
-            "example": "apache-app-security-group01"
+            "convention": "",
+            "example": ""
         }
     ],
     "azureFirewalls": [
@@ -2274,8 +2274,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-<custom.azureRegion>-firewall<##>",
-            "example": "contoso-production-useast2-firewall01"
+            "convention": "",
+            "example": ""
         }
     ],
     "bastionHosts": [
@@ -2285,8 +2285,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-bastion<##>",
-            "example": "contoso-production-useast2-bastion01"
+            "convention": "",
+            "example": ""
         }
     ],
     "connections": [
@@ -2296,8 +2296,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-to-<custom.onPrem>-connection",
-            "example": "contoso-production-to-nyc-connection"
+            "convention": "",
+            "example": ""
         }
     ],
     "dnsZones": [
@@ -2307,8 +2307,8 @@
             "scope": "resource group",
             "maxlength": "63",
             "rule": "a-9",
-            "convention": "<custom.serviceName>.<custom.productName>.<custom.productGroup>.<custom.subscriptionType>.<custom.market>.<root domain>",
-            "example": "es01.contosoapi.contoso.prod.us.<root domain>"
+            "convention": "",
+            "example": ""
         }
     ],
     "expressRouteCircuits": [
@@ -2318,8 +2318,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-expressroute-circuit<##>",
-            "example": "contoso-production-useast2-expressroute-circuit01"
+            "convention": "",
+            "example": ""
         }
     ],
     "firewallPolicies": [
@@ -2329,8 +2329,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-<custom.azureRegion>-waf-policy<##>",
-            "example": "contoso-production-useast2-waf-policy01"
+            "convention": "",
+            "example": ""
         }
     ],
     "firewallPolicies/ruleGroups": [
@@ -2340,8 +2340,8 @@
             "scope": "firewall policy",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<rule_group_purpose[64]>-rule-group",
-            "example": "permitwebservers-rule-group"
+            "convention": "",
+            "example": ""
         }
     ],
     "frontDoors": [
@@ -2373,8 +2373,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.serviceName>-<custom.environment>-loadbalancer<##>",
-            "example": "apache-prod-loadbalancer01"
+            "convention": "",
+            "example": ""
         }
     ],
     "loadBalancers/inboundNatRules": [
@@ -2395,8 +2395,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.onPrem>-<custom.productGroup>-<custom.subscriptionType>-local-network-gateway",
-            "example": "nyc-contoso-nonprod-local-network-gateway"
+            "convention": "",
+            "example": ""
         }
     ],
     "networkInterfaces": [
@@ -2406,8 +2406,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productName>-<custom.serviceName>-<custom.applicationName>-<custom.environment>##-<custom.subnetType>-interface##",
-            "example": "contosoweb-mono-docker-prod01-iaas-public-interface01"
+            "convention": "",
+            "example": ""
         }
     ],
     "networkSecurityGroups": [
@@ -2417,8 +2417,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.resourceGroupType>-<custom.productName>-<custom.subnetType>-security-group",
-            "example": "app-contoso-private-security-group"
+            "convention": "",
+            "example": ""
         }
     ],
     "networkSecurityGroups/securityRules": [
@@ -2472,8 +2472,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.serviceName>-<custom.environment>-publicip<##>",
-            "example": "apache-prod-publicip01"
+            "convention": "",
+            "example": ""
         }
     ],
     "publicIPPrefixes": [
@@ -2571,8 +2571,8 @@
             "scope": "resource group",
             "maxlength": "64",
             "rule": "a-9",
-            "convention": "<custom.resourceGroupType>-<custom.productName>-<custom.subscriptionType>-<custom.azureRegion>-vnet",
-            "example": "app-contoso-nonprod-useast2-vnet"
+            "convention": "",
+            "example": ""
         }
     ],
     "virtualnetworks/subnets": [
@@ -2582,8 +2582,8 @@
             "scope": "virtual network",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.subnetType>-subnet<##>",
-            "example": "private-subnet01"
+            "convention": "",
+            "example": ""
         }
     ],
     "virtualNetworks/virtualNetworkPeerings": [
@@ -2615,8 +2615,8 @@
             "scope": "resource group",
             "maxlength": "80",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-<custom.virtualNetGwType>",
-            "example": "contoso-nonprod-expressroute"
+            "convention": "",
+            "example": ""
         }
     ],
     "vpnGateways/vpnConnections": [
@@ -2769,8 +2769,8 @@
             "scope": "resource group",
             "maxlength": "64",
             "rule": "a-9",
-            "convention": "<custom.productGroup>-<custom.subscriptionType>-<custom.azureRegion>-deployment<###>",
-            "example": "contoso-nonprod-useast2-deployment001"
+            "convention": "",
+            "example": ""
         }
     ],
     "resourcegroups": [
@@ -2780,8 +2780,8 @@
             "scope": "subscription",
             "maxlength": "90",
             "rule": "a-9",
-            "convention": "<custom.resourceGroupType>-<custom.productName>-<custom.environment>-<custom.azureRegion>",
-            "example": "app-contosoweb-dev-useast2"
+            "convention": "",
+            "example": ""
         }
     ],
     "tagNames": [
@@ -2791,8 +2791,8 @@
             "scope": "resource",
             "maxlength": "512",
             "rule": "a-9",
-            "convention": "<custom.tagName>",
-            "example": "environment"
+            "convention": "",
+            "example": ""
         }
     ],
     "tagNames/tagValues": [
@@ -2802,8 +2802,8 @@
             "scope": "tag name",
             "maxlength": "256",
             "rule": "a-9",
-            "convention": "<custom.* value>",
-            "example": "production"
+            "convention": "",
+            "example": ""
         }
     ],
     "templateSpecs": [
@@ -3426,7 +3426,7 @@
         {
             "category": "Web",
             "entity": "sites",
-            "scope": "global",
+            "scope": "global or per domain. See note below.",
             "maxlength": "60",
             "rule": "a-9",
             "convention": "",
@@ -3439,28 +3439,6 @@
             "entity": "slots",
             "scope": "site",
             "maxlength": "59",
-            "rule": "a-9",
-            "convention": "",
-            "example": ""
-        }
-    ],
-    "policyassignments": [
-        {
-            "category": "Authorization",
-            "entity": "policyassignments",
-            "scope": "scope of assignment",
-            "maxlength": "255",
-            "rule": "a-9",
-            "convention": "",
-            "example": ""
-        }
-    ],
-    "policydefinitions": [
-        {
-            "category": "Authorization",
-            "entity": "policydefinitions",
-            "scope": "scope of definition",
-            "maxlength": "255",
             "rule": "a-9",
             "convention": "",
             "example": ""
