@@ -17,40 +17,48 @@ module "resource_group" {
 
 
 module "network" {
-    source = "github.com/danielscholl/iac-terraform/modules/network"
+  source     = "../"
+  depends_on = [module.resource_group]
 
-    name                = "iac-terraform-vnet-${module.resource_group.random}"
-    resource_group_name = module.resource_group.name
-    address_space       = "10.0.1.0/24"
-    dns_servers         = ["8.8.8.8"]
-    subnet_prefixes     = ["10.0.1.0/26", "10.0.1.64/26", "10.0.1.128/26", "10.0.1.192/27", "10.0.1.224/28"]
-    subnet_names        = ["Web-Tier", "App-Tier", "Data-Tier", "Mgmt-Tier", "GatewaySubnet"]
+  name                = "iac-terraform-vnet-${module.resource_group.random}"
+  resource_group_name = module.resource_group.name
 
-    # Tags
-    resource_tags = {
-      iac = "terraform"
+  dns_servers = ["8.8.8.8"]
+  address_space = ["10.0.1.0/24"]
+  subnets = {
+    Web-Tier = {
+      cidrs = ["10.0.1.0/26"]
+
+      allow_vnet_inbound      = true
+      allow_vnet_outbound     = true
+      allow_internet_outbound = true
     }
+    App-Tier = {
+      cidrs = ["10.0.1.64/26"]
+
+      allow_vnet_inbound  = true
+      allow_vnet_outbound = true
+    }
+    Data-Tier = {
+      cidrs = ["10.0.1.128/26"]
+
+      allow_vnet_inbound = true
+    }
+    Mgmt-Tier = {
+      cidrs = ["10.0.1.192/27"]
+
+      create_network_security_group = true
+    }
+    GatewaySubnet = {
+      cidrs = ["10.0.1.224/28"]
+
+      create_network_security_group = false
+    }
+  }
+
+  # Tags
+  resource_tags = {
+    iac = "terraform"
+  }
 }
 ```
-
-## Inputs
-
-| Variable Name                     | Type       | Description                          | 
-| --------------------------------- | ---------- | ------------------------------------ |
-| `name`                            | _string_   | The name of the web app service.     |
-| `resource_group_name`             | _string_   | The name of an existing resource group. |
-| `resource_tags`                   | _list_     | Map of tags to apply to taggable resources in this module. |
-| `address_space`                   | _string_   | The address space that is used by the virtual network. Default: `10.0.0.0/16` |
-| `dns_servers`                     | _list_     | The DNS servers to be used with vNet. |
-| `subnet_prefixes`                 | _list_     | The address prefix to use for the subnet. Default: `["10.0.1.0/24"]`
-| `subnet_names`                    | _list_     | A list of public subnets inside the vNet. Default: `["subnet1"]`
-
-
-## Outputs
-
-Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
-
-- `id`: The virtual network Id.
-- `name`: The Application Insights Instrumentation Key.
-- `address_space`: The address space of the virtual network.
-- `subnets`: The ids of subnets created inside the virtual network.
