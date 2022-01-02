@@ -1,6 +1,8 @@
 name: Generate Naming Rules
-on: [push, pull_request]
-  paths: 'modules/naming/**'
+on: 
+  push
+    paths:
+      - 'modules/naming/**'
 jobs:
 
   naming-doc:
