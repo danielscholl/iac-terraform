@@ -98,6 +98,7 @@ named and tagged in Azure.
 |<sub>Infrastructure as Code</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>iac</sub>|
 |<sub>OSDU</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>osdu</sub>|
 |<sub>Engineering Team</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>engineering</sub>|
+|<sub>Cluster Sample</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>multicluster</sub>|
 
 ## custom.subnetType
 
