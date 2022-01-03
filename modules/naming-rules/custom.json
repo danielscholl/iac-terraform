@@ -1,12 +1,4 @@
 {
-  "contact": {
-    "category": "Custom",
-    "entity": "contact",
-    "scope": "global",
-    "maxlength": "20",
-    "rule": "az",
-    "allowed_values": {}
-  },
   "environment": {
     "category": "Custom",
     "entity": "environment",
@@ -19,6 +11,17 @@
       "qa": "Quality Assurance",
       "uat": "User Acceptance Testing",
       "prod": "Production"
+    }
+  },
+  "product": {
+    "category": "Custom",
+    "entity": "product",
+    "scope": "global",
+    "maxlength": "12",
+    "rule": "az",
+    "allowed_values": {
+      "osdu": "Open Subsurface Data Universe",
+      "engineering": "Engineering Team"
     }
   },
   "azureRegion": {

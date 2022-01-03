@@ -21,28 +21,21 @@ module "subscription" {
 }
 
 module "naming" {
-  source = "../../naming"
+  source = "../../naming-rules"
 }
 
 module "metadata" {
   source = "../"
 
   naming_rules = module.naming.yaml
-
-  market              = "us"
-  project             = "https://github.com/danielscholl/iac-terraform"
+  
   location            = "eastus2"
   environment         = "sandbox"
-  product_name        = "contosoweb"
-  business_unit       = "infra"
-  product_group       = "contoso"
-  subscription_id     = module.subscription.output.subscription_id
-  subscription_type   = "dev"
-  resource_group_type = "app"
+  product             = "engineering"
 
   additional_tags = {
-    "support_email" = "support@contoso.com"
-    "owner"         = "Jon Doe"
+    "repo"         = "https://github.com/danielscholl/iac-terraform"
+    "owner"         = "Daniel Scholl"
   }
 }
 
