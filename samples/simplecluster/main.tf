@@ -37,13 +37,21 @@ provider "azurerm" {
   features {}
 }
 
-# provider "null" {
-#   version = "~>3.1.0"
-# }
+provider "kubernetes" {
+  host                   = module.kubernetes.kube_config.host
+  client_certificate     = base64decode(module.kubernetes.kube_config.client_certificate)
+  client_key             = base64decode(module.kubernetes.kube_config.client_key)
+  cluster_ca_certificate = base64decode(module.kubernetes.kube_config.cluster_ca_certificate)
+}
 
-# provider "random" {
-#   version = "~>3.1.0"
-# }
+provider "helm" {
+  kubernetes {
+    host                   = module.kubernetes.kube_config.host
+    client_certificate     = base64decode(module.kubernetes.kube_config.client_certificate)
+    client_key             = base64decode(module.kubernetes.kube_config.client_key)
+    cluster_ca_certificate = base64decode(module.kubernetes.kube_config.cluster_ca_certificate)
+  }
+}
 
 
 #-------------------------------
@@ -142,99 +150,51 @@ resource "null_resource" "save-key" {
   }
 }
 
-module "subscription" {
-  source = "../../modules/subscription-data"
-  subscription_id = data.azurerm_subscription.current.subscription_id
-}
-
 module "naming" {
-  source = "../../modules/naming"
+  source = "github.com/danielscholl/iac-terraform.git/modules/naming-rules"
 }
 
 module "metadata" {
-  source = "../../modules/metadata"
+  source = "github.com/danielscholl/iac-terraform.git/modules/metadata"
 
   naming_rules = module.naming.yaml
-
-  project             = "https://github.com/danielscholl/iac-terraform/simplecluster/"
+  
   location            = "eastus2"
-  environment         = "sandbox"
-  product_name        = random_string.workspace_scope.result
-  contact             = "Daniel Scholl"
-  product_group       = "contoso"
-  subscription_id     = module.subscription.output.subscription_id
-  subscription_type   = "dev"
-  resource_group_type = "app"
+  product             = "iac"
+  environment         = "tf"
+
+  additional_tags = {
+    "repo"         = "https://github.com/danielscholl/iac-terraform"
+    "owner"         = "Daniel Scholl"
+  }
 }
 
 #-------------------------------
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "../../modules/resource-group"
+  source = "github.com/danielscholl/iac-terraform.git/modules/resource-group"
 
-  name     = local.name
-  location = local.location
-
+  names = module.metadata.names
+  location = module.metadata.location
   resource_tags = module.metadata.tags
 }
-
-
-#-------------------------------
-# Container Registry
-#-------------------------------
-module "container_registry" {
-  source = "../../modules/container-registry"
-  depends_on = [module.resource_group]
-
-  name                = local.registry_name
-  resource_group_name = module.resource_group.name
-
-  is_admin_enabled = false
-
-  resource_tags = module.metadata.tags
-}
-
-
-#-------------------------------
-# Azure Key Vault
-#-------------------------------
-module "keyvault" {
-  # Module Path
-  source = "../../modules/keyvault"
-  depends_on = [module.resource_group]
-
-  # Module variable
-  name                = local.keyvault_name
-  resource_group_name = module.resource_group.name
-
-  resource_tags = module.metadata.tags
-}
-
-module "keyvault_secret" {
-  # Module Path
-  source = "../../modules/keyvault-secret"
-  depends_on = [module.keyvault]
-
-  keyvault_id = module.keyvault.id
-  secrets = {
-    "sshKey"       = tls_private_key.key.private_key_pem
-  }
-}
-
 
 #-------------------------------
 # Virtual Network
 #-------------------------------
 module "network" {
-  source     = "../../modules/network"
+  source     = "github.com/danielscholl/iac-terraform.git/modules/network"
   depends_on = [module.resource_group]
 
-  name                = local.vnet_name
+  naming_rules = module.naming.yaml
+
   resource_group_name = module.resource_group.name
+  names               = module.metadata.names
+  resource_tags       = module.metadata.tags
+
 
   dns_servers = ["8.8.8.8"]
-
   address_space = ["10.1.0.0/22"]
 
   subnets = {
@@ -266,24 +226,22 @@ module "network" {
       }
     }
   }  
-
-
-  # Tags
-  resource_tags = module.metadata.tags
 }
 
 #-------------------------------
 # Azure Kubernetes Service
 #-------------------------------
-module "aks" {
-  source     = "../../modules/aks"
-  depends_on = [module.resource_group]
+module "kubernetes" {
+  source     = "github.com/danielscholl/iac-terraform.git/modules/aks"
+  depends_on = [module.resource_group, module.network]
 
   name                 = local.cluster_name
-  resource_group_name = module.resource_group.name
+  resource_group_name  = module.resource_group.name
+  resource_tags        = module.metadata.tags
 
-  identity_type       = "UserAssigned"
-  dns_prefix          = local.cluster_name
+  identity_type         = "UserAssigned"
+  network_plugin          = "azure"
+  configure_network_role  = true
 
   virtual_network = { 
     subnets = {
@@ -308,32 +266,96 @@ module "aks" {
       vm_size                = "Standard_B2s"
       enable_host_encryption = true
 
-      node_count = 3
+      node_count = 2
+      only_critical_addons_enabled = true
+      subnet = "private"
+    }
+    linuxweb = {
+      vm_size             = "Standard_B2ms"
+      enable_auto_scaling = true
+      min_count           = 1
+      max_count           = 3
+      subnet              = "public"
     }
   }
-
-  resource_tags = module.metadata.tags
 }
 
+# resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
+#   name                        = "AllowNginx"
+#   priority                    = 100
+#   direction                   = "Inbound"
+#   access                      = "Allow"
+#   protocol                    = "tcp"
+#   source_port_range           = "*"
+#   destination_port_range      = "80"
+#   source_address_prefix       = "Internet"
+#   destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
+#   resource_group_name         = module.virtual_network.subnets["iaas-public"].resource_group_name
+#   network_security_group_name = module.virtual_network.subnets["iaas-public"].network_security_group_name
+# }
 
-# module "aks" {
-#   source = "../../modules/aks"
+# resource "azurerm_network_security_rule" "ingress_public_allow_iis" {
+#   name                        = "AllowIIS"
+#   priority                    = 101
+#   direction                   = "Inbound"
+#   access                      = "Allow"
+#   protocol                    = "tcp"
+#   source_port_range           = "*"
+#   destination_port_range      = "80"
+#   source_address_prefix       = "Internet"
+#   destination_address_prefix  = data.kubernetes_service.iis.status.0.load_balancer.0.ingress.0.ip
+#   resource_group_name         = module.virtual_network.subnets["iaas-public"].resource_group_name
+#   network_security_group_name = module.virtual_network.subnets["iaas-public"].network_security_group_name
+# }
 
-#   name                     = local.cluster_name
-#   resource_group_name      = module.resource_group.name
-#   dns_prefix               = local.cluster_name
-#   service_principal_id     = module.service_principal.client_id
-#   service_principal_secret = module.service_principal.client_secret
-#   agent_vm_count           = var.agent_vm_count
-#   agent_vm_size            = var.agent_vm_size
 
-#   ssh_public_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
-#   vnet_subnet_id = module.network.subnets.0
 
-#   resource_tags = {
-#     iac = "terraform"
+#-------------------------------
+# Container Registry
+#-------------------------------
+# module "container_registry" {
+#   source = "../../modules/container-registry"
+#   depends_on = [module.resource_group]
+
+#   name                = local.registry_name
+#   resource_group_name = module.resource_group.name
+
+#   is_admin_enabled = false
+
+#   resource_tags = module.metadata.tags
+# }
+
+
+#-------------------------------
+# Azure Key Vault
+#-------------------------------
+# module "keyvault" {
+#   # Module Path
+#   source = "../../modules/keyvault"
+#   depends_on = [module.resource_group]
+
+#   # Module variable
+#   name                = local.keyvault_name
+#   resource_group_name = module.resource_group.name
+
+#   resource_tags = module.metadata.tags
+# }
+
+# module "keyvault_secret" {
+#   # Module Path
+#   source = "../../modules/keyvault-secret"
+#   depends_on = [module.keyvault]
+
+#   keyvault_id = module.keyvault.id
+#   secrets = {
+#     "sshKey"       = tls_private_key.key.private_key_pem
 #   }
 # }
+
+
+
+
+
 
 
 #-------------------------------
@@ -344,14 +366,14 @@ output "RESOURCE_GROUP" {
   value = module.resource_group.name
 }
 
-output "REGISTRY_NAME" {
-  value = module.container_registry.name
-}
+# output "REGISTRY_NAME" {
+#   value = module.container_registry.name
+# }
 
-output "CLUSTER_NAME" {
-  value = local.cluster_name
-}
+# output "CLUSTER_NAME" {
+#   value = local.cluster_name
+# }
 
-output "id_rsa" {
-  value = tls_private_key.key.private_key_pem
-}
+# output "id_rsa" {
+#   value = tls_private_key.key.private_key_pem
+# }
