@@ -80,11 +80,6 @@ named and tagged in Azure.
 |<sub>US Gov Texas</sub>|<sub>global</sub>|<sub>az[20]</sub>|<sub>usgovtexas</sub>|
 |<sub>US Gov Arizona</sub>|<sub>global</sub>|<sub>az[20]</sub>|<sub>usgovarizona</sub>|
 
-## custom.contact
-
-|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
-| ------ | ------ | ------ | ------ |
-
 ## custom.environment
 
 |<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
@@ -94,6 +89,13 @@ named and tagged in Azure.
 |<sub>Quality Assurance</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>qa</sub>|
 |<sub>User Acceptance Testing</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>uat</sub>|
 |<sub>Production</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>prod</sub>|
+
+## custom.product
+
+|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
+| ------ | ------ | ------ | ------ |
+|<sub>Open Subsurface Data Universe</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>osdu</sub>|
+|<sub>Engineering Team</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>engineering</sub>|
 
 # Azure Entities
 
