@@ -26,6 +26,7 @@ No requirements.
 | enforce\_private\_link\_service\_network\_policies | enable network policies for the private link service on the subnet | `bool` | `false` | no |
 | enforce\_subnet\_names | enforce subnet naming rules | `bool` | `false` | no |
 | location | Azure Region | `string` | n/a | yes |
+| naming\_rules | naming conventions yaml file | `string` | `""` | no |
 | resource\_group\_name | Resource group name | `string` | n/a | yes |
 | resource\_tags | tags to be applied to resources | `map(string)` | n/a | yes |
 | service\_endpoints | service endpoints to associate with the subnet | `list(string)` | `[]` | no |
