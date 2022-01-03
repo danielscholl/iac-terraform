@@ -81,5 +81,40 @@
       "usgovtexas": "US Gov Texas",
       "usgovarizona": "US Gov Arizona"
     }
+  },
+  "subnetType": {
+    "category": "Custom",
+    "entity": "subnetType",
+    "scope": "global",
+    "maxlength": "24",
+    "rule": "A-Z",
+    "allowed_values": {
+      "azure-appgateway": "Application Gateway",
+      "azure-vpngateway": "VPN Gateway",
+      "azure-firewall": "Azure Firewall",
+      "azure-rediscache": "Redis Cache",
+      "azure-sqldatabase": "Azure SQL Database",
+      "azure-containers": "Azure Container Instance",
+      "azure-apimanagement": "API Management",
+      "azure-appservice": "App Service Environment",
+      "azure-logicapps": "Azure Logic Apps",
+      "azure-dedicatedhsm": "Azure Dedicated HSM",
+      "azure-netappfiles": "Azure Netapp Files",
+      "iaas-public": "IaaS Public",
+      "iaas-outbound": "IaaS Outbound",
+      "iaas-private": "IaaS Private",
+      "AzureBastionSubnet": "Azure Bastion Service"
+    }
+  },
+  "virtualNetGwType": {
+    "category": "Custom",
+    "entity": "virtualNetworkGatewayType",
+    "scope": "global",
+    "maxlength": "12",
+    "rule": "az",
+    "allowed_values": {
+      "expressroute": "Express Route Connection",
+      "vpn": "Virtual Private Network"
+    }
   }
 }
