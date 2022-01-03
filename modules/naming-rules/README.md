@@ -84,6 +84,7 @@ named and tagged in Azure.
 
 |<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
 | ------ | ------ | ------ | ------ |
+|<sub>Terraform Testing</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>tf</sub>|
 |<sub>Sandbox</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>sandbox</sub>|
 |<sub>Development</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>dev</sub>|
 |<sub>Quality Assurance</sub>|<sub>global</sub>|<sub>az[7]</sub>|<sub>qa</sub>|
@@ -94,7 +95,8 @@ named and tagged in Azure.
 
 |<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
 | ------ | ------ | ------ | ------ |
-|<sub>Open Subsurface Data Universe</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>osdu</sub>|
+|<sub>Infrastructure as Code</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>iac</sub>|
+|<sub>OSDU</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>osdu</sub>|
 |<sub>Engineering Team</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>engineering</sub>|
 
 # Azure Entities
