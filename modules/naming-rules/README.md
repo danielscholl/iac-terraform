@@ -99,6 +99,33 @@ named and tagged in Azure.
 |<sub>OSDU</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>osdu</sub>|
 |<sub>Engineering Team</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>engineering</sub>|
 
+## custom.subnetType
+
+|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
+| ------ | ------ | ------ | ------ |
+|<sub>Application Gateway</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-appgateway</sub>|
+|<sub>VPN Gateway</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-vpngateway</sub>|
+|<sub>Azure Firewall</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-firewall</sub>|
+|<sub>Redis Cache</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-rediscache</sub>|
+|<sub>Azure SQL Database</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-sqldatabase</sub>|
+|<sub>Azure Container Instance</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-containers</sub>|
+|<sub>API Management</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-apimanagement</sub>|
+|<sub>App Service Environment</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-appservice</sub>|
+|<sub>Azure Logic Apps</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-logicapps</sub>|
+|<sub>Azure Dedicated HSM</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-dedicatedhsm</sub>|
+|<sub>Azure Netapp Files</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>azure-netappfiles</sub>|
+|<sub>IaaS Public</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>iaas-public</sub>|
+|<sub>IaaS Outbound</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>iaas-outbound</sub>|
+|<sub>IaaS Private</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>iaas-private</sub>|
+|<sub>Azure Bastion Service</sub>|<sub>global</sub>|<sub>A-Z[24]</sub>|<sub>AzureBastionSubnet</sub>|
+
+## custom.virtualNetGwType
+
+|<sub>Full Text</sub>|<sub>Scope</sub>|<sub>Rule</sub>|<sub>Value</sub>|
+| ------ | ------ | ------ | ------ |
+|<sub>Express Route Connection</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>expressroute</sub>|
+|<sub>Virtual Private Network</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>vpn</sub>|
+
 # Azure Entities
 
 
