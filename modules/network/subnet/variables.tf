@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Virtual Network Subnet
+##############################################################
+
 variable "resource_group_name" {
   description = "Resource group name"
   type        = string

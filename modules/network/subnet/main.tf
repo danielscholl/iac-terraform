@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Virtual Network Subnet
+##############################################################
+
 resource "azurerm_subnet" "subnet" {
   name                 = var.subnet_type
   resource_group_name  = var.resource_group_name

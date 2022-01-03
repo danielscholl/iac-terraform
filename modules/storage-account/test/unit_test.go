@@ -10,7 +10,7 @@ import (
 )
 
 var name = "storage-"
-var count = 5
+var count = 6
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "./",

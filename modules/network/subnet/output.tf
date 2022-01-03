@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Virtual Network Subnet
+##############################################################
+
 output "id" {
   description = "subnet id"
   value       = azurerm_subnet.subnet.id

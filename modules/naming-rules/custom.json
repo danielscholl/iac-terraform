@@ -23,7 +23,8 @@
     "allowed_values": {
       "iac": "Infrastructure as Code",
       "osdu": "OSDU",
-      "engineering": "Engineering Team"
+      "engineering": "Engineering Team",
+      "multicluster": "Cluster Sample"
     }
   },
   "azureRegion": {

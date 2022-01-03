@@ -160,8 +160,8 @@ module "metadata" {
   naming_rules = module.naming.yaml
   
   location            = "eastus2"
-  product             = "iac"
-  environment         = "tf"
+  product             = "multicluster"
+  environment         = "sandbox"
 
   additional_tags = {
     "repo"         = "https://github.com/danielscholl/iac-terraform"
@@ -189,8 +189,8 @@ module "network" {
 
   naming_rules = module.naming.yaml
 
-  resource_group_name = module.resource_group.name
   names               = module.metadata.names
+  resource_group_name = module.resource_group.name
   resource_tags       = module.metadata.tags
 
 
@@ -235,9 +235,9 @@ module "kubernetes" {
   source     = "github.com/danielscholl/iac-terraform.git/modules/aks"
   depends_on = [module.resource_group, module.network]
 
-  name                 = local.cluster_name
-  resource_group_name  = module.resource_group.name
-  resource_tags        = module.metadata.tags
+  names               = module.metadata.names
+  resource_group_name = module.resource_group.name
+  resource_tags       = module.metadata.tags
 
   identity_type         = "UserAssigned"
   network_plugin          = "azure"

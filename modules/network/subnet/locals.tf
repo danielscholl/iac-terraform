@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Virtual Network Subnet
+##############################################################
+
 locals {
   naming_rules = (var.naming_rules != "" ? yamldecode(var.naming_rules) : null) 
 

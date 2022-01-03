@@ -3,8 +3,13 @@
 ##############################################################
 
 variable "name" {
-  description = "Name of the vnet to create"
+  description = "The name of the Virtual Network. (Optional) - names override"
   default     = null
+}
+
+variable "resource_group_name" {
+  description = "The name of an existing resource group."
+  type        = string
 }
 
 variable "names" {
@@ -15,16 +20,19 @@ variable "names" {
     product        = string
   })
   default = {
-    environment = "sandbox"
     location = "eastus2"
     product = "iac"
+    environment = "tf"
   }
 }
 
-variable "resource_group_name" {
-  description = "Default resource group name that the network will be created in."
-  default     = "myapp-rg"
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
 }
+
+
 
 variable "naming_rules" {
   description = "naming conventions yaml file"
@@ -36,12 +44,6 @@ variable "enforce_subnet_names" {
   description = "enforce subnet names based on naming_rules variable"
   type        = bool
   default     = true
-}
-
-variable "resource_tags" {
-  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
-  type        = map(string)
-  default     = {}
 }
 
 # Networking

@@ -1,3 +1,7 @@
+##############################################################
+# This module allows the creation of a Virtual Network
+##############################################################
+
 locals {
   name = "${var.names.product}-${var.names.environment}-${var.names.location}-vnet"
   enforce_subnet_names = (var.naming_rules == "" ? false : var.enforce_subnet_names)

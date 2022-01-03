@@ -2,11 +2,9 @@
 # This module allows the creation of a Kubernetes Cluster
 ##############################################################
 
-
 data "azurerm_resource_group" "main" {
   name = var.resource_group_name
 }
-
 
 resource "azurerm_user_assigned_identity" "main" {
   count = (var.identity_type == "UserAssigned" && var.user_assigned_identity == null ? 1 : 0)

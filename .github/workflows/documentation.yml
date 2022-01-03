@@ -68,3 +68,27 @@ jobs:
         tf_docs_output_file: README.md
         tf_docs_output_method: inject
         tf_docs_git_push: 'true'
+
+    - name: Storage Module
+      uses: Dirrk/terraform-docs@v1.0.8
+      with:
+        tf_docs_working_dir: ./modules/storage-account
+        tf_docs_output_file: README.md
+        tf_docs_output_method: inject
+        tf_docs_git_push: 'true'
+
+    - name: NGINX Ingress
+      uses: Dirrk/terraform-docs@v1.0.8
+      with:
+        tf_docs_working_dir: ./modules/nginx-ingress
+        tf_docs_output_file: README.md
+        tf_docs_output_method: inject
+        tf_docs_git_push: 'true'
+
+    - name: Certificate Manager
+      uses: Dirrk/terraform-docs@v1.0.8
+      with:
+        tf_docs_working_dir: ./modules/cert-manager
+        tf_docs_output_file: README.md
+        tf_docs_output_method: inject
+        tf_docs_git_push: 'true'

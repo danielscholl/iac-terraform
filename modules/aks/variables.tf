@@ -1,22 +1,16 @@
 ##############################################################
 # This module allows the creation of a Kubernetes Cluster
 ##############################################################
-/*
-.Synopsis
-   Terraform Variable File
-.DESCRIPTION
-   This file holds the variables for AKS Module.
-*/
+
+variable "name" {
+  description = "The name of the Kubernetes Cluster. (Optional) - names override"
+  type        = string
+  default     = null
+}
 
 variable "resource_group_name" {
   description = "The name of an existing resource group."
   type        = string
-}
-
-variable "name" {
-  description = "The name of the Kubernetes Cluster."
-  type        = string
-  default     = null
 }
 
 variable "names" {
@@ -27,9 +21,9 @@ variable "names" {
     product        = string
   })
   default = {
-    environment = "sandbox"
     location = "eastus2"
     product = "iac"
+    environment = "tf"
   }
 }
 
@@ -93,83 +87,9 @@ variable "sku_tier" {
 }
 
 variable "kubernetes_version" {
+  description = "Kubernetes Version (Default) - latest"
   type    = string
   default = null
-}
-
-
-variable "enable_private_cluster" {
-  description = "If true cluster API server will be exposed only on internal IP address and available only in cluster vnet."
-  type        = bool
-  default     = false
-}
-
-variable "enable_monitoring" {
-  description = "(Optional) Enable Monitoring"
-  default     = false
-}
-
-variable "enable_keyvault_secrets" {
-  description = "(Optional) Enable Keyvault CSI Driver"
-  default     = false
-}
-
-variable "enable_policy" {
-  description = "Enable Azure Policy Addon."
-  type        = bool
-  default     = false
-}
-
-variable "enable_http_application_routing" {
-  description = "Enable HTTP Application Routing Addon (forces recreation)."
-  type        = bool
-  default     = false
-}
-
-variable "rbac" {
-  description = "role based access control settings"
-  type = object({
-    enabled        = bool
-    ad_integration = bool
-  })
-  default = {
-    enabled        = true
-    ad_integration = false
-  }
-
-  validation {
-    condition = (
-      (var.rbac.enabled && var.rbac.ad_integration) ||
-      (var.rbac.enabled && var.rbac.ad_integration == false) ||
-      (var.rbac.enabled == false && var.rbac.ad_integration == false)
-    )
-    error_message = "Role based access control must be enabled to use Active Directory integration."
-  }
-}
-
-variable "rbac_admin_object_ids" {
-  description = "Admin group object ids for use with rbac active directory integration"
-  type        = map(string) # keys are only for documentation purposes
-  default     = {}
-}
-
-
-
-variable "virtual_network" {
-  description = "Virtual network info."
-  type = object({
-    subnets = map(object({
-      id = string
-    }))
-    route_table_id = string
-  })
-  default = null
-}
-
-variable "configure_network_role" {
-  description = "Add Network Contributor role for identity on input subnets."
-  type        = bool
-  default     = true
 }
 
 variable "network_plugin" {
@@ -232,46 +152,6 @@ variable "network_policy" {
       (var.network_policy == "calico")
     )
     error_message = "Network pollicy must be azure or calico."
-  }
-}
-
-variable "windows_profile" {
-  description = "windows profile admin user/pass"
-  type = object({
-    admin_username = string
-    admin_password = string
-  })
-  default = null
-
-  validation {
-    condition = (
-      var.windows_profile == null ? true :
-      ((var.windows_profile.admin_username != null) &&
-        (var.windows_profile.admin_username != "") &&
-        (var.windows_profile.admin_password != null) &&
-      (var.windows_profile.admin_password != ""))
-    )
-    error_message = "Windows profile requires both admin_username and admin_password."
-  }
-}
-
-variable "linux_profile" {
-  description = "linux profile admin user/key"
-  type = object({
-    admin_username = string
-    ssh_key        = string
-  })
-  default = null
-
-  validation {
-    condition = (
-      var.linux_profile == null ? true :
-      ((var.linux_profile.admin_username != null) &&
-        (var.linux_profile.admin_username != "") &&
-        (var.linux_profile.ssh_key != null) &&
-      (var.linux_profile.ssh_key != ""))
-    )
-    error_message = "Linux profile requires both admin_username and ssh_key."
   }
 }
 
@@ -347,6 +227,118 @@ variable "default_node_pool" {
   description = "Default node pool.  Value refers to key within node_pools variable."
   type        = string
   default     = "default"
+}
+
+variable "virtual_network" {
+  description = "Virtual network info."
+  type = object({
+    subnets = map(object({
+      id = string
+    }))
+    route_table_id = string
+  })
+  default = null
+}
+
+variable "configure_network_role" {
+  description = "Add Network Contributor role for identity on input subnets."
+  type        = bool
+  default     = true
+}
+
+variable "windows_profile" {
+  description = "windows profile admin user/pass"
+  type = object({
+    admin_username = string
+    admin_password = string
+  })
+  default = null
+
+  validation {
+    condition = (
+      var.windows_profile == null ? true :
+      ((var.windows_profile.admin_username != null) &&
+        (var.windows_profile.admin_username != "") &&
+        (var.windows_profile.admin_password != null) &&
+      (var.windows_profile.admin_password != ""))
+    )
+    error_message = "Windows profile requires both admin_username and admin_password."
+  }
+}
+
+variable "linux_profile" {
+  description = "linux profile admin user/key"
+  type = object({
+    admin_username = string
+    ssh_key        = string
+  })
+  default = null
+
+  validation {
+    condition = (
+      var.linux_profile == null ? true :
+      ((var.linux_profile.admin_username != null) &&
+        (var.linux_profile.admin_username != "") &&
+        (var.linux_profile.ssh_key != null) &&
+      (var.linux_profile.ssh_key != ""))
+    )
+    error_message = "Linux profile requires both admin_username and ssh_key."
+  }
+}
+
+variable "rbac" {
+  description = "role based access control settings"
+  type = object({
+    enabled        = bool
+    ad_integration = bool
+  })
+  default = {
+    enabled        = true
+    ad_integration = false
+  }
+
+  validation {
+    condition = (
+      (var.rbac.enabled && var.rbac.ad_integration) ||
+      (var.rbac.enabled && var.rbac.ad_integration == false) ||
+      (var.rbac.enabled == false && var.rbac.ad_integration == false)
+    )
+    error_message = "Role based access control must be enabled to use Active Directory integration."
+  }
+}
+
+variable "rbac_admin_object_ids" {
+  description = "Admin group object ids for use with rbac active directory integration"
+  type        = map(string) # keys are only for documentation purposes
+  default     = {}
+}
+
+variable "enable_private_cluster" {
+  description = "If true cluster API server will be exposed only on internal IP address and available only in cluster vnet."
+  type        = bool
+  default     = false
+}
+
+variable "enable_monitoring" {
+  description = "(Optional) Enable Monitoring"
+  default     = false
+}
+
+variable "enable_keyvault_secrets" {
+  description = "(Optional) Enable Keyvault CSI Driver"
+  default     = false
+}
+
+variable "enable_policy" {
+  description = "Enable Azure Policy Addon."
+  type        = bool
+  default     = false
+}
+
+variable "enable_http_application_routing" {
+  description = "Enable HTTP Application Routing Addon (forces recreation)."
+  type        = bool
+  default     = false
 }
 
 variable "api_server_authorized_ip_ranges" {
