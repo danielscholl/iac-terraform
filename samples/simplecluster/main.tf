@@ -151,11 +151,11 @@ resource "null_resource" "save-key" {
 }
 
 module "naming" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=v1.0.1"
+  source = "github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=v1.0.0"
 }
 
 module "metadata" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.1"
+  source = "github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.0"
 
   naming_rules = module.naming.yaml
   
@@ -173,7 +173,7 @@ module "metadata" {
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.1"
+  source = "github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.0"
 
   names = module.metadata.names
   location = module.metadata.location
@@ -184,7 +184,7 @@ module "resource_group" {
 # Virtual Network
 #-------------------------------
 module "network" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/network?ref=v1.0.1"
+  source     = "github.com/danielscholl/iac-terraform.git//modules/network?ref=v1.0.0"
   depends_on = [module.resource_group]
 
   naming_rules = module.naming.yaml
@@ -232,7 +232,7 @@ module "network" {
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.1"
+  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
   depends_on = [module.resource_group, module.network]
 
   names               = module.metadata.names
