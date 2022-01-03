@@ -11,7 +11,7 @@ locals {
   dns_prefix = (var.dns_prefix != null ? var.dns_prefix :
     "${var.names.product}-${var.names.environment}-${var.names.location}-cluster")
 
-  node_resource_group = (var.node_resource_group != null ? var.node_resource_group : "MC_${var.name}")
+  node_resource_group = (var.node_resource_group != null ? var.node_resource_group : "MC_${local.name}")
 
   node_pools                      = zipmap(keys(var.node_pools), [for node_pool in values(var.node_pools) : merge(var.node_pool_defaults, node_pool)])
   additional_node_pools           = { for k, v in local.node_pools : k => v if k != var.default_node_pool }
