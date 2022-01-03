@@ -1,4 +1,6 @@
 locals {
+  name = "${var.names.product}-${var.names.environment}-${var.names.location}-vnet"
+  enforce_subnet_names = (var.naming_rules == "" ? false : var.enforce_subnet_names)
 
   subnets = zipmap(keys(var.subnets), [for subnet in values(var.subnets) : merge(var.subnet_defaults, subnet)])
 

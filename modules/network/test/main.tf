@@ -2,11 +2,16 @@ provider "azurerm" {
   features {}
 }
 
+
 module "resource_group" {
   source = "../../resource-group"
 
-  name     = "iac-terraform"
+  name = "iac-terraform"
   location = "eastus2"
+
+  resource_tags = {
+    iac = "terraform"
+  }
 }
 
 module "network" {

@@ -17,20 +17,6 @@ module "resource_group" {
 }
 ```
 
-## Inputs
+<!--- BEGIN_TF_DOCS --->
 
-| Variable Name                     | Type       | Description                          | 
-| --------------------------------- | ---------- | ------------------------------------ |
-| `name`                            | _string_   | The name of the web app service.     |
-| `location`                        | _string_   | The location of the resource group.  |
-| `resource_tags`                   | _list_     | Map of tags to apply to taggable resources in this module. |
-
-
-## Outputs
-
-Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
-
-- `name`: The name of the Resource Group.
-- `location`: The location of the Resource Group.
-- `id`: The id of the Resource Group.
-- `random`: A random string derived from the Resource Group.
+<!--- END_TF_DOCS --->

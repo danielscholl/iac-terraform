@@ -13,13 +13,13 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
 
-    # - name: Metadata Module
-    #   uses: terraform-docs/gh-actions@v0.11.0
-    #   with:
-    #     working-dir: ./modules/metadata
-    #     output-file: README.md
-    #     output-method: inject
-    #     git-push: "true"
+    - name: ResourceGroup Module
+      uses: terraform-docs/gh-actions@v0.11.0
+      with:
+        working-dir: ./modules/resource-group
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
 
     - name: Network Module
       uses: terraform-docs/gh-actions@v0.11.0

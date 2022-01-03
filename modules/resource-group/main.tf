@@ -2,8 +2,12 @@
 # This module allows the creation of a Resource Group
 ##############################################################
 
+locals {
+  name = "${var.names.product}-${var.names.environment}-${var.names.location}"
+}
+
 resource "azurerm_resource_group" "main" {
-  name     = var.name
+  name     = var.name != null ? var.name : local.name
   location = var.location
   tags     = var.resource_tags
 }

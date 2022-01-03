@@ -8,7 +8,7 @@ data "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = var.name
+  name                = var.name != null ? var.name : local.name
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
   address_space       = var.address_space
@@ -23,6 +23,9 @@ module "subnet" {
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
   resource_tags       = var.resource_tags
+
+  naming_rules         = var.naming_rules
+  enforce_subnet_names = local.enforce_subnet_names
 
   virtual_network_name = azurerm_virtual_network.vnet.name
   subnet_type          = each.key

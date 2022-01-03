@@ -4,12 +4,38 @@
 
 variable "name" {
   description = "Name of the vnet to create"
-  default     = "myvnet"
+  default     = null
+}
+
+variable "names" {
+  description = "Names to be applied to resources (inclusive)"
+  type        = object({
+    environment    = string
+    location       = string
+    product        = string
+  })
+  default = {
+    environment = "sandbox"
+    location = "eastus2"
+    product = "iac"
+  }
 }
 
 variable "resource_group_name" {
   description = "Default resource group name that the network will be created in."
   default     = "myapp-rg"
+}
+
+variable "naming_rules" {
+  description = "naming conventions yaml file"
+  type        = string
+  default     = ""
+}
+
+variable "enforce_subnet_names" {
+  description = "enforce subnet names based on naming_rules variable"
+  type        = bool
+  default     = true
 }
 
 variable "resource_tags" {

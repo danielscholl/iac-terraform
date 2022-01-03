@@ -34,7 +34,7 @@ resource "azurerm_network_security_group" "nsg" {
   name                = "${var.subnet_type}-nsg"
   location            = var.location
   resource_group_name = var.resource_group_name
-  tags                = merge(var.resource_tags, { subnet_type = var.subnet_type })
+  tags                = merge(var.resource_tags, {subnet_type = lookup(local.allowed_subnet_info, var.subnet_type, var.subnet_type)})
 }
 
 resource "azurerm_network_security_rule" "deny_all_inbound" {

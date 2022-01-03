@@ -13,6 +13,12 @@ variable "resource_tags" {
   type        = map(string)
 }
 
+variable "naming_rules" {
+  description = "naming conventions yaml file"
+  type        = string
+  default     = ""
+}
+
 variable "enforce_subnet_names" {
   description = "enforce subnet naming rules"
   type        = bool

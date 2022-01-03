@@ -6,6 +6,7 @@
     "maxlength": "7",
     "rule": "az",
     "allowed_values": {
+      "terraform": "Terraform Testing",
       "sandbox": "Sandbox",
       "dev": "Development",
       "qa": "Quality Assurance",
@@ -20,7 +21,8 @@
     "maxlength": "12",
     "rule": "az",
     "allowed_values": {
-      "osdu": "Open Subsurface Data Universe",
+      "iac": "Infrastructure as Code",
+      "osdu": "OSDU",
       "engineering": "Engineering Team"
     }
   },
