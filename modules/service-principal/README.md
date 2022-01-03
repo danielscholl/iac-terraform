@@ -31,24 +31,6 @@ module "service_principal" {
 }
 ```
 
-## Inputs
+<!--- BEGIN_TF_DOCS --->
 
-| Variable Name | Type       | Description                          | 
-| ------------- | ---------- | ------------------------------------ |
-| `name`        | _string_   | The name of the service principal.     |
-| `password`    | _string_   | A password for the service principal. (Optional).  |
-| `end_date`    | _string_   | The relative duration or RFC3339 date after which the password expire.|
-| `role`        | _string_   | The name of a role for the service principal. |
-| `scopes`      | _list_     | List of scopes the role assignment applies to. |
-| `object_id`   | string     | Object Id of an existing service principle to be assigned to a role. |
-
-
-## Outputs
-
-Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
-
-- `name`: The Service Principal Display Name.
-- `object_id`: The Service Principal Object Id.
-- `tenant_id`: The Service Principal Tenant Id.
-- `client_id`: The Service Principal Client Id (Application Id)
-- `client_secret`: The Service Principal Client Secret (Application Password).
+<!--- END_TF_DOCS --->

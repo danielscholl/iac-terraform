@@ -20,7 +20,6 @@ module "ad-application" {
   source = "../"
 
   name = format("${local.name}-%s-ad-app-management", random_id.main.hex)
-  # aad_client_id = "10465c52-d094-4340-867d-c976ea1b1b14"
 
   reply_urls = [
     "https://iac-osdu.com/",

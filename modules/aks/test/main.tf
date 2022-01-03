@@ -20,18 +20,12 @@ resource "null_resource" "save-key" {
   }
 }
 
-resource "random_password" "admin" {
-  length  = 14
-  special = true
-}
-
 module "resource_group" {
   source   = "../../resource-group"
   name     = "iac-terraform"
   location = "eastus2"
 }
 
-data "azurerm_client_config" "current" {}
 
 module "aks" {
   source     = "../"
