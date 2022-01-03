@@ -96,11 +96,11 @@ module "aks" {
 | enable\_policy | Enable Azure Policy Addon. | `bool` | `false` | no |
 | enable\_private\_cluster | If true cluster API server will be exposed only on internal IP address and available only in cluster vnet. | `bool` | `false` | no |
 | identity\_type | SystemAssigned or UserAssigned. | `string` | `"SystemAssigned"` | no |
-| kubernetes\_version | n/a | `string` | `null` | no |
+| kubernetes\_version | Kubernetes Version (Default) - latest | `string` | `null` | no |
 | linux\_profile | linux profile admin user/key | <pre>object({<br>    admin_username = string<br>    ssh_key        = string<br>  })</pre> | `null` | no |
 | log\_analytics\_workspace\_id | ID of the Azure Log Analytics Workspace | `string` | `null` | no |
-| name | The name of the Kubernetes Cluster. | `string` | `null` | no |
-| names | Names to be applied to resources (inclusive) | <pre>object({<br>    environment    = string<br>    location       = string<br>    product        = string<br>  })</pre> | <pre>{<br>  "environment": "sandbox",<br>  "location": "eastus2",<br>  "product": "iac"<br>}</pre> | no |
+| name | The name of the Kubernetes Cluster. (Optional) - names override | `string` | `null` | no |
+| names | Names to be applied to resources (inclusive) | <pre>object({<br>    environment    = string<br>    location       = string<br>    product        = string<br>  })</pre> | <pre>{<br>  "environment": "tf",<br>  "location": "eastus2",<br>  "product": "iac"<br>}</pre> | no |
 | network\_plugin | network plugin to use for networking (azure or kubenet) | `string` | `"kubenet"` | no |
 | network\_policy | Sets up network policy to be used with Azure CNI. | `string` | `null` | no |
 | network\_profile\_options | docker\_bridge\_cidr, dns\_service\_ip and service\_cidr should all be empty or all should be set | <pre>object({<br>    docker_bridge_cidr = string<br>    dns_service_ip     = string<br>    service_cidr       = string<br>  })</pre> | `null` | no |
