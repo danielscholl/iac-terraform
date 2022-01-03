@@ -6,7 +6,7 @@
     "maxlength": "7",
     "rule": "az",
     "allowed_values": {
-      "terraform": "Terraform Testing",
+      "tf": "Terraform Testing",
       "sandbox": "Sandbox",
       "dev": "Development",
       "qa": "Quality Assurance",
