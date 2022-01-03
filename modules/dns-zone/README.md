@@ -31,5 +31,39 @@ output "domain" {
 ```
 
 <!--- BEGIN_TF_DOCS --->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.14.11 |
+| azurerm | >= 2.90.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| azurerm.child | >= 2.90.0 |
+| azurerm.parent | >= 2.90.0 |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| child\_domain\_prefix | child domain prefix (<child\_domain\_prefix>.<parent\_domain>) | `string` | n/a | yes |
+| child\_domain\_resource\_group\_name | name of the target resource group | `string` | n/a | yes |
+| child\_domain\_subscription\_id | ID of the target subscription | `string` | n/a | yes |
+| parent\_domain | pre-existing parent domain in which to create the NS record for the child domain | `string` | n/a | yes |
+| parent\_domain\_resource\_group\_name | name of the pre-existing parent resource\_group - This is the owner of the root domain | `string` | n/a | yes |
+| parent\_domain\_subscription\_id | ID of the parent subscription - This is the owner of the parent domain | `string` | n/a | yes |
+| tags | Tags to be applied to resources (inclusive) | `map(string)` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| id | id of dns child zone |
+| name | The DNS zone that has been delegated to you |
+| resource\_group\_name | The resource group which contains the child zone |
+| subscription\_id | The subscription\_id which contains the child zone |
 
 <!--- END_TF_DOCS --->
