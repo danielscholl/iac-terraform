@@ -123,6 +123,7 @@ module "aks" {
 
 | Name | Description |
 |------|-------------|
+| aks\_egress\_ip\_address | n/a |
 | client\_certificate | kubernetes client certificate |
 | client\_key | kubernetes client key |
 | cluster\_ca\_certificate | kubernetes cluster ca certificate |
