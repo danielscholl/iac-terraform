@@ -83,3 +83,7 @@ output "kubelet_identity" {
   description = "kubelet identity information"
   value       = azurerm_kubernetes_cluster.main.kubelet_identity.0
 }
+
+output "aks_egress_ip_address" {
+  value = data.azurerm_public_ip.aks_egress_ip.ip_address
+}

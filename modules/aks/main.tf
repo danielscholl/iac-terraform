@@ -6,6 +6,13 @@ data "azurerm_resource_group" "main" {
   name = var.resource_group_name
 }
 
+data "azurerm_public_ip" "aks_egress_ip" {
+  // Splits the Resource Id for the Egress IP to get the name
+  name                = split("/", tolist(azurerm_kubernetes_cluster.main.network_profile[0].load_balancer_profile[0].effective_outbound_ips)[0])[8]
+  resource_group_name = azurerm_kubernetes_cluster.main.node_resource_group
+}
+
+
 resource "azurerm_user_assigned_identity" "main" {
   count = (var.identity_type == "UserAssigned" && var.user_assigned_identity == null ? 1 : 0)
 

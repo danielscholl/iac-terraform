@@ -39,6 +39,8 @@ provider "azurerm" {
 
 provider "kubernetes" {
   host                   = module.kubernetes.kube_config.host
+  username               = module.kubernetes.kube_config.username
+  password               = module.kubernetes.kube_config.password
   client_certificate     = base64decode(module.kubernetes.kube_config.client_certificate)
   client_key             = base64decode(module.kubernetes.kube_config.client_key)
   cluster_ca_certificate = base64decode(module.kubernetes.kube_config.cluster_ca_certificate)
@@ -47,6 +49,8 @@ provider "kubernetes" {
 provider "helm" {
   kubernetes {
     host                   = module.kubernetes.kube_config.host
+    username               = module.kubernetes.kube_config.username
+    password               = module.kubernetes.kube_config.password
     client_certificate     = base64decode(module.kubernetes.kube_config.client_certificate)
     client_key             = base64decode(module.kubernetes.kube_config.client_key)
     cluster_ca_certificate = base64decode(module.kubernetes.kube_config.cluster_ca_certificate)
@@ -98,11 +102,11 @@ locals {
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name              = local.base_name
-  vnet_name         = "${local.base_name}-vnet"
-  cluster_name      = "${local.base_name}-cluster"
-  registry_name     = replace(local.base_name_21, "-", "")
-  keyvault_name     = "${local.base_name_21}-kv"
+  name          = local.base_name
+  vnet_name     = "${local.base_name}-vnet"
+  cluster_name  = "${local.base_name}-cluster"
+  registry_name = replace(local.base_name_21, "-", "")
+  keyvault_name = "${local.base_name_21}-kv"
 }
 
 
@@ -158,14 +162,14 @@ module "metadata" {
   source = "github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.0"
 
   naming_rules = module.naming.yaml
-  
-  location            = "eastus2"
-  product             = "multicluster"
-  environment         = "sandbox"
+
+  location    = "eastus2"
+  product     = "multicluster"
+  environment = "sandbox"
 
   additional_tags = {
-    "repo"         = "https://github.com/danielscholl/iac-terraform"
-    "owner"         = "Daniel Scholl"
+    "repo"  = "https://github.com/danielscholl/iac-terraform"
+    "owner" = "Daniel Scholl"
   }
 }
 
@@ -175,8 +179,8 @@ module "metadata" {
 module "resource_group" {
   source = "github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.0"
 
-  names = module.metadata.names
-  location = module.metadata.location
+  names         = module.metadata.names
+  location      = module.metadata.location
   resource_tags = module.metadata.tags
 }
 
@@ -194,7 +198,7 @@ module "network" {
   resource_tags       = module.metadata.tags
 
 
-  dns_servers = ["8.8.8.8"]
+  dns_servers   = ["8.8.8.8"]
   address_space = ["10.1.0.0/22"]
 
   subnets = {
@@ -202,11 +206,21 @@ module "network" {
       cidrs                   = ["10.1.0.0/24"]
       route_table_association = "aks"
       configure_nsg_rules     = false
+      service_endpoints = ["Microsoft.Storage",
+        "Microsoft.AzureCosmosDB",
+        "Microsoft.KeyVault",
+        "Microsoft.ServiceBus",
+      "Microsoft.EventHub"]
     }
-    iaas-public  = {
-       cidrs                   = ["10.1.1.0/24"]
-       route_table_association = "aks"
-       configure_nsg_rules     = false
+    iaas-public = {
+      cidrs                   = ["10.1.1.0/24"]
+      route_table_association = "aks"
+      configure_nsg_rules     = false
+      service_endpoints = ["Microsoft.Storage",
+        "Microsoft.AzureCosmosDB",
+        "Microsoft.KeyVault",
+        "Microsoft.ServiceBus",
+      "Microsoft.EventHub"]
     }
   }
 
@@ -216,16 +230,16 @@ module "network" {
       use_inline_routes             = false
       routes = {
         internet = {
-          address_prefix         = "0.0.0.0/0"
-          next_hop_type          = "Internet"
+          address_prefix = "0.0.0.0/0"
+          next_hop_type  = "Internet"
         }
         local-vnet = {
-          address_prefix         = "10.1.0.0/22"
-          next_hop_type          = "vnetlocal"
+          address_prefix = "10.1.0.0/22"
+          next_hop_type  = "vnetlocal"
         }
       }
     }
-  }  
+  }
 }
 
 #-------------------------------
@@ -239,11 +253,13 @@ module "kubernetes" {
   resource_group_name = module.resource_group.name
   resource_tags       = module.metadata.tags
 
-  identity_type         = "UserAssigned"
-  network_plugin          = "azure"
-  configure_network_role  = true
+  identity_type          = "UserAssigned"
+  dns_prefix             = format("simple-cluster-%s", module.resource_group.random)
+  network_plugin         = "azure"
+  network_policy         = "azure"
+  configure_network_role = true
 
-  virtual_network = { 
+  virtual_network = {
     subnets = {
       private = {
         id = module.network.subnets["iaas-private"].id
@@ -257,78 +273,80 @@ module "kubernetes" {
 
   linux_profile = {
     admin_username = "k8sadmin"
-    ssh_key = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
+    ssh_key        = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
   }
-
-  default_node_pool = "default"
+  default_node_pool = "system"
   node_pools = {
-    default = {
-      vm_size                = "Standard_B2s"
-      enable_host_encryption = true
-
-      node_count = 2
+    system = {
+      vm_size                      = "Standard_B2s"
+      enable_host_encryption       = true
+      node_count                   = 2
       only_critical_addons_enabled = true
-      subnet = "private"
+      subnet                       = "private"
     }
-    linuxweb = {
-      vm_size             = "Standard_B2ms"
-      enable_auto_scaling = true
-      min_count           = 1
-      max_count           = 3
-      subnet              = "public"
+    internal = {
+      vm_size                = "Standard_B2ms"
+      enable_host_encryption = true
+      enable_auto_scaling    = true
+      min_count              = 5
+      max_count              = 10
+      subnet                 = "public"
+      node_labels = {
+        "pool" = "services"
+      }
     }
   }
 }
 
-resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
-  name                        = "AllowNginx"
-  priority                    = 100
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "tcp"
-  source_port_range           = "*"
-  destination_port_range      = "80"
-  source_address_prefix       = "Internet"
-  destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
-  resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
-  network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
-}
+# resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
+#   name                        = "AllowNginx"
+#   priority                    = 100
+#   direction                   = "Inbound"
+#   access                      = "Allow"
+#   protocol                    = "tcp"
+#   source_port_range           = "*"
+#   destination_port_range      = "80"
+#   source_address_prefix       = "Internet"
+#   destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
+#   resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
+#   network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
+# }
 
 
-resource "helm_release" "nginx" {
-  depends_on = [module.kubernetes] 
-  name       = "nginx"
-  chart      = "./charts"
+# resource "helm_release" "nginx" {
+#   depends_on = [module.kubernetes]
+#   name       = "nginx"
+#   chart      = "./charts"
 
-  set {
-    name  = "name"
-    value = "nginx"
-  }
+#   set {
+#     name  = "name"
+#     value = "nginx"
+#   }
 
-  set {
-    name  = "image"
-    value = "nginx:latest"
-  }
+#   set {
+#     name  = "image"
+#     value = "nginx:latest"
+#   }
 
-  set {
-    name  = "nodeSelector"
-    value = yamlencode({agentpool = "linuxweb"})
-  }
-}
+#   set {
+#     name  = "nodeSelector"
+#     value = yamlencode({ agentpool = "internal" })
+#   }
+# }
 
-data "kubernetes_service" "nginx" {
-  depends_on = [helm_release.nginx] 
-  metadata {
-    name = "nginx"
-  }
-}
+# data "kubernetes_service" "nginx" {
+#   depends_on = [helm_release.nginx]
+#   metadata {
+#     name = "nginx"
+#   }
+# }
 
 
 #-------------------------------
 # Container Registry
 #-------------------------------
 module "container_registry" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/container-registry?ref=v1.0.0"
+  source     = "github.com/danielscholl/iac-terraform.git//modules/container-registry?ref=v1.0.0"
   depends_on = [module.resource_group]
 
   name                = local.registry_name
