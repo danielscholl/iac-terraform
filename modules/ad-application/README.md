@@ -65,7 +65,7 @@ module "ad-application" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.14.11 |
+| terraform | >= 0.14.10 |
 | azuread | >= 2.13.0 |
 | random | 3.1.0 |
 
