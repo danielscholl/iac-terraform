@@ -68,7 +68,7 @@ module "network" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.11 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.10 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >= 2.90.0 |
 
 ## Providers
