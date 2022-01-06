@@ -71,7 +71,7 @@ module "aks" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.14.7 |
+| terraform | >= 0.14.10 |
 | azurerm | >= 2.90.0 |
 | http | >= 1.2.0 |
 
