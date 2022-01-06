@@ -43,7 +43,7 @@ variable "naming_rules" {
 variable "enforce_subnet_names" {
   description = "enforce subnet names based on naming_rules variable"
   type        = bool
-  default     = true
+  default     = false
 }
 
 # Networking
