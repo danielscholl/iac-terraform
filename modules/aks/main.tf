@@ -34,8 +34,9 @@ resource "azurerm_role_assignment" "route_table_network_contributor" {
 
   scope                = var.virtual_network.route_table_id
   role_definition_name = "Network Contributor"
-  principal_id = (var.user_assigned_identity == null ? azurerm_user_assigned_identity.main.0.principal_id :
-  var.user_assigned_identity.principal_id)
+  principal_id =local.aks_identity_id
+  #principal_id = (var.user_assigned_identity == null ? azurerm_user_assigned_identity.main.0.principal_id :
+  # var.user_assigned_identity.principal_id)
 }
 
 resource "azurerm_kubernetes_cluster" "main" {
