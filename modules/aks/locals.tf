@@ -35,8 +35,8 @@ locals {
   validate_dns_prefix = ((var.dns_prefix == null && var.names == null) ?
   file("ERROR: dns_prefix or names variable must be specified.") : null)
 
-  validate_virtual_network_support = (var.identity_type == "SystemAssigned" && var.virtual_network != null ?
-  file("ERROR: virtual network unavailable with SystemAssigned identity type") : null)
+ # validate_virtual_network_support = (var.identity_type == "SystemAssigned" && var.virtual_network != null ?
+ # file("ERROR: virtual network unavailable with SystemAssigned identity type") : null)
 
   validate_multiple_node_pools = (((local.node_pools[var.default_node_pool].type != "VirtualMachineScaleSets") && (length(local.additional_node_pools) > 0)) ?
   file("ERROR: multiple node pools only allowed when default node pool type is VirtualMachineScaleSets") : null)
