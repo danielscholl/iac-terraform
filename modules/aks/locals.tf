@@ -22,6 +22,9 @@ locals {
   aks_identity_id = (var.identity_type == "SystemAssigned" ? azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id :
   (var.user_assigned_identity == null ? azurerm_user_assigned_identity.main.0.principal_id : var.user_assigned_identity.principal_id))
 
+  aks_identity_id = (var.identity_type == "SystemAssigned" ? azurerm_kubernetes_cluster.main.identity.0.principal_id :
+  (var.user_assigned_identity == null ? azurerm_user_assigned_identity.main.0.principal_id : var.user_assigned_identity.principal_id))
+
   invalid_node_pool_attributes = join(",", flatten([for np in values(var.node_pools) : [for k, v in np : k if !(contains(keys(var.node_pool_defaults), k))]]))
   validate_node_pool_attributes = (length(local.invalid_node_pool_attributes) > 0 ?
   file("ERROR: invalid node pool attribute:  ${local.invalid_node_pool_attributes}") : null)
