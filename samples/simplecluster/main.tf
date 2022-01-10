@@ -246,7 +246,7 @@ module "network" {
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
+  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=master"
   depends_on = [module.resource_group, module.network]
 
   names               = module.metadata.names
@@ -330,7 +330,7 @@ resource "helm_release" "nginx" {
 
   set {
     name  = "nodeSelector"
-    value = yamlencode({ agentpool = "internal" })
+    value = yamlencode({ pool = "services" })
   }
 }
 
