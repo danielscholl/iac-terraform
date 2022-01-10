@@ -19,9 +19,6 @@ locals {
   linux_nodes                     = (length([for v in local.node_pools : v if lower(v.os_type) == "linux"]) > 0 ? true : false)
   api_server_authorized_ip_ranges = (var.api_server_authorized_ip_ranges == null ? null : values(var.api_server_authorized_ip_ranges))
 
-  aks_identity_id = (var.identity_type == "SystemAssigned" ? azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id :
-  (var.user_assigned_identity == null ? azurerm_user_assigned_identity.main.0.principal_id : var.user_assigned_identity.principal_id))
-
   aks_identity_id = (var.identity_type == "SystemAssigned" ? azurerm_kubernetes_cluster.main.identity.0.principal_id :
   (var.user_assigned_identity == null ? azurerm_user_assigned_identity.main.0.principal_id : var.user_assigned_identity.principal_id))
 
