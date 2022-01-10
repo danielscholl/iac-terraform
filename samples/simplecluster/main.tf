@@ -298,48 +298,48 @@ module "kubernetes" {
   }
 }
 
-# resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
-#   name                        = "AllowNginx"
-#   priority                    = 100
-#   direction                   = "Inbound"
-#   access                      = "Allow"
-#   protocol                    = "tcp"
-#   source_port_range           = "*"
-#   destination_port_range      = "80"
-#   source_address_prefix       = "Internet"
-#   destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
-#   resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
-#   network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
-# }
+resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
+  name                        = "AllowNginx"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "Internet"
+  destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
+  resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
+  network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
+}
 
 
-# resource "helm_release" "nginx" {
-#   depends_on = [module.kubernetes]
-#   name       = "nginx"
-#   chart      = "./charts"
+resource "helm_release" "nginx" {
+  depends_on = [module.kubernetes]
+  name       = "nginx"
+  chart      = "./charts"
 
-#   set {
-#     name  = "name"
-#     value = "nginx"
-#   }
+  set {
+    name  = "name"
+    value = "nginx"
+  }
 
-#   set {
-#     name  = "image"
-#     value = "nginx:latest"
-#   }
+  set {
+    name  = "image"
+    value = "nginx:latest"
+  }
 
-#   set {
-#     name  = "nodeSelector"
-#     value = yamlencode({ agentpool = "internal" })
-#   }
-# }
+  set {
+    name  = "nodeSelector"
+    value = yamlencode({ agentpool = "internal" })
+  }
+}
 
-# data "kubernetes_service" "nginx" {
-#   depends_on = [helm_release.nginx]
-#   metadata {
-#     name = "nginx"
-#   }
-# }
+data "kubernetes_service" "nginx" {
+  depends_on = [helm_release.nginx]
+  metadata {
+    name = "nginx"
+  }
+}
 
 
 #-------------------------------
@@ -383,11 +383,6 @@ module "container_registry" {
 #     "sshKey"       = tls_private_key.key.private_key_pem
 #   }
 # }
-
-
-
-
-
 
 
 #-------------------------------
