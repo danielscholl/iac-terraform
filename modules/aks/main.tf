@@ -216,18 +216,16 @@ data "azurerm_resource_group" "node_rg" {
 
 // Give AKS Access rights to Operate the Node Resource Group
 resource "azurerm_role_assignment" "agentpool_msi" {
-  scope                            = data.azurerm_resource_group.node_rg.id
-  role_definition_name             = "Managed Identity Operator"
-  principal_id                     = azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id
-  skip_service_principal_aad_check = true
+  scope                = data.azurerm_resource_group.node_rg.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id
 }
 
 // Give AKS Access to Create and Remove VM's in Node Resource Group
 resource "azurerm_role_assignment" "agentpool_vm" {
-  scope                            = data.azurerm_resource_group.node_rg.id
-  role_definition_name             = "Virtual Machine Contributor"
-  principal_id                     = azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id
-  skip_service_principal_aad_check = true
+  scope                = data.azurerm_resource_group.node_rg.id
+  role_definition_name = "Virtual Machine Contributor"
+  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id
 }
 
 
