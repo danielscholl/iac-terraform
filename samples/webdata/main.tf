@@ -92,12 +92,12 @@ locals {
   base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name                   = "${local.base_name_83}"
+  name                   = local.base_name_83
   keyvault_name          = "${local.base_name_21}-kv"
   cosmosdb_account_name  = "${local.base_name_83}-db"
-  cosmosdb_database_name = "${local.base_name_83}"
+  cosmosdb_database_name = local.base_name_83
   service_plan_name      = "${local.base_name_83}-plan"
-  app_service_name       = "${local.base_name_83}"
+  app_service_name       = local.base_name_83
   insights_name          = "${local.base_name_83}-insights"
 
   // Resolved TF Vars

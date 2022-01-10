@@ -4,7 +4,7 @@
 
 locals {
   name = (var.name != null ? var.name :
-    "${var.names.product}${var.names.environment}")
+  "${var.names.product}${var.names.environment}")
 
   # Automatically set account tier for BlockBlobStorage/FileStorage if not specified.
   # Not correcting incompatible type if specified to prevent user misunderstanding.

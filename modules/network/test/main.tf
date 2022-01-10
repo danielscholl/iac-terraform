@@ -6,7 +6,7 @@ provider "azurerm" {
 module "resource_group" {
   source = "../../resource-group"
 
-  name = "iac-terraform"
+  name     = "iac-terraform"
   location = "eastus2"
 
   resource_tags = {
@@ -21,7 +21,7 @@ module "network" {
   name                = "iac-terraform-vnet-${module.resource_group.random}"
   resource_group_name = module.resource_group.name
 
-  dns_servers = ["8.8.8.8"]
+  dns_servers   = ["8.8.8.8"]
   address_space = ["10.0.1.0/24"]
   subnets = {
     Web-Tier = {

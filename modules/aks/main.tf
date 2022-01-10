@@ -12,33 +12,6 @@ data "azurerm_public_ip" "aks_egress_ip" {
   resource_group_name = azurerm_kubernetes_cluster.main.node_resource_group
 }
 
-
-resource "azurerm_user_assigned_identity" "main" {
-  count = (var.identity_type == "UserAssigned" && var.user_assigned_identity == null ? 1 : 0)
-
-  name                = local.identity_name
-  resource_group_name = data.azurerm_resource_group.main.name
-  location            = data.azurerm_resource_group.main.location
-}
-
-resource "azurerm_role_assignment" "subnet_network_contributor" {
-  for_each = (var.virtual_network == null ? {} : (var.configure_network_role ? var.virtual_network.subnets : {}))
-
-  scope                = each.value.id
-  role_definition_name = "Network Contributor"
-  principal_id         = local.aks_identity_id
-}
-
-resource "azurerm_role_assignment" "route_table_network_contributor" {
-  count = (var.virtual_network == null ? 0 : 1)
-
-  scope                = var.virtual_network.route_table_id
-  role_definition_name = "Network Contributor"
-  principal_id =local.aks_identity_id
-  #principal_id = (var.user_assigned_identity == null ? azurerm_user_assigned_identity.main.0.principal_id :
-  # var.user_assigned_identity.principal_id)
-}
-
 resource "azurerm_kubernetes_cluster" "main" {
   name                = local.name
   location            = data.azurerm_resource_group.main.location
@@ -172,6 +145,7 @@ resource "azurerm_role_assignment" "rbac_admin" {
   principal_id         = each.value
 }
 
+// Create any desired Node Pools
 resource "azurerm_kubernetes_cluster_node_pool" "additional" {
   for_each = local.additional_node_pools
 
@@ -208,6 +182,69 @@ resource "azurerm_kubernetes_cluster_node_pool" "additional" {
   }
 }
 
+// AKS User Assigned Managed Identity - Auto Create if not provided
+resource "azurerm_user_assigned_identity" "main" {
+  count = (var.identity_type == "UserAssigned" && var.user_assigned_identity == null ? 1 : 0)
+
+  name                = local.identity_name
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+}
+
+// Give AKS Access to Operate the Network - AKS.identity.0.principal_id
+resource "azurerm_role_assignment" "subnet_network_contributor" {
+  for_each = (var.virtual_network == null ? {} : (var.configure_network_role ? var.virtual_network.subnets : {}))
+
+  scope                = each.value.id
+  role_definition_name = "Network Contributor"
+  principal_id         = local.aks_identity_id
+}
+
+// Give AKS Access to Operate the Network - AKS.identity.0.principal_id
+resource "azurerm_role_assignment" "route_table_network_contributor" {
+  count = (var.virtual_network == null ? 0 : 1)
+
+  scope                = var.virtual_network.route_table_id
+  role_definition_name = "Network Contributor"
+  principal_id         = local.aks_identity_id
+}
+
+
+data "azurerm_resource_group" "node_rg" {
+  name = azurerm_kubernetes_cluster.main.node_resource_group
+}
+
+data "azurerm_user_assigned_identity" "agentpool" {
+  name                = "${azurerm_kubernetes_cluster.main.name}-agentpool"
+  resource_group_name = azurerm_kubernetes_cluster.main.node_resource_group
+}
+
+// Give AKS Access rights to Operate the Node Resource Group
+resource "azurerm_role_assignment" "agentpool_msi" {
+  scope                            = data.azurerm_resource_group.node_rg.id
+  role_definition_name             = "Managed Identity Operator"
+  principal_id                     = data.azurerm_user_assigned_identity.agentpool.principal_id
+  skip_service_principal_aad_check = true
+}
+
+// Give AKS Access to Create and Remove VM's in Node Resource Group
+resource "azurerm_role_assignment" "agentpool_vm" {
+  scope                            = data.azurerm_resource_group.node_rg.id
+  role_definition_name             = "Virtual Machine Contributor"
+  principal_id                     = data.azurerm_user_assigned_identity.agentpool.principal_id
+  skip_service_principal_aad_check = true
+}
+
+
+// Give Kubelet Access to list or read a user-assigned managed identities in Group
+resource "azurerm_role_assignment" "kubelet_managed_id_operator" {
+  scope                = data.azurerm_resource_group.main.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id
+}
+
+
+// Give Kubelet access to Pull from ACR's
 resource "azurerm_role_assignment" "acr_pull" {
   for_each                         = var.acr_pull_access
   scope                            = each.value

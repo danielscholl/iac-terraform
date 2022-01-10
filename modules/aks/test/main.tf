@@ -95,7 +95,7 @@ module "aks" {
   name                = format("iac-terraform-cluster-%s", module.resource_group.random)
   resource_group_name = module.resource_group.name
 
-  identity_type          = "UserAssigned"
+  # identity_type          = "UserAssigned"
   dns_prefix             = format("iac-terraform-cluster-%s", module.resource_group.random)
   network_plugin         = "azure"
   network_policy         = "azure"

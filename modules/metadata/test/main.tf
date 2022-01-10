@@ -28,14 +28,14 @@ module "metadata" {
   source = "../"
 
   naming_rules = module.naming.yaml
-  
-  location            = "eastus2"
-  environment         = "sandbox"
-  product             = "engineering"
+
+  location    = "eastus2"
+  environment = "sandbox"
+  product     = "engineering"
 
   additional_tags = {
-    "repo"         = "https://github.com/danielscholl/iac-terraform"
-    "owner"         = "Daniel Scholl"
+    "repo"  = "https://github.com/danielscholl/iac-terraform"
+    "owner" = "Daniel Scholl"
   }
 }
 

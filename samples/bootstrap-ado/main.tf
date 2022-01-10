@@ -89,7 +89,7 @@ locals {
 
   // Resolved resource names
   name                    = local.base_name
-  storage_name            = "${replace(local.base_name_21, "-", "")}"
+  storage_name            = replace(local.base_name_21, "-", "")
   ad_principal_name       = "${local.base_name}-principal"
   tf_state_container_name = "remote-state-container"
 

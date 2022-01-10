@@ -10,15 +10,15 @@ variable "name" {
 
 variable "names" {
   description = "Names to be applied to resources (inclusive)"
-  type        = object({
-    environment    = string
-    location       = string
-    product        = string
+  type = object({
+    environment = string
+    location    = string
+    product     = string
   })
   default = {
     environment = "sandbox"
-    location = "eastus2"
-    product = "iac"
+    location    = "eastus2"
+    product     = "iac"
   }
 }
 

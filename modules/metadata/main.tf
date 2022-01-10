@@ -11,8 +11,8 @@ locals {
   # Naming metadata
   names = merge(
     {
-      environment       = var.environment
-      location          = var.location
+      environment = var.environment
+      location    = var.location
     },
     var.product != "" ? { product = var.product } : {}
   )
@@ -20,11 +20,11 @@ locals {
   # Tagging metadata
   tags = merge(
     {
-      environment       = local.naming_rules.environment.allowed_values[var.environment]
-      location          = local.naming_rules.azureRegion.allowed_values[var.location]
+      environment = local.naming_rules.environment.allowed_values[var.environment]
+      location    = local.naming_rules.azureRegion.allowed_values[var.location]
     },
 
-    var.product!= "" ? { product = lookup(local.naming_rules.product.allowed_values, var.product, var.product) } : {},
+    var.product != "" ? { product = lookup(local.naming_rules.product.allowed_values, var.product, var.product) } : {},
     var.additional_tags,
     local.default_tags,
   )

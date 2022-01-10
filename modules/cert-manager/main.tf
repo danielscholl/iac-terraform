@@ -7,10 +7,10 @@ data "azurerm_subscription" "subscription" {
 }
 
 resource "azurerm_user_assigned_identity" "cert_manager" {
-  name                 = "${var.names.product_group}-${var.names.subscription_type}-certmgr${local.delimiter}${var.name_identifier}"
-  location             = var.location
-  resource_group_name  = var.resource_group_name
-  tags                 = var.tags
+  name                = "${var.names.product_group}-${var.names.subscription_type}-certmgr${local.delimiter}${var.name_identifier}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
 }
 
 resource "azurerm_role_definition" "cert_manager" {
@@ -20,9 +20,9 @@ resource "azurerm_role_definition" "cert_manager" {
   scope       = data.azurerm_subscription.subscription.id
 
   permissions {
-    actions     = ["Microsoft.Network/dnszones/TXT/read",
-                   "Microsoft.Network/dnszones/TXT/write",
-                   "Microsoft.Network/dnszones/TXT/delete"]
+    actions = ["Microsoft.Network/dnszones/TXT/read",
+      "Microsoft.Network/dnszones/TXT/write",
+    "Microsoft.Network/dnszones/TXT/delete"]
     not_actions = []
   }
 
@@ -60,17 +60,17 @@ resource "helm_release" "cert_manager" {
       }
       podDnsPolicy = "None"
       podDnsConfig = {
-        nameservers = ["8.8.8.8","8.8.4.4"]
+        nameservers = ["8.8.8.8", "8.8.4.4"]
       }
-      extraArgs	= ["--enable-certificate-owner-ref=true"]
+      extraArgs = ["--enable-certificate-owner-ref=true"]
     }),
     var.additional_yaml_config
   ]
 }
 
-resource "helm_release" issuer {
-  depends_on       = [helm_release.cert_manager]
-  for_each         = var.issuers
+resource "helm_release" "issuer" {
+  depends_on = [helm_release.cert_manager]
+  for_each   = var.issuers
 
   name      = "cert-manager-issuer-${each.key}"
   namespace = each.value.namespace

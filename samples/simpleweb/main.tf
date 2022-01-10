@@ -81,9 +81,9 @@ locals {
   base_name = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
 
   // Resolved resource names
-  name              = "${local.base_name}"
+  name              = local.base_name
   service_plan_name = "${local.base_name}-plan"
-  app_service_name  = "${local.base_name}"
+  app_service_name  = local.base_name
 
   // Resolved TF Vars
   reg_url = var.docker_registry_server_url

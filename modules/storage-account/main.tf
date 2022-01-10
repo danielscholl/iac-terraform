@@ -13,11 +13,11 @@ data "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_storage_account" "main" {
-  name                     = (var.name == null ? "${local.name}${random_string.random.result}" : lower(var.name))
+  name = (var.name == null ? "${local.name}${random_string.random.result}" : lower(var.name))
 
-  resource_group_name       = data.azurerm_resource_group.main.name
-  location                  = data.azurerm_resource_group.main.location
-  tags                      = var.resource_tags 
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  tags                = var.resource_tags
 
   account_kind             = var.account_kind
   account_tier             = local.account_tier

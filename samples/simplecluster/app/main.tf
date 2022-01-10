@@ -25,7 +25,7 @@ resource "kubernetes_service" "redis" {
   }
   spec {
     selector {
-      name = "${kubernetes_pod.web.metadata.0.labels.name}"
+      name = kubernetes_pod.web.metadata.0.labels.name
     }
     port {
       port        = 6379
@@ -62,7 +62,7 @@ resource "kubernetes_service" "web" {
   }
   spec {
     selector {
-      name = "${kubernetes_pod.web.metadata.0.labels.name}"
+      name = kubernetes_pod.web.metadata.0.labels.name
     }
     port {
       port        = 80
@@ -74,5 +74,5 @@ resource "kubernetes_service" "web" {
 
 
 output "lb_ip" {
-  value = "${kubernetes_service.web.load_balancer_ingress.0.ip}"
+  value = kubernetes_service.web.load_balancer_ingress.0.ip
 }

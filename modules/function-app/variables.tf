@@ -69,7 +69,7 @@ variable "docker_registry_server_password" {
 
 variable "app_settings" {
   default     = {}
-  type        = map
+  type        = map(any)
   description = "Application settings to insert on creating the function app. Following updates will be ignored, and has to be set manually. Updates done on application deploy or in portal will not affect terraform state file."
 }
 

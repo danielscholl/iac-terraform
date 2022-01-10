@@ -188,7 +188,7 @@ locals {
   insights_name          = "${local.base_name_83}-ai"
   keyvault_name          = "${local.base_name_21}-kv"
   cosmosdb_account_name  = "${local.base_name_83}-db"
-  cosmosdb_database_name = "${local.base_name_83}"
+  cosmosdb_database_name = local.base_name_83
   service_plan_name      = "${local.base_name_83}-sp"
   app_service_name       = local.base_name_21
   ad_app_name            = "${local.base_name}-oauth"
