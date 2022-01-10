@@ -52,7 +52,7 @@ No modules.
 | <a name="input_isLocked"></a> [isLocked](#input\_isLocked) | Does the Resource Group prevent deletion? | `bool` | `false` | no |
 | <a name="input_location"></a> [location](#input\_location) | The location of the Resource Group. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | The name of the Resource Group. | `string` | `null` | no |
-| <a name="input_names"></a> [names](#input\_names) | Names to be applied to resources (inclusive) | <pre>object({<br>    environment    = string<br>    location       = string<br>    product        = string<br>  })</pre> | <pre>{<br>  "environment": "sandbox",<br>  "location": "eastus2",<br>  "product": "iac"<br>}</pre> | no |
+| <a name="input_names"></a> [names](#input\_names) | Names to be applied to resources (inclusive) | <pre>object({<br>    environment = string<br>    location    = string<br>    product     = string<br>  })</pre> | <pre>{<br>  "environment": "sandbox",<br>  "location": "eastus2",<br>  "product": "iac"<br>}</pre> | no |
 | <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | Map of tags to apply to taggable resources in this module.  By default the taggable resources are tagged with the name defined above and this map is merged in | `map(string)` | `{}` | no |
 
 ## Outputs
