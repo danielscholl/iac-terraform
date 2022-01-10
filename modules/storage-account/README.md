@@ -69,7 +69,7 @@ module "storage_account" {
 | index\_path | path from your repo root to index.html | `string` | `null` | no |
 | min\_tls\_version | The minimum supported TLS version for the storage account. | `string` | `"TLS1_2"` | no |
 | name | The name of the Storage Account. (Optional) - names override | `string` | `null` | no |
-| names | Names to be applied to resources (inclusive) | <pre>object({<br>    environment    = string<br>    location       = string<br>    product        = string<br>  })</pre> | <pre>{<br>  "environment": "tf",<br>  "location": "eastus2",<br>  "product": "iac"<br>}</pre> | no |
+| names | Names to be applied to resources (inclusive) | <pre>object({<br>    environment = string<br>    location    = string<br>    product     = string<br>  })</pre> | <pre>{<br>  "environment": "tf",<br>  "location": "eastus2",<br>  "product": "iac"<br>}</pre> | no |
 | nfsv3\_enabled | Is NFSv3 protocol enabled? Changing this forces a new resource to be created | `bool` | `false` | no |
 | replication\_type | Storage account replication type - i.e. LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS. | `string` | `"LRS"` | no |
 | resource\_group\_name | The name of an existing resource group. | `string` | n/a | yes |
