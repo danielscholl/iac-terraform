@@ -228,6 +228,13 @@ resource "azurerm_role_assignment" "agentpool_vm" {
   principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id
 }
 
+// Give Kubelet Access to list or read a user-assigned managed identities in Group
+resource "azurerm_role_assignment" "kubelet_managed_id_operator" {
+  scope                = data.azurerm_resource_group.main.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity.0.object_id
+}
+
 // Give Kubelet access to Pull from ACR's
 resource "azurerm_role_assignment" "acr_pull" {
   for_each                         = var.acr_pull_access

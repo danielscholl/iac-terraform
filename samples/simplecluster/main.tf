@@ -246,7 +246,7 @@ module "network" {
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=master"
+  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
   depends_on = [module.resource_group, module.network]
 
   names               = module.metadata.names
@@ -298,21 +298,23 @@ module "kubernetes" {
   }
 }
 
-resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
-  name                        = "AllowNginx"
-  priority                    = 100
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "tcp"
-  source_port_range           = "*"
-  destination_port_range      = "80"
-  source_address_prefix       = "Internet"
-  destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
-  resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
-  network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
-}
+
+#-------------------------------
+# NGINX Ingress
+#-------------------------------
+
+# module "nginx" {
+#   source     = "../../modules/nginx-ingress"
+#   depends_on = [module.kubernetes]
+
+#   name                   = "ingress-nginx"
+#   namespace              = "kube-system"
+#   additional_yaml_config = yamlencode({ "nodeSelector" : { "pool" : "services" } })
+# }
 
 
+
+# Temporary Direct Chart Install
 resource "helm_release" "nginx" {
   depends_on = [module.kubernetes]
   name       = "nginx"
@@ -339,6 +341,21 @@ data "kubernetes_service" "nginx" {
   metadata {
     name = "nginx"
   }
+}
+
+resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
+  name                   = "AllowNginx"
+  priority               = 100
+  direction              = "Inbound"
+  access                 = "Allow"
+  protocol               = "tcp"
+  source_port_range      = "*"
+  destination_port_range = "80"
+  source_address_prefix  = "Internet"
+  # destination_address_prefix  = module.nginx.load_balancer_ip
+  destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
+  resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
+  network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
 }
 
 

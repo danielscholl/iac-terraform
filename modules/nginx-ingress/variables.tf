@@ -2,28 +2,45 @@
 # This module allows the creation of an NGINX Ingress Controller
 ##############################################################
 
-variable "helm_repository" {
-  description = "nginx-ingress helm repository url"
+variable "name" {
   type        = string
-  default     = "https://kubernetes.github.io/ingress-nginx"
+  description = "Name of helm release"
+  default     = "ingress-nginx"
+}
+variable "namespace" {
+  type        = string
+  description = "Name of namespace where nginx controller should be deployed"
+  default     = "kube-system"
 }
 
-variable "helm_chart_version" {
-  description = "helm chart version"
+variable "chart_version" {
   type        = string
-  default     = "3.4.1"
+  description = "HELM Chart Version for nginx controller"
+  default     = "4.0.6"
 }
 
-variable "helm_release_name" {
-  description = "helm release name"
-  type        = string
-}
+# variable "helm_repository" {
+#   description = "nginx-ingress helm repository url"
+#   type        = string
+#   default     = "https://kubernetes.github.io/ingress-nginx"
+# }
 
-variable "kubernetes_namespace" {
-  description = "kubernetes_namespace"
-  type        = string
-  default     = "default"
-}
+# variable "helm_chart_version" {
+#   description = "helm chart version"
+#   type        = string
+#   default     = "4.0.6"
+# }
+
+# variable "helm_release_name" {
+#   description = "helm release name"
+#   type        = string
+# }
+
+# variable "kubernetes_namespace" {
+#   description = "kubernetes_namespace"
+#   type        = string
+#   default     = "default"
+# }
 
 variable "kubernetes_create_namespace" {
   description = "create kubernetes namespace"
