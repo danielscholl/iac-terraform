@@ -313,7 +313,6 @@ module "kubernetes" {
 # }
 
 
-
 # Temporary Direct Chart Install
 resource "helm_release" "nginx" {
   depends_on = [module.kubernetes]
@@ -357,6 +356,25 @@ resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
   resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
   network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
 }
+
+
+#-------------------------------
+# Elastic Cloud Kubernetes
+#-------------------------------
+# resource "helm_release" "eck-operator" {
+#   name             = "elastic-operator"
+#   repository       = "https://helm.elastic.co"
+#   chart            = "eck-operator"
+#   version          = "1.9.1"
+#   namespace        = "elastic-system"
+#   create_namespace = true
+
+#   set {
+#     name  = "nodeSelector"
+#     value = yamlencode({ pool = "services" })
+#   }
+
+# }
 
 
 #-------------------------------
