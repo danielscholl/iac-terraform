@@ -15,11 +15,12 @@ resource "helm_release" "nginx" {
   # version          = var.helm_chart_version
   # create_namespace = var.kubernetes_create_namespace
 
-  name       = var.name
-  chart      = local.helm_chart
-  namespace  = var.namespace
-  repository = local.helm_repository
-  version    = var.chart_version
+  name             = var.name
+  chart            = local.helm_chart
+  namespace        = var.namespace
+  repository       = local.helm_repository
+  version          = var.chart_version
+  create_namespace = var.kubernetes_create_namespace
 
   values = [
     yamlencode({

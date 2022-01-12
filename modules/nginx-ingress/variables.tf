@@ -45,7 +45,7 @@ variable "chart_version" {
 variable "kubernetes_create_namespace" {
   description = "create kubernetes namespace"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "ingress_class" {

@@ -24,7 +24,8 @@
       "iac": "Infrastructure as Code",
       "osdu": "OSDU",
       "engineering": "Engineering Team",
-      "multicluster": "Cluster Sample"
+      "multicluster": "Cluster Sample",
+      "elastic": "Elastic Search"
     }
   },
   "azureRegion": {

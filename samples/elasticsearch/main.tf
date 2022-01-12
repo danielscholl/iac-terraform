@@ -6,7 +6,7 @@
 */
 
 terraform {
-  required_version = ">= 0.14.11"
+  required_version = ">= 1.1.1"
 
   required_providers {
     azurerm = {
@@ -27,7 +27,6 @@ terraform {
     }
   }
 }
-
 
 
 #-------------------------------
@@ -155,7 +154,7 @@ resource "null_resource" "save-key" {
 }
 
 module "naming" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=v1.0.0"
+  source = "github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=master"
 }
 
 module "metadata" {
@@ -251,10 +250,11 @@ module "kubernetes" {
 
   names               = module.metadata.names
   resource_group_name = module.resource_group.name
+  node_resource_group = format("%s-cluster", module.resource_group.name)
   resource_tags       = module.metadata.tags
 
   identity_type          = "UserAssigned"
-  dns_prefix             = format("simple-cluster-%s", module.resource_group.random)
+  dns_prefix             = format("elastic-cluster-%s", module.resource_group.random)
   network_plugin         = "azure"
   network_policy         = "azure"
   configure_network_role = true
@@ -288,7 +288,7 @@ module "kubernetes" {
       vm_size                = "Standard_B2ms"
       enable_host_encryption = true
       enable_auto_scaling    = true
-      min_count              = 5
+      min_count              = 3
       max_count              = 10
       subnet                 = "public"
       node_labels = {
@@ -299,103 +299,21 @@ module "kubernetes" {
 }
 
 #-------------------------------
-# NGINX Ingress
+# Elastic Cloud Kubernetes
 #-------------------------------
+resource "helm_release" "eck-operator" {
+  name       = "elastic-operator"
+  depends_on = [module.kubernetes]
 
-# module "nginx" {
-#   source     = "../../modules/nginx-ingress"
-#   depends_on = [module.kubernetes]
+  repository       = "https://helm.elastic.co"
+  chart            = "eck-operator"
+  version          = "1.9.1"
+  namespace        = "elastic-system"
+  create_namespace = true
 
-#   name                        = "ingress-nginx"
-#   # namespace                   = "nginx-ingress"
-#   # kubernetes_create_namespace = true
-#   additional_yaml_config      = yamlencode({ "nodeSelector" : { "pool" : "services" } })
-# }
-
-
-# Temporary Direct Chart Install
-# resource "helm_release" "nginx" {
-#   depends_on = [module.kubernetes]
-#   name       = "nginx"
-#   chart      = "./charts"
-
-#   set {
-#     name  = "name"
-#     value = "nginx"
-#   }
-
-#   set {
-#     name  = "image"
-#     value = "nginx:latest"
-#   }
-
-#   set {
-#     name  = "nodeSelector"
-#     value = yamlencode({ pool = "services" })
-#   }
-# }
-
-# data "kubernetes_service" "nginx" {
-#   depends_on = [helm_release.nginx]
-#   metadata {
-#     name = "nginx"
-#   }
-# }
-
-# resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
-#   name                   = "AllowNginx"
-#   priority               = 100
-#   direction              = "Inbound"
-#   access                 = "Allow"
-#   protocol               = "tcp"
-#   source_port_range      = "*"
-#   destination_port_range = "80"
-#   source_address_prefix  = "Internet"
-#   # destination_address_prefix  = module.nginx.load_balancer_ip
-#   destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
-#   resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
-#   network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
-# }
-
-#-------------------------------
-# Container Registry
-#-------------------------------
-module "container_registry" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/container-registry?ref=v1.0.0"
-  depends_on = [module.resource_group]
-
-  name                = local.registry_name
-  resource_group_name = module.resource_group.name
-
-  is_admin_enabled = false
-
-  resource_tags = module.metadata.tags
-}
-
-
-#-------------------------------
-# Azure Key Vault
-#-------------------------------
-module "keyvault" {
-  # Module Path
-  source     = "github.com/danielscholl/iac-terraform.git//modules/keyvault?ref=v1.0.0"
-  depends_on = [module.resource_group]
-
-  # Module variable
-  name                = local.keyvault_name
-  resource_group_name = module.resource_group.name
-
-  resource_tags = module.metadata.tags
-}
-
-module "keyvault_secret" {
-  # Module Path
-  source     = "github.com/danielscholl/iac-terraform.git//modules/keyvault-secret?ref=v1.0.0"
-  depends_on = [module.keyvault]
-
-  keyvault_id = module.keyvault.id
-  secrets = {
-    "sshKey" = tls_private_key.key.private_key_pem
+  set {
+    name  = "nodeSelector.agentpool"
+    value = "public"
   }
 }
 
@@ -408,14 +326,6 @@ output "RESOURCE_GROUP" {
   value = module.resource_group.name
 }
 
-output "REGISTRY_NAME" {
-  value = module.container_registry.name
-}
-
 output "CLUSTER_NAME" {
   value = local.cluster_name
-}
-
-output "id_rsa" {
-  value = tls_private_key.key.private_key_pem
 }

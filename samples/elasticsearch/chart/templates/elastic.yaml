@@ -1,0 +1,70 @@
+{{- $list := split "," .Values.application}}
+{{- $nodepoolPrefix := .Values.nodepoolNamePrefix}}
+{{- $memLimit := .Values.resources.limits.memory}}
+{{- $cpuReq := .Values.resources.requests.cpu}}
+{{- $cpuLimit := .Values.resources.limits.cpu}}
+{{- $esVersion := .Values.elasticsearch.version}}
+{{- $esNodeCount := .Values.elasticsearch.nodeCount}}
+{{- $esNodeStorage := .Values.elasticsearch.storagePerNodeGB}}
+{{- range $index, $app := $list}}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "elastic-{{ lower $app }}"
+  labels:
+    name: "elastic-{{ lower $app }}"
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: "elasticsearch"
+  namespace: "elastic-{{ lower $app }}"
+spec:
+  version: {{ $esVersion }}
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+    service:
+      spec:
+        type: ClusterIP
+  nodeSets:
+    - name: default
+      count: {{ $esNodeCount }}
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: {{ $esNodeStorage }}Gi
+            storageClassName: managed-premium
+      config:
+        node.master: true
+        node.data: true
+        node.ingest: true
+        node.store.allow_mmap: false
+      podTemplate:
+        spec:
+          nodeSelector:
+            agentpool: {{ $nodepoolPrefix }}{{ trimPrefix "_" $index }}
+          tolerations:
+          - key: "sku"
+            operator: "Equal"
+            value: "es"
+            effect: "NoSchedule"
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms{{ div $memLimit 2 }}g -Xmx{{ div $memLimit 2 }}g"
+          resources:
+            requests:
+              cpu: {{ $cpuReq }}
+            limits:
+              memory: {{ $memLimit }}Gi
+              cpu: {{ $cpuLimit }}
+{{- end}}
