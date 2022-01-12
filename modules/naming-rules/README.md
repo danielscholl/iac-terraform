@@ -99,6 +99,7 @@ named and tagged in Azure.
 |<sub>OSDU</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>osdu</sub>|
 |<sub>Engineering Team</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>engineering</sub>|
 |<sub>Cluster Sample</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>multicluster</sub>|
+|<sub>Elastic Search</sub>|<sub>global</sub>|<sub>az[12]</sub>|<sub>elastic</sub>|
 
 ## custom.subnetType
 
