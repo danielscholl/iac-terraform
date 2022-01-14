@@ -24,8 +24,8 @@
       "iac": "Infrastructure as Code",
       "osdu": "OSDU",
       "engineering": "Engineering Team",
-      "multicluster": "Cluster Sample",
-      "elastic": "Elastic Search"
+      "simplecluster": "Cluster Sample",
+      "elasticcloud": "Elastic Cloud on Kubernetes"
     }
   },
   "azureRegion": {

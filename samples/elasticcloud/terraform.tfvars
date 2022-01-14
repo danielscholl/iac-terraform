@@ -5,6 +5,6 @@
    This file holds the variables to be used with the application.
 */
 
-name                = "elasticsearch"
+name                = "elasticcloud"
 location            = "eastus"
 randomization_level = 3

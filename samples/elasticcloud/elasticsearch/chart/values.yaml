@@ -1,4 +1,9 @@
-nodepoolNamePrefix: public
+################################################################################
+# Specify the Default settings to be used.
+#
+name: sample
+
+agentPool: public
 application: sample
 resources:
   limits:

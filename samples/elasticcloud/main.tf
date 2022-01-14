@@ -86,6 +86,18 @@ variable "agent_vm_size" {
   default = "Standard_D2s_v3"
 }
 
+variable "search_instances" {
+  description = "Elastic Searches to be configured"
+  type = map(object({
+    namespace = string
+    name      = string
+  }))
+  default = {
+    namespace = "elastic-search"
+    name      = "sample"
+  }
+}
+
 #-------------------------------
 # Private Variables  (common.tf)
 #-------------------------------
@@ -315,6 +327,17 @@ resource "helm_release" "eck-operator" {
     name  = "nodeSelector.agentpool"
     value = "public"
   }
+}
+
+module "elasticsearch" {
+  depends_on = [helm_release.eck-operator]
+  source     = "./elasticsearch"
+  for_each   = (var.search_instances == null ? {} : var.search_instances)
+
+  namespace        = each.value.namespace
+  create_namespace = var.create_namespace
+
+  name = each.value.name
 }
 
 

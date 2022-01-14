@@ -1,27 +1,19 @@
-{{- $list := split "," .Values.application}}
-{{- $nodepoolPrefix := .Values.nodepoolNamePrefix}}
+{{- $list := split "," .Values.clusterNames}}
+{{- $agentPool := .Values.agentPool}}
 {{- $memLimit := .Values.resources.limits.memory}}
 {{- $cpuReq := .Values.resources.requests.cpu}}
 {{- $cpuLimit := .Values.resources.limits.cpu}}
-{{- $esVersion := .Values.elasticsearch.version}}
-{{- $esNodeCount := .Values.elasticsearch.nodeCount}}
-{{- $esNodeStorage := .Values.elasticsearch.storagePerNodeGB}}
+{{- $version := .Values.elasticsearch.version}}
+{{- $nodeCount := .Values.elasticsearch.nodeCount}}
+{{- $nodeStorage := .Values.elasticsearch.storagePerNodeGB}}
 {{- range $index, $app := $list}}
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: "elastic-{{ lower $app }}"
-  labels:
-    name: "elastic-{{ lower $app }}"
 ---
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: "elasticsearch"
-  namespace: "elastic-{{ lower $app }}"
 spec:
-  version: {{ $esVersion }}
+  version: {{ $version }}
   http:
     tls:
       selfSignedCertificate:
@@ -31,7 +23,7 @@ spec:
         type: ClusterIP
   nodeSets:
     - name: default
-      count: {{ $esNodeCount }}
+      count: {{ $nodeCount }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -40,7 +32,7 @@ spec:
               - ReadWriteOnce
             resources:
               requests:
-                storage: {{ $esNodeStorage }}Gi
+                storage: {{ $nodeStorage }}Gi
             storageClassName: managed-premium
       config:
         node.master: true
@@ -50,11 +42,11 @@ spec:
       podTemplate:
         spec:
           nodeSelector:
-            agentpool: {{ $nodepoolPrefix }}{{ trimPrefix "_" $index }}
+            agentpool: {{ $agentPool }}
           tolerations:
           - key: "sku"
             operator: "Equal"
-            value: "es"
+            value: "elasticsearch"
             effect: "NoSchedule"
         containers:
         - name: elasticsearch
