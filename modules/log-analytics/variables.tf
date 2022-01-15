@@ -3,13 +3,27 @@
 ##############################################################
 
 variable "name" {
-  description = "Name of Log Analystics Workspace."
-  type        = string
+  description = "Name of Log Analystics Workspace. (Optional) - names override"
+  default     = null
 }
 
 variable "resource_group_name" {
   description = "The name of the resource group the resource will be created in"
   type        = string
+}
+
+variable "names" {
+  description = "Names to be applied to resources (inclusive)"
+  type = object({
+    environment = string
+    location    = string
+    product     = string
+  })
+  default = {
+    location    = "eastus2"
+    product     = "iac"
+    environment = "tf"
+  }
 }
 
 variable "resource_tags" {
@@ -18,11 +32,22 @@ variable "resource_tags" {
   default     = {}
 }
 
-variable "sku" {
-  description = "Sku of the Log Analytics Workspace."
+variable "naming_rules" {
+  description = "naming conventions yaml file"
   type        = string
-  default     = "PerGB2018"
+  default     = ""
 }
+
+variable "sku" {
+  description = "SKU of the log analytics workspace."
+  default     = "free"
+}
+
+# variable "sku" {
+#   description = "Sku of the Log Analytics Workspace."
+#   type        = string
+#   default     = "PerGB2018"
+# }
 
 variable "retention_in_days" {
   description = "The workspace data retention in days. Between 30 and 730."
@@ -39,4 +64,9 @@ variable "solutions" {
   description = "A list of solutions to add to the workspace."
   type        = list(object({ solution_name = string, publisher = string, product = string }))
   default     = []
+}
+
+variable "enabled" {
+  description = "Enable or not the log analytics workspace."
+  default     = true
 }

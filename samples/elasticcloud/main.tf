@@ -36,14 +36,14 @@ provider "azurerm" {
   features {}
 }
 
-provider "kubernetes" {
-  host                   = module.kubernetes.kube_config.host
-  username               = module.kubernetes.kube_config.username
-  password               = module.kubernetes.kube_config.password
-  client_certificate     = base64decode(module.kubernetes.kube_config.client_certificate)
-  client_key             = base64decode(module.kubernetes.kube_config.client_key)
-  cluster_ca_certificate = base64decode(module.kubernetes.kube_config.cluster_ca_certificate)
-}
+# provider "kubernetes" {
+#   host                   = module.kubernetes.kube_config.host
+#   username               = module.kubernetes.kube_config.username
+#   password               = module.kubernetes.kube_config.password
+#   client_certificate     = base64decode(module.kubernetes.kube_config.client_certificate)
+#   client_key             = base64decode(module.kubernetes.kube_config.client_key)
+#   cluster_ca_certificate = base64decode(module.kubernetes.kube_config.cluster_ca_certificate)
+# }
 
 provider "helm" {
   kubernetes {
@@ -264,11 +264,15 @@ module "network" {
 # Log Analytics
 #-------------------------------
 module "log_analytics" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/log-analytics?ref=master"
+  # source = "github.com/danielscholl/iac-terraform.git//modules/log-analytics?ref=master"
+  source = "../../modules/log-analytics"
   depends_on = [module.resource_group]
+  
+  naming_rules        = module.naming.yaml
 
-  name                = var.name
+  names               = module.metadata.names
   resource_group_name = module.resource_group.name
+  resource_tags       = module.metadata.tags
 
   solutions = [
     {
@@ -277,8 +281,6 @@ module "log_analytics" {
       product       = "OMSGallery/ContainerInsights",
     }
   ]
-
-  resource_tags = module.metadata.tags
 }
 
 #-------------------------------
@@ -293,8 +295,8 @@ module "kubernetes" {
   node_resource_group = format("%s-cluster", module.resource_group.name)
   resource_tags       = module.metadata.tags
 
-  # enable_monitoring          = true
-  # log_analytics_workspace_id = module.log_analytics.log_analytics_id
+  enable_monitoring          = true
+  log_analytics_workspace_id = module.log_analytics.workspace_id
 
   identity_type          = "UserAssigned"
   dns_prefix             = format("elastic-cluster-%s", module.resource_group.random)
