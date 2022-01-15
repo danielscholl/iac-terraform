@@ -1,12 +1,5 @@
-{{- $list := split "," .Values.clusterNames}}
-{{- $agentPool := .Values.agentPool}}
+{{- $version := .Chart.AppVersion -}}
 {{- $memLimit := .Values.resources.limits.memory}}
-{{- $cpuReq := .Values.resources.requests.cpu}}
-{{- $cpuLimit := .Values.resources.limits.cpu}}
-{{- $version := .Values.elasticsearch.version}}
-{{- $nodeCount := .Values.elasticsearch.nodeCount}}
-{{- $nodeStorage := .Values.elasticsearch.storagePerNodeGB}}
-{{- range $index, $app := $list}}
 ---
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
@@ -22,8 +15,8 @@ spec:
       spec:
         type: ClusterIP
   nodeSets:
-    - name: default
-      count: {{ $nodeCount }}
+    - name: node
+      count: {{ .Values.elasticsearch.nodeCount }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -32,7 +25,7 @@ spec:
               - ReadWriteOnce
             resources:
               requests:
-                storage: {{ $nodeStorage }}Gi
+                storage: {{ .Values.elasticsearch.storagePerNodeGB }}Gi
             storageClassName: managed-premium
       config:
         node.master: true
@@ -42,7 +35,7 @@ spec:
       podTemplate:
         spec:
           nodeSelector:
-            agentpool: {{ $agentPool }}
+            agentpool: {{ .Values.agentPool }}
           tolerations:
           - key: "sku"
             operator: "Equal"
@@ -55,8 +48,7 @@ spec:
             value: "-Xms{{ div $memLimit 2 }}g -Xmx{{ div $memLimit 2 }}g"
           resources:
             requests:
-              cpu: {{ $cpuReq }}
+              cpu: {{ .Values.resources.requests.cpu }}
             limits:
               memory: {{ $memLimit }}Gi
-              cpu: {{ $cpuLimit }}
-{{- end}}
+              cpu: {{ .Values.resources.limits.cpu }}

@@ -1,24 +1,19 @@
 resource "helm_release" "elasticsearch" {
-  name  = (var.helm_name != null ? var.helm_name : "elasticsearch-${var.name}")
+  name  = (var.helm_name != null ? var.helm_name : "elasticsearch")
   chart = "${path.module}/chart"
 
   namespace        = var.namespace
   create_namespace = var.create_namespace
 
   values = [<<-EOT
-  name: ${var.name}
-  application: sample
-  agentPool: public
+  agentPool: ${var.agent_pool}
   elasticsearch:
-    version: 7.11.2
-    nodeCount: 3
-    storagePerNodeGB: 128
+    nodeCount: ${var.node_count}
+    storagePerNodeGB: ${var.storage}
   resources:
     limits:
-      cpu: 2
-      memory: 8
-    requests:
-      cpu: 0.2
+      cpu: ${var.cpu}
+      memory: ${var.memory}
   EOT
   ]
 }

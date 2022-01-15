@@ -86,15 +86,23 @@ variable "agent_vm_size" {
   default = "Standard_D2s_v3"
 }
 
-variable "search_instances" {
-  description = "Elastic Searches to be configured"
+variable "elasticsearch" {
+  description = "Elastic Search instances configured"
   type = map(object({
-    namespace = string
-    name      = string
+    agent_pool  = string
+    node_count  = number
+    storage = number
+    cpu = number
+    memory = number
   }))
-  default = {
-    namespace = "elastic-search"
-    name      = "sample"
+  default =  {
+    elastic-instance = {
+      agent_pool   = "public"
+      node_count   = 3
+      storage      = 128
+      cpu          = 2
+      memory       = 8
+    }
   }
 }
 
@@ -208,30 +216,29 @@ module "network" {
   resource_group_name = module.resource_group.name
   resource_tags       = module.metadata.tags
 
-
   dns_servers   = ["8.8.8.8"]
   address_space = ["10.1.0.0/22"]
 
   subnets = {
-    iaas-private = {
+    default = {
       cidrs                   = ["10.1.0.0/24"]
       route_table_association = "aks"
       configure_nsg_rules     = false
-      service_endpoints = ["Microsoft.Storage",
-        "Microsoft.AzureCosmosDB",
-        "Microsoft.KeyVault",
-        "Microsoft.ServiceBus",
-      "Microsoft.EventHub"]
     }
-    iaas-public = {
+    dev = {
       cidrs                   = ["10.1.1.0/24"]
       route_table_association = "aks"
       configure_nsg_rules     = false
-      service_endpoints = ["Microsoft.Storage",
-        "Microsoft.AzureCosmosDB",
-        "Microsoft.KeyVault",
-        "Microsoft.ServiceBus",
-      "Microsoft.EventHub"]
+    }
+    stg = {
+      cidrs                   = ["10.1.2.0/24"]
+      route_table_association = "aks"
+      configure_nsg_rules     = false
+    }
+    prod = {
+      cidrs                   = ["10.1.3.0/24"]
+      route_table_association = "aks"
+      configure_nsg_rules     = false
     }
   }
 
@@ -254,16 +261,40 @@ module "network" {
 }
 
 #-------------------------------
+# Log Analytics
+#-------------------------------
+module "log_analytics" {
+  source = "github.com/danielscholl/iac-terraform.git//modules/log-analytics?ref=master"
+  depends_on = [module.resource_group]
+
+  name                = var.name
+  resource_group_name = module.resource_group.name
+
+  solutions = [
+    {
+      solution_name = "ContainerInsights",
+      publisher     = "Microsoft",
+      product       = "OMSGallery/ContainerInsights",
+    }
+  ]
+
+  resource_tags = module.metadata.tags
+}
+
+#-------------------------------
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
   source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
-  depends_on = [module.resource_group, module.network]
+  depends_on = [module.resource_group, module.network, module.log_analytics]
 
   names               = module.metadata.names
   resource_group_name = module.resource_group.name
   node_resource_group = format("%s-cluster", module.resource_group.name)
   resource_tags       = module.metadata.tags
+
+  # enable_monitoring          = true
+  # log_analytics_workspace_id = module.log_analytics.log_analytics_id
 
   identity_type          = "UserAssigned"
   dns_prefix             = format("elastic-cluster-%s", module.resource_group.random)
@@ -273,11 +304,17 @@ module "kubernetes" {
 
   virtual_network = {
     subnets = {
-      private = {
-        id = module.network.subnets["iaas-private"].id
+      default = {
+        id = module.network.subnets["default"].id
       }
-      public = {
-        id = module.network.subnets["iaas-public"].id
+      dev = {
+        id = module.network.subnets["dev"].id
+      }
+      stg = {
+        id = module.network.subnets["stg"].id
+      }
+      prod = {
+        id = module.network.subnets["prod"].id
       }
     }
     route_table_id = module.network.route_tables["aks"].id
@@ -287,24 +324,42 @@ module "kubernetes" {
     admin_username = "k8sadmin"
     ssh_key        = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
   }
-  default_node_pool = "system"
+  default_node_pool = "default"
   node_pools = {
-    system = {
+    default = {
       vm_size                      = "Standard_B2s"
       enable_host_encryption       = true
       node_count                   = 2
-      only_critical_addons_enabled = true
-      subnet                       = "private"
+      subnet                       = "default"
+      node_labels = {
+        "agentpool" = "default"
+      }
     }
-    public = {
+    dev = {
       vm_size                = "Standard_B2ms"
       enable_host_encryption = true
-      enable_auto_scaling    = true
-      min_count              = 3
-      max_count              = 10
-      subnet                 = "public"
+      node_count             = 3
+      subnet                 = "dev"
       node_labels = {
-        "agentpool" = "public"
+        "agentpool" = "dev"
+      }
+    }
+    stg = {
+      vm_size                = "Standard_B2ms"
+      enable_host_encryption = true
+      node_count             = 3
+      subnet                 = "stg"
+      node_labels = {
+        "agentpool" = "stg"
+      }
+    }
+    prod = {
+      vm_size                = "Standard_B2ms"
+      enable_host_encryption = true
+      node_count             = 3
+      subnet                 = "prod"
+      node_labels = {
+        "agentpool" = "prod"
       }
     }
   }
@@ -325,19 +380,23 @@ resource "helm_release" "eck-operator" {
 
   set {
     name  = "nodeSelector.agentpool"
-    value = "public"
+    value = "default"
   }
 }
 
 module "elasticsearch" {
   depends_on = [helm_release.eck-operator]
   source     = "./elasticsearch"
-  for_each   = (var.search_instances == null ? {} : var.search_instances)
+  for_each   = (var.elasticsearch == null ? {} : var.elasticsearch)
 
-  namespace        = each.value.namespace
-  create_namespace = var.create_namespace
-
-  name = each.value.name
+  create_namespace = true
+  namespace  = each.key
+  agent_pool = each.value.agent_pool
+  
+  node_count = each.value.node_count
+  storage    = each.value.storage
+  cpu        = each.value.cpu
+  memory     = each.value.memory
 }
 
 
