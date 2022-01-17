@@ -398,43 +398,6 @@ module "kubernetes" {
 }
 
 
-#-------------------------------
-# Certficate Manager
-#-------------------------------
-module "certs" {
-  source     = "../../modules/cert-manager"
-  depends_on = [module.kubernetes]
-
-  providers = { helm = helm.aks }
-
-  subscription_id = data.azurerm_subscription.current.subscription_id
-
-  names               = module.metadata.names
-  resource_group_name = module.resource_group.name
-  resource_tags       = module.metadata.tags
-
-  cert_manager_version = "v0.15.1"
-
-  # domains = { "${module.dns.name}" = module.dns.id }
-
-  issuers = {
-    staging = {
-      namespace      = "cert-manager"
-      cluster_issuer = true
-      email_address  = var.email_address
-      # domain               = module.dns.name
-      letsencrypt_endpoint = "staging"
-    }
-    production = {
-      namespace      = "cert-manager"
-      cluster_issuer = true
-      email_address  = var.email_address
-      # domain               = module.dns.name
-      letsencrypt_endpoint = "production"
-    }
-  }
-}
-
 
 #-------------------------------
 # Elastic Cloud Kubernetes
