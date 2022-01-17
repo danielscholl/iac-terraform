@@ -19,29 +19,6 @@ variable "chart_version" {
   default     = "4.0.6"
 }
 
-# variable "helm_repository" {
-#   description = "nginx-ingress helm repository url"
-#   type        = string
-#   default     = "https://kubernetes.github.io/ingress-nginx"
-# }
-
-# variable "helm_chart_version" {
-#   description = "helm chart version"
-#   type        = string
-#   default     = "4.0.6"
-# }
-
-# variable "helm_release_name" {
-#   description = "helm release name"
-#   type        = string
-# }
-
-# variable "kubernetes_namespace" {
-#   description = "kubernetes_namespace"
-#   type        = string
-#   default     = "default"
-# }
-
 variable "kubernetes_create_namespace" {
   description = "create kubernetes namespace"
   type        = bool

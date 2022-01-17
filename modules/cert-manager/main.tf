@@ -6,16 +6,20 @@ data "azurerm_subscription" "subscription" {
   subscription_id = var.subscription_id
 }
 
+data "azurerm_resource_group" "main" {
+  name = var.resource_group_name
+}
+
 resource "azurerm_user_assigned_identity" "cert_manager" {
-  name                = "${var.names.product_group}-${var.names.subscription_type}-certmgr${local.delimiter}${var.name_identifier}"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
+  name                = "${var.names.product}-certmgr${local.delimiter}${var.name_identifier}"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  tags                = var.resource_tags
 }
 
 resource "azurerm_role_definition" "cert_manager" {
   for_each    = var.domains
-  name        = "${var.names.product_group}-${var.names.subscription_type}-certmgr${local.delimiter}${var.name_identifier}-${each.key}"
+  name        = "${var.names.product}-certmgr${local.delimiter}${var.name_identifier}-${each.key}"
   description = "Allow cert manager to use TXT entries for verification"
   scope       = data.azurerm_subscription.subscription.id
 
@@ -74,18 +78,18 @@ resource "helm_release" "issuer" {
 
   name      = "cert-manager-issuer-${each.key}"
   namespace = each.value.namespace
-  chart     = "${path.module}/charts/letsencrypt-acme"
+  chart     = "${path.module}/charts"
 
   values = [
     yamlencode({
       kind           = (each.value.cluster_issuer ? "ClusterIssuer" : "Issuer")
-      name           = "letsencrypt-acme-${each.key}"
+      name           = "letsencrypt-issuer-${each.key}"
       email          = each.value.email_address
       server         = lookup(local.le_endpoint, each.value.letsencrypt_endpoint, each.value.letsencrypt_endpoint)
       secretName     = "cert-manager-issuer-${each.key}"
       subscriptionID = var.subscription_id
       resourceGroup  = var.resource_group_name
-      dnsZone        = each.value.domain
+      # dnsZone        = each.value.domain
     })
   ]
 }

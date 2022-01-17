@@ -8,13 +8,6 @@ locals {
 }
 
 resource "helm_release" "nginx" {
-  # name             = var.helm_release_name
-  # namespace        = var.kubernetes_namespace
-  # repository       = var.helm_repository
-  # chart            = "ingress-nginx"
-  # version          = var.helm_chart_version
-  # create_namespace = var.kubernetes_create_namespace
-
   name             = var.name
   chart            = local.helm_chart
   namespace        = var.namespace
@@ -29,7 +22,7 @@ resource "helm_release" "nginx" {
         ingressClass = var.ingress_class
         publishService = {
           enabled      = true
-          pathOverride = "${var.namespace}/${var.name}-ingress-nginx-controller"
+          pathOverride = "${var.namespace}/${var.name}-controller"
         }
         config = {
           ssl-redirect = var.enable_default_tls
@@ -46,10 +39,10 @@ resource "helm_release" "nginx" {
   ]
 }
 
-data "kubernetes_service" "nginx" {
-  depends_on = [helm_release.nginx]
-  metadata {
-    name      = "${var.name}-ingress-nginx-controller"
-    namespace = var.namespace
-  }
-}
+# data "kubernetes_service" "nginx" {
+#   depends_on = [helm_release.nginx]
+#   metadata {
+#     name      = "${var.name}-controller"
+#     namespace = var.namespace
+#   }
+# }

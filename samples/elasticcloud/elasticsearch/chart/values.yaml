@@ -1,7 +1,7 @@
 ################################################################################
 # Specify the Default settings to be used.
 #
-agentPool: public
+agentPool: dev
 resources:
   limits:
     cpu: 2
