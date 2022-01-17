@@ -24,7 +24,8 @@
       "iac": "Infrastructure as Code",
       "osdu": "OSDU",
       "engineering": "Engineering Team",
-      "simplecluster": "Cluster Sample",
+      "simplecluster": "Simple Cluster Sample",
+      "appcluster": "Application Cluster Sample",
       "elasticcloud": "Elastic Cloud on Kubernetes"
     }
   },

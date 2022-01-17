@@ -101,12 +101,9 @@ locals {
   base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
 
-  // Resolved resource names
-  name          = local.base_name
-  vnet_name     = "${local.base_name}-vnet"
-  cluster_name  = "${local.base_name}-cluster"
-  registry_name = replace(local.base_name_21, "-", "")
-  keyvault_name = "${local.base_name_21}-kv"
+  // Manual Naming Conventions
+  name         = local.base_name
+  cluster_name = "${local.base_name}-cluster"
 }
 
 
@@ -154,24 +151,6 @@ resource "null_resource" "save-key" {
   }
 }
 
-module "naming" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=v1.0.0"
-}
-
-module "metadata" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.0"
-
-  naming_rules = module.naming.yaml
-
-  location    = var.location
-  product     = var.name
-  environment = "sandbox"
-
-  additional_tags = {
-    "repo"  = "https://github.com/danielscholl/iac-terraform"
-    "owner" = "Daniel Scholl"
-  }
-}
 
 #-------------------------------
 # Resource Group
@@ -179,226 +158,56 @@ module "metadata" {
 module "resource_group" {
   source = "github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.0"
 
-  names         = module.metadata.names
-  location      = module.metadata.location
-  resource_tags = module.metadata.tags
-}
-
-#-------------------------------
-# Virtual Network
-#-------------------------------
-module "network" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/network?ref=v1.0.0"
-  depends_on = [module.resource_group]
-
-  naming_rules = module.naming.yaml
-
-  names               = module.metadata.names
-  resource_group_name = module.resource_group.name
-  resource_tags       = module.metadata.tags
-
-
-  dns_servers   = ["8.8.8.8"]
-  address_space = ["10.1.0.0/22"]
-
-  subnets = {
-    iaas-private = {
-      cidrs                   = ["10.1.0.0/24"]
-      route_table_association = "aks"
-      configure_nsg_rules     = false
-      service_endpoints = ["Microsoft.Storage",
-        "Microsoft.AzureCosmosDB",
-        "Microsoft.KeyVault",
-        "Microsoft.ServiceBus",
-      "Microsoft.EventHub"]
-    }
-    iaas-public = {
-      cidrs                   = ["10.1.1.0/24"]
-      route_table_association = "aks"
-      configure_nsg_rules     = false
-      service_endpoints = ["Microsoft.Storage",
-        "Microsoft.AzureCosmosDB",
-        "Microsoft.KeyVault",
-        "Microsoft.ServiceBus",
-      "Microsoft.EventHub"]
-    }
-  }
-
-  route_tables = {
-    aks = {
-      disable_bgp_route_propagation = true
-      use_inline_routes             = false
-      routes = {
-        internet = {
-          address_prefix = "0.0.0.0/0"
-          next_hop_type  = "Internet"
-        }
-        local-vnet = {
-          address_prefix = "10.1.0.0/22"
-          next_hop_type  = "vnetlocal"
-        }
-      }
-    }
+  name     = local.name
+  location = local.location
+  resource_tags = {
+    environment = local.ws_name
   }
 }
+
 
 #-------------------------------
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
   source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
-  depends_on = [module.resource_group, module.network]
+  depends_on = [module.resource_group]
 
-  names               = module.metadata.names
+  name                = local.cluster_name
   resource_group_name = module.resource_group.name
-  resource_tags       = module.metadata.tags
-
-  identity_type          = "UserAssigned"
-  dns_prefix             = format("simple-cluster-%s", module.resource_group.random)
-  network_plugin         = "azure"
-  network_policy         = "azure"
-  configure_network_role = true
-
-  virtual_network = {
-    subnets = {
-      private = {
-        id = module.network.subnets["iaas-private"].id
-      }
-      public = {
-        id = module.network.subnets["iaas-public"].id
-      }
-    }
-    route_table_id = module.network.route_tables["aks"].id
+  resource_tags = {
+    environment = local.ws_name
   }
 
   linux_profile = {
     admin_username = "k8sadmin"
     ssh_key        = "${trimspace(tls_private_key.key.public_key_openssh)} k8sadmin"
   }
-  default_node_pool = "system"
+
   node_pools = {
-    system = {
+    default = {
       vm_size                      = "Standard_B2s"
       enable_host_encryption       = true
       node_count                   = 2
       only_critical_addons_enabled = true
-      subnet                       = "private"
     }
-    public = {
-      vm_size                = "Standard_B2ms"
-      enable_host_encryption = true
-      enable_auto_scaling    = true
-      min_count              = 5
-      max_count              = 10
-      subnet                 = "public"
+    spotpool = {
+      vm_size                = "Standard_D2_v2"
+      enable_host_encryption = false
+      eviction_policy        = "Delete"
+      spot_max_price         = -1
+      priority               = "Spot"
+
+      enable_auto_scaling = true
+      min_count           = 2
+      max_count           = 5
+
       node_labels = {
-        "agentpool" = "public"
+        "pool" = "spotpool"
       }
     }
   }
 }
-
-#-------------------------------
-# NGINX Ingress
-#-------------------------------
-
-# module "nginx" {
-#   source     = "../../modules/nginx-ingress"
-#   depends_on = [module.kubernetes]
-
-#   name                        = "ingress-nginx"
-#   # namespace                   = "nginx-ingress"
-#   # kubernetes_create_namespace = true
-#   additional_yaml_config      = yamlencode({ "nodeSelector" : { "pool" : "services" } })
-# }
-
-
-# Temporary Direct Chart Install
-# resource "helm_release" "nginx" {
-#   depends_on = [module.kubernetes]
-#   name       = "nginx"
-#   chart      = "./charts"
-
-#   set {
-#     name  = "name"
-#     value = "nginx"
-#   }
-
-#   set {
-#     name  = "image"
-#     value = "nginx:latest"
-#   }
-
-#   set {
-#     name  = "nodeSelector"
-#     value = yamlencode({ pool = "services" })
-#   }
-# }
-
-# data "kubernetes_service" "nginx" {
-#   depends_on = [helm_release.nginx]
-#   metadata {
-#     name = "nginx"
-#   }
-# }
-
-# resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
-#   name                   = "AllowNginx"
-#   priority               = 100
-#   direction              = "Inbound"
-#   access                 = "Allow"
-#   protocol               = "tcp"
-#   source_port_range      = "*"
-#   destination_port_range = "80"
-#   source_address_prefix  = "Internet"
-#   # destination_address_prefix  = module.nginx.load_balancer_ip
-#   destination_address_prefix  = data.kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.ip
-#   resource_group_name         = module.network.subnets["iaas-public"].resource_group_name
-#   network_security_group_name = module.network.subnets["iaas-public"].network_security_group_name
-# }
-
-#-------------------------------
-# Container Registry
-#-------------------------------
-module "container_registry" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/container-registry?ref=v1.0.0"
-  depends_on = [module.resource_group]
-
-  name                = local.registry_name
-  resource_group_name = module.resource_group.name
-
-  is_admin_enabled = false
-
-  resource_tags = module.metadata.tags
-}
-
-
-#-------------------------------
-# Azure Key Vault
-#-------------------------------
-module "keyvault" {
-  # Module Path
-  source     = "github.com/danielscholl/iac-terraform.git//modules/keyvault?ref=v1.0.0"
-  depends_on = [module.resource_group]
-
-  # Module variable
-  name                = local.keyvault_name
-  resource_group_name = module.resource_group.name
-
-  resource_tags = module.metadata.tags
-}
-
-module "keyvault_secret" {
-  # Module Path
-  source     = "github.com/danielscholl/iac-terraform.git//modules/keyvault-secret?ref=v1.0.0"
-  depends_on = [module.keyvault]
-
-  keyvault_id = module.keyvault.id
-  secrets = {
-    "sshKey" = tls_private_key.key.private_key_pem
-  }
-}
-
 
 #-------------------------------
 # Output Variables  (output.tf)
@@ -408,14 +217,6 @@ output "RESOURCE_GROUP" {
   value = module.resource_group.name
 }
 
-output "REGISTRY_NAME" {
-  value = module.container_registry.name
-}
-
 output "CLUSTER_NAME" {
   value = local.cluster_name
-}
-
-output "id_rsa" {
-  value = tls_private_key.key.private_key_pem
 }

@@ -92,29 +92,10 @@ variable "agent_vm_size" {
   default = "Standard_D2s_v3"
 }
 
-variable "elasticsearch" {
-  description = "Elastic Search instances configured"
-  type = map(object({
-    agent_pool = string
-    node_count = number
-    storage    = number
-    cpu        = number
-    memory     = number
-  }))
-  default = {
-    elastic-instance = {
-      agent_pool = "public"
-      node_count = 3
-      storage    = 128
-      cpu        = 2
-      memory     = 8
-    }
-  }
-}
 
 variable "hostname" {
   type    = string
-  default = "elasticcloud"
+  default = "appcluster"
 }
 
 variable "email_address" {
@@ -137,16 +118,13 @@ locals {
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
 
   // Resolved resource names
-  name          = local.base_name
-  vnet_name     = "${local.base_name}-vnet"
-  cluster_name  = "${local.base_name}-cluster"
-  registry_name = replace(local.base_name_21, "-", "")
-  keyvault_name = "${local.base_name_21}-kv"
+  name         = local.base_name
+  cluster_name = "${local.base_name}-cluster"
 }
 
 
 #-------------------------------
-# Common Resources  (common.tf)
+# Common Resources
 #-------------------------------
 resource "random_string" "workspace_scope" {
   keepers = {
@@ -189,12 +167,16 @@ resource "null_resource" "save-key" {
   }
 }
 
+#-------------------------------
+# Custom Naming Modules
+#-------------------------------
 module "naming" {
-  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=master"
+  # source = "git::https://github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=master"
+  source = "../../modules/naming-rules"
 }
 
 module "metadata" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.0"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.0"
 
   naming_rules = module.naming.yaml
 
@@ -226,33 +208,17 @@ module "network" {
   source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/network?ref=v1.0.0"
   depends_on = [module.resource_group]
 
-  naming_rules = module.naming.yaml
-
   names               = module.metadata.names
   resource_group_name = module.resource_group.name
   resource_tags       = module.metadata.tags
+  naming_rules        = module.naming.yaml
 
   dns_servers   = ["8.8.8.8"]
-  address_space = ["10.1.0.0/22"]
+  address_space = ["10.1.0.0/24"]
 
   subnets = {
     default = {
       cidrs                   = ["10.1.0.0/24"]
-      route_table_association = "aks"
-      configure_nsg_rules     = false
-    }
-    dev = {
-      cidrs                   = ["10.1.1.0/24"]
-      route_table_association = "aks"
-      configure_nsg_rules     = false
-    }
-    stg = {
-      cidrs                   = ["10.1.2.0/24"]
-      route_table_association = "aks"
-      configure_nsg_rules     = false
-    }
-    prod = {
-      cidrs                   = ["10.1.3.0/24"]
       route_table_association = "aks"
       configure_nsg_rules     = false
     }
@@ -268,7 +234,7 @@ module "network" {
           next_hop_type  = "Internet"
         }
         local-vnet = {
-          address_prefix = "10.1.0.0/22"
+          address_prefix = "10.1.0.0/24"
           next_hop_type  = "vnetlocal"
         }
       }
@@ -276,7 +242,7 @@ module "network" {
   }
 }
 
-resource "azurerm_public_ip" "elasticcloud" {
+resource "azurerm_public_ip" "appcluster" {
   name                = var.hostname
   resource_group_name = module.kubernetes.node_resource_group
   location            = module.resource_group.location
@@ -288,41 +254,16 @@ resource "azurerm_public_ip" "elasticcloud" {
 }
 
 #-------------------------------
-# Log Analytics
-#-------------------------------
-module "log_analytics" {
-  source     = "../../modules/log-analytics"
-  depends_on = [module.resource_group]
-
-  naming_rules = module.naming.yaml
-
-  names               = module.metadata.names
-  resource_group_name = module.resource_group.name
-  resource_tags       = module.metadata.tags
-
-  solutions = [
-    {
-      solution_name = "ContainerInsights",
-      publisher     = "Microsoft",
-      product       = "OMSGallery/ContainerInsights",
-    }
-  ]
-}
-
-#-------------------------------
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
   source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
-  depends_on = [module.resource_group, module.network, module.log_analytics]
+  depends_on = [module.resource_group, module.network]
 
   names               = module.metadata.names
   resource_group_name = module.resource_group.name
   node_resource_group = format("%s-cluster", module.resource_group.name)
   resource_tags       = module.metadata.tags
-
-  enable_monitoring          = true
-  log_analytics_workspace_id = module.log_analytics.id
 
   identity_type          = "UserAssigned"
   dns_prefix             = format("elastic-cluster-%s", module.resource_group.random)
@@ -334,15 +275,6 @@ module "kubernetes" {
     subnets = {
       default = {
         id = module.network.subnets["default"].id
-      }
-      dev = {
-        id = module.network.subnets["dev"].id
-      }
-      stg = {
-        id = module.network.subnets["stg"].id
-      }
-      prod = {
-        id = module.network.subnets["prod"].id
       }
     }
     route_table_id = module.network.route_tables["aks"].id
@@ -360,41 +292,40 @@ module "kubernetes" {
       node_count             = 2
       subnet                 = "default"
     }
-    dev = {
-      vm_size                = "Standard_B2ms"
-      enable_host_encryption = true
-      node_count             = 3
-      subnet                 = "dev"
-      enable_auto_scaling    = true
-      min_count              = 3
-      max_count              = 5
-      node_labels = {
-        "agentpool" = "dev"
-      }
-    }
-    stg = {
-      vm_size                = "Standard_B2ms"
-      enable_host_encryption = true
-      enable_auto_scaling    = true
-      min_count              = 3
-      max_count              = 5
-      subnet                 = "stg"
-      node_labels = {
-        "agentpool" = "stg"
-      }
-    }
-    prod = {
-      vm_size                = "Standard_B2ms"
-      enable_host_encryption = true
-      enable_auto_scaling    = true
-      min_count              = 3
-      max_count              = 5
-      subnet                 = "prod"
-      node_labels = {
-        "agentpool" = "prod"
-      }
+  }
+}
+
+#-------------------------------
+# AAD Pod Identity
+#-------------------------------
+resource "azurerm_user_assigned_identity" "appidentity" {
+  name                = "${module.metadata.names.product}-appidentity"
+  resource_group_name = module.resource_group.name
+  location            = module.metadata.location
+  tags                = module.metadata.tags
+}
+
+module "aad_pod_identity" {
+  source = "../../modules/aad-pod-identity"
+
+  depends_on = [module.kubernetes]
+
+  providers = { helm = helm.aks }
+
+  helm_chart_version      = "2.0.0"
+  aks_node_resource_group = module.kubernetes.node_resource_group
+  aks_identity            = module.kubernetes.kubelet_identity.object_id
+
+  identities = {
+    app = {
+      name        = azurerm_user_assigned_identity.appidentity.name
+      namespace   = "default"
+      client_id   = azurerm_user_assigned_identity.appidentity.client_id
+      resource_id = azurerm_user_assigned_identity.appidentity.id
     }
   }
+
+  additional_scopes = { pod_identity = azurerm_user_assigned_identity.appidentity.id }
 }
 
 
@@ -403,7 +334,7 @@ module "kubernetes" {
 #-------------------------------
 module "certs" {
   source     = "../../modules/cert-manager"
-  depends_on = [module.kubernetes]
+  depends_on = [module.kubernetes, module.aad_pod_identity]
 
   providers = { helm = helm.aks }
 
@@ -437,40 +368,42 @@ module "certs" {
 
 
 #-------------------------------
-# Elastic Cloud Kubernetes
+# NGINX Ingress
 #-------------------------------
-resource "helm_release" "eck-operator" {
-  name       = "elastic-operator"
+module "nginx" {
+  source     = "../../modules/nginx-ingress"
   depends_on = [module.kubernetes]
 
-  repository       = "https://helm.elastic.co"
-  chart            = "eck-operator"
-  version          = "1.9.1"
-  namespace        = "elastic-system"
-  create_namespace = true
+  providers = { helm = helm.aks }
 
-  set {
-    name  = "nodeSelector.agentpool"
-    value = "default"
+  name                        = "ingress-nginx"
+  namespace                   = "nginx-system"
+  kubernetes_create_namespace = true
+  additional_yaml_config      = yamlencode({ "nodeSelector" : { "agentpool" : "default" } })
+}
+
+data "kubernetes_service" "nginx" {
+  depends_on = [module.nginx]
+  metadata {
+    name = "nginx"
   }
 }
 
-module "elasticsearch" {
-  depends_on = [helm_release.eck-operator]
 
-  source = "./elasticsearch"
-
-  for_each = (var.elasticsearch == null ? {} : var.elasticsearch)
-
-  create_namespace = true
-  namespace        = each.key
-  agent_pool       = each.value.agent_pool
-
-  node_count = each.value.node_count
-  storage    = each.value.storage
-  cpu        = each.value.cpu
-  memory     = each.value.memory
-}
+// After an application deployed that uses Ingress then open the NSG.
+# resource "azurerm_network_security_rule" "ingress_public_allow_nginx" {
+#   name                        = "AllowNginx"
+#   priority                    = 100
+#   direction                   = "Inbound"
+#   access                      = "Allow"
+#   protocol                    = "tcp"
+#   source_port_range           = "*"
+#   destination_port_range      = "80"
+#   source_address_prefix       = "Internet"
+#   destination_address_prefix  = data.kubernetes_service.nginx.load_balancer_ingress.0.ip
+#   resource_group_name         = module.resource_group.name
+#   network_security_group_name = module.network.subnet_nsg_names["default"]
+# }
 
 
 #-------------------------------
