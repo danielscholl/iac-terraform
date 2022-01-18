@@ -397,44 +397,106 @@ module "kubernetes" {
   }
 }
 
+#-------------------------------
+# NGINX Ingress
+#-------------------------------
+module "nginx" {
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/nginx-ingress?ref=master"
+  depends_on = [module.kubernetes]
 
+  providers = { helm = helm.aks }
+
+  name                        = "ingress-nginx"
+  namespace                   = "nginx-system"
+  kubernetes_create_namespace = true
+  additional_yaml_config      = yamlencode({ "nodeSelector" : { "agentpool" : "default" } })
+}
+
+
+#-------------------------------
+# AAD Pod Identity
+#-------------------------------
+resource "azurerm_user_assigned_identity" "appidentity" {
+  name                = "${module.metadata.names.product}-appidentity"
+  resource_group_name = module.resource_group.name
+  location            = module.metadata.location
+  tags                = module.metadata.tags
+}
+
+module "aad_pod_identity" {
+  source = "../../modules/aad-pod-identity"
+
+  depends_on = [module.kubernetes]
+
+  providers = { helm = helm.aks }
+
+  helm_chart_version      = "2.0.0"
+  aks_node_resource_group = module.kubernetes.node_resource_group
+  aks_identity            = module.kubernetes.kubelet_identity.object_id
+
+  identities = {
+    app = {
+      name        = azurerm_user_assigned_identity.appidentity.name
+      namespace   = "default"
+      client_id   = azurerm_user_assigned_identity.appidentity.client_id
+      resource_id = azurerm_user_assigned_identity.appidentity.id
+    }
+  }
+
+  additional_scopes = { pod_identity = azurerm_user_assigned_identity.appidentity.id }
+}
+
+
+#-------------------------------
+# Certficate Manager
+#-------------------------------
+module "certs" {
+  source     = "../../modules/cert-manager"
+  depends_on = [module.kubernetes, module.aad_pod_identity]
+
+  providers = { helm = helm.aks }
+
+  subscription_id = data.azurerm_subscription.current.subscription_id
+
+  names               = module.metadata.names
+  resource_group_name = module.resource_group.name
+  resource_tags       = module.metadata.tags
+
+  cert_manager_version = "v0.15.1"
+
+  issuers = {
+    staging = {
+      namespace            = "cert-manager"
+      cluster_issuer       = true
+      email_address        = var.email_address
+      letsencrypt_endpoint = "staging"
+    }
+    production = {
+      namespace            = "cert-manager"
+      cluster_issuer       = true
+      email_address        = var.email_address
+      letsencrypt_endpoint = "production"
+    }
+  }
+}
 
 #-------------------------------
 # Elastic Cloud Kubernetes
 #-------------------------------
-resource "helm_release" "eck-operator" {
-  name       = "elastic-operator"
+module "elasticcloud" {
+  source     = "../../modules/elastic-cloud"
   depends_on = [module.kubernetes]
 
-  repository       = "https://helm.elastic.co"
-  chart            = "eck-operator"
-  version          = "1.9.1"
-  namespace        = "elastic-system"
-  create_namespace = true
+  providers = { helm = helm.aks }
 
-  set {
-    name  = "nodeSelector.agentpool"
-    value = "default"
-  }
+  name                        = "elastic-operator"
+  namespace                   = "elastic-system"
+  kubernetes_create_namespace = true
+  additional_yaml_config      = yamlencode({ "nodeSelector" : { "agentpool" : "default" } })
+
+  # Elastic Search Instances
+  elasticsearch = var.elasticsearch
 }
-
-module "elasticsearch" {
-  depends_on = [helm_release.eck-operator]
-
-  source = "./elasticsearch"
-
-  for_each = (var.elasticsearch == null ? {} : var.elasticsearch)
-
-  create_namespace = true
-  namespace        = each.key
-  agent_pool       = each.value.agent_pool
-
-  node_count = each.value.node_count
-  storage    = each.value.storage
-  cpu        = each.value.cpu
-  memory     = each.value.memory
-}
-
 
 #-------------------------------
 # Output Variables  (output.tf)
@@ -444,5 +506,5 @@ output "RESOURCE_GROUP" {
 }
 
 output "CLUSTER_NAME" {
-  value = local.cluster_name
+  value = module.kubernetes.name
 }
