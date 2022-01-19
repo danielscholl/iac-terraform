@@ -5,6 +5,7 @@
 variable "name" {
   description = "The name of the Container Registry."
   type        = string
+  default     = null
 }
 
 variable "resource_group_name" {
