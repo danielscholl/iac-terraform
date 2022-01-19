@@ -82,6 +82,26 @@ variable "randomization_level" {
   default     = 8
 }
 
+variable "hostname" {
+  type    = string
+  default = "appcluster"
+}
+
+variable "dns_zone_name" {
+  type = string
+}
+
+variable "dns_zone_resource_group_name" {
+  type = string
+}
+
+
+variable "certificate_type" {
+  type        = string
+  description = "staging or production"
+  default     = "staging"
+}
+
 variable "agent_vm_count" {
   type    = string
   default = "2"
@@ -90,12 +110,6 @@ variable "agent_vm_count" {
 variable "agent_vm_size" {
   type    = string
   default = "Standard_D2s_v3"
-}
-
-
-variable "hostname" {
-  type    = string
-  default = "appcluster"
 }
 
 variable "email_address" {
@@ -171,12 +185,11 @@ resource "null_resource" "save-key" {
 # Custom Naming Modules
 #-------------------------------
 module "naming" {
-  # source = "git::https://github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=master"
-  source = "../../modules/naming-rules"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=v1.0.1"
 }
 
 module "metadata" {
-  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.0"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.1"
 
   naming_rules = module.naming.yaml
 
@@ -194,7 +207,7 @@ module "metadata" {
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.0"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.1"
 
   names         = module.metadata.names
   location      = module.metadata.location
@@ -244,7 +257,7 @@ module "network" {
 
 resource "azurerm_public_ip" "appcluster" {
   name                = var.hostname
-  resource_group_name = module.kubernetes.node_resource_group
+  resource_group_name = module.resource_group.name
   location            = module.resource_group.location
   allocation_method   = "Static"
 
@@ -253,11 +266,37 @@ resource "azurerm_public_ip" "appcluster" {
   tags = module.metadata.tags
 }
 
+
+#-------------------------------
+# Azure DNS Record
+#-------------------------------
+module "dns" {
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/dns-zone?ref=v1.0.1"
+
+  child_domain_resource_group_name = module.resource_group.name
+  child_domain_subscription_id     = data.azurerm_subscription.current.subscription_id
+  child_domain_prefix              = module.metadata.names.environment
+
+  parent_domain_resource_group_name = var.dns_zone_resource_group_name
+  parent_domain_subscription_id     = data.azurerm_subscription.current.subscription_id
+  parent_domain                     = var.dns_zone_name
+
+  tags = module.metadata.tags
+}
+
+resource "azurerm_dns_a_record" "appcluster" {
+  name                = var.hostname
+  zone_name           = module.dns.name
+  resource_group_name = module.resource_group.name
+  ttl                 = 60
+  records             = [azurerm_public_ip.appcluster.ip_address]
+}
+
 #-------------------------------
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
-  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.1"
   depends_on = [module.resource_group, module.network]
 
   names               = module.metadata.names
@@ -296,6 +335,21 @@ module "kubernetes" {
 }
 
 #-------------------------------
+# NGINX Ingress
+#-------------------------------
+module "nginx" {
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/nginx-ingress?ref=v1.0.1"
+  depends_on = [module.kubernetes]
+
+  providers = { helm = helm.aks }
+
+  name                        = "ingress-nginx"
+  namespace                   = "nginx-system"
+  kubernetes_create_namespace = true
+  additional_yaml_config      = yamlencode({ "nodeSelector" : { "agentpool" : "default" } })
+}
+
+#-------------------------------
 # AAD Pod Identity
 #-------------------------------
 resource "azurerm_user_assigned_identity" "appidentity" {
@@ -306,13 +360,11 @@ resource "azurerm_user_assigned_identity" "appidentity" {
 }
 
 module "aad_pod_identity" {
-  source = "../../modules/aad-pod-identity"
-
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/aad-pod-identity?ref=v1.0.1"
   depends_on = [module.kubernetes]
 
   providers = { helm = helm.aks }
 
-  helm_chart_version      = "2.0.0"
   aks_node_resource_group = module.kubernetes.node_resource_group
   aks_identity            = module.kubernetes.kubelet_identity.object_id
 
@@ -332,8 +384,8 @@ module "aad_pod_identity" {
 #-------------------------------
 # Certficate Manager
 #-------------------------------
-module "certs" {
-  source     = "../../modules/cert-manager"
+module "cert_manager" {
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager?ref=v1.0.1"
   depends_on = [module.kubernetes, module.aad_pod_identity]
 
   providers = { helm = helm.aks }
@@ -344,49 +396,38 @@ module "certs" {
   resource_group_name = module.resource_group.name
   resource_tags       = module.metadata.tags
 
-  cert_manager_version = "v0.15.1"
-
-  # domains = { "${module.dns.name}" = module.dns.id }
+  domains = { "${module.dns.name}" = module.dns.id }
 
   issuers = {
     staging = {
-      namespace      = "cert-manager"
-      cluster_issuer = true
-      email_address  = var.email_address
-      # domain               = module.dns.name
+      namespace            = "cert-manager"
+      cluster_issuer       = true
+      email_address        = var.email_address
+      domain               = module.dns.name
       letsencrypt_endpoint = "staging"
     }
     production = {
-      namespace      = "cert-manager"
-      cluster_issuer = true
-      email_address  = var.email_address
-      # domain               = module.dns.name
+      namespace            = "cert-manager"
+      cluster_issuer       = true
+      email_address        = var.email_address
+      domain               = module.dns.name
       letsencrypt_endpoint = "production"
     }
   }
 }
 
-
-#-------------------------------
-# NGINX Ingress
-#-------------------------------
-module "nginx" {
-  source     = "../../modules/nginx-ingress"
-  depends_on = [module.kubernetes]
+module "certificate" {
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager/certificate?ref=v1.0.1"
+  depends_on = [module.cert_manager]
 
   providers = { helm = helm.aks }
 
-  name                        = "ingress-nginx"
-  namespace                   = "nginx-system"
-  kubernetes_create_namespace = true
-  additional_yaml_config      = yamlencode({ "nodeSelector" : { "agentpool" : "default" } })
-}
+  certificate_name = "appcluster"
+  namespace        = "default"
+  secret_name      = "app-certificate"
+  issuer_ref_name  = module.cert_manager.issuers[var.certificate_type]
 
-data "kubernetes_service" "nginx" {
-  depends_on = [module.nginx]
-  metadata {
-    name = "nginx"
-  }
+  dns_names = [trim(azurerm_dns_a_record.appcluster.fqdn, ".")]
 }
 
 
@@ -413,6 +454,6 @@ output "RESOURCE_GROUP" {
   value = module.resource_group.name
 }
 
-output "CLUSTER_NAME" {
-  value = local.cluster_name
-}
+# output "CLUSTER_NAME" {
+#   value = local.cluster_name
+# }

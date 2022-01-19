@@ -31,7 +31,7 @@ variable "name_identifier" {
 variable "cert_manager_version" {
   description = "cert-manager helm chart version"
   type        = string
-  default     = "v0.15.0"
+  default     = "v0.15.1"
 }
 
 variable "helm_release_name" {
