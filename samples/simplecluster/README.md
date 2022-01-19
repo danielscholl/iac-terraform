@@ -10,28 +10,16 @@ This deployment creates the following:
  1. Azure Resource Group
  2. Container Registry (ACR)
  3. Kubernetes Cluster (AKS)
- 4. Virtual Network
- 5. Keyvault
- 6. Managed Identity
 
 
 ## Example Usage
 
-1. Execute the following commands to set up your terraform workspace.
+1. Execute the following commands to provision resources.
 
 ```bash
-# This configures terraform to leverage a remote backend that will help you and your
-# team keep consistent state
-terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
+# Download required modules
+terraform init
 
-# This command configures terraform to use a workspace unique to you. This allows you to work
-# without stepping over your teammate's deployments
-terraform workspace new $USER || terraform workspace select $USER
-```
-
-2. Execute the following commands to provision resources.
-
-```bash
 # See what terraform will try to deploy without actually deploying
 terraform plan
 
@@ -39,7 +27,7 @@ terraform plan
 terraform apply
 ```
 
-3. Execute the following command to teardown your deployment and delete your resources when done with them.
+2. Execute the following command to teardown your deployment and delete your resources when done with them.
 
 ```bash
 # Destroy resources and tear down deployment. Only do this if you want to destroy your deployment.
@@ -69,7 +57,7 @@ export REGISTRY_NAME="<your_registry_name>"
 
 ```bash
 # This logs your local Azure CLI in using the configured service principal.
-az login --service-principal -u $PRINCIPAL_ID -p $PRINCIPAL_SECRET --tenant $ARM_TENANT_ID
+az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
 ```
 
 1. Ensure the proper AKS Credentials have been retrieved
@@ -80,12 +68,10 @@ az aks get-credentials --name $CLUSTER_NAME \
   --resource-group $RESOURCE_GROUP \
   --admin
 
-# Install kubectl command
-az aks install-cli --install-location ~/bin/kubectl
 
 # Validate the cluster
-~/bin/kubectl get nodes
-~/bin/kubectl get pods --all-namespaces
+kubectl get nodes
+kubectl get pods --all-namespaces
 ```
 
 1. Build and Deploy a Sample Application using Docker
@@ -131,21 +117,36 @@ _Deploy the application_
 
 ```bash
 # Create a k8s manifest file for the App
-cat > deployment.yaml <<EOF
-apiVersion: apps/v1beta1
+cat <<EOF | kubectl apply --namespace default -f -
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: azure-vote-back
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: azure-vote-back
   template:
     metadata:
       labels:
         app: azure-vote-back
     spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
       containers:
       - name: azure-vote-back
-        image: redis
+        image: mcr.microsoft.com/oss/bitnami/redis:6.0.8
+        env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
         ports:
         - containerPort: 6379
           name: redis
@@ -160,32 +161,34 @@ spec:
   selector:
     app: azure-vote-back
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: azure-vote-front
 spec:
   replicas: 1
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-  minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: azure-vote-front
   template:
     metadata:
       labels:
         app: azure-vote-front
     spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
       containers:
       - name: azure-vote-front
         image: ${RegistryServer}/azure-vote-front:${USER}
-        ports:
-        - containerPort: 80
         resources:
           requests:
-            cpu: 250m
+            cpu: 100m
+            memory: 128Mi
           limits:
-            cpu: 500m
+            cpu: 250m
+            memory: 256Mi
+        ports:
+        - containerPort: 80
         env:
         - name: REDIS
           value: "azure-vote-back"
@@ -202,14 +205,5 @@ spec:
     app: azure-vote-front
 EOF
 
-~/bin/kubectl apply -f deployment.yaml
-~/bin/kubectl get service azure-vote-front --watch  # Wait for the External IP to come live
-
-
-## THIS SECTION NOT TESTED YET
-# Add a clusterrolebinding for cluster-admin to the dashboard
-~/bin/kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
-
-# Open the dashboard
-az aks browse -n $CLUSTER_NAME -g $RESOURCE_GROUP 
+kubectl get service azure-vote-front --watch  # Wait for the External IP to come live
 ```

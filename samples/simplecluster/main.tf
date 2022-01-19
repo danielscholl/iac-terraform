@@ -98,12 +98,12 @@ locals {
   suffix   = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // Base Names
-  base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
+  base_name    = "${module.metadata.names.product}-${module.metadata.names.environment}-${module.metadata.names.location}"
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
 
   // Manual Naming Conventions
-  name         = local.base_name
-  cluster_name = "${local.base_name}-cluster"
+  name          = local.base_name
+  registry_name = "${replace(local.base_name_21, "-", "")}cr"
 }
 
 
@@ -153,10 +153,34 @@ resource "null_resource" "save-key" {
 
 
 #-------------------------------
+# Naming Guidelines
+#-------------------------------
+
+module "naming" {
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=v1.0.1"
+}
+
+module "metadata" {
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.1"
+
+  naming_rules = module.naming.yaml
+
+  location    = var.location
+  product     = var.name
+  environment = "sandbox"
+
+  additional_tags = {
+    "repo"  = "https://github.com/danielscholl/iac-terraform"
+    "owner" = "Daniel Scholl"
+  }
+}
+
+
+#-------------------------------
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.0"
+  source = "github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.1"
 
   name     = local.name
   location = local.location
@@ -165,19 +189,30 @@ module "resource_group" {
   }
 }
 
+#-------------------------------
+# Container Registry
+#-------------------------------
+module "registry" {
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/container-registry?ref=v1.0.1"
+  depends_on = [module.resource_group]
+
+  name                = local.registry_name
+  resource_group_name = module.resource_group.name
+  resource_tags       = module.metadata.tags
+}
+
 
 #-------------------------------
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
-  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
+  source     = "github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.1"
   depends_on = [module.resource_group]
 
-  name                = local.cluster_name
+  names               = module.metadata.names
   resource_group_name = module.resource_group.name
-  resource_tags = {
-    environment = local.ws_name
-  }
+  node_resource_group = format("%s-cluster", module.resource_group.name)
+  resource_tags       = module.metadata.tags
 
   linux_profile = {
     admin_username = "k8sadmin"
@@ -186,26 +221,14 @@ module "kubernetes" {
 
   node_pools = {
     default = {
-      vm_size                      = "Standard_B2s"
-      enable_host_encryption       = true
-      node_count                   = 2
-      only_critical_addons_enabled = true
+      vm_size                = "Standard_B2s"
+      enable_host_encryption = true
+      node_count             = 2
     }
-    spotpool = {
-      vm_size                = "Standard_D2_v2"
-      enable_host_encryption = false
-      eviction_policy        = "Delete"
-      spot_max_price         = -1
-      priority               = "Spot"
+  }
 
-      enable_auto_scaling = true
-      min_count           = 2
-      max_count           = 5
-
-      node_labels = {
-        "pool" = "spotpool"
-      }
-    }
+  acr_pull_access = {
+    acr = module.registry.id
   }
 }
 
@@ -218,5 +241,9 @@ output "RESOURCE_GROUP" {
 }
 
 output "CLUSTER_NAME" {
-  value = local.cluster_name
+  value = module.kubernetes.name
+}
+
+output "REGISTRY_NAME" {
+  value = module.registry.name
 }
