@@ -4,6 +4,8 @@
 docker-compose.yaml
 deployment.yaml
 
+go.sum
+
 .envrc*
 .env
 
