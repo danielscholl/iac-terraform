@@ -82,6 +82,21 @@ variable "randomization_level" {
   default     = 8
 }
 
+
+variable "parent_domain_resource_group_name" {
+  type = string
+}
+
+variable "parent_domain" {
+  type = string
+}
+
+variable "certificate_type" {
+  type        = string
+  description = "staging or production"
+  default     = "staging"
+}
+
 variable "agent_vm_count" {
   type    = string
   default = "2"
@@ -287,6 +302,28 @@ resource "azurerm_public_ip" "elasticcloud" {
   tags = module.metadata.tags
 }
 
+module "dns" {
+  source = "../../modules/dns-zone"
+
+  child_domain_resource_group_name = module.resource_group.name
+  child_domain_subscription_id     = data.azurerm_subscription.current.subscription_id
+  child_domain_prefix              = var.name
+
+  parent_domain_resource_group_name = var.parent_domain_resource_group_name
+  parent_domain_subscription_id     = data.azurerm_subscription.current.subscription_id
+  parent_domain                     = var.parent_domain
+
+  tags = module.metadata.tags
+}
+
+resource "azurerm_dns_a_record" "elasticcloud" {
+  name                = var.hostname
+  zone_name           = module.dns.name
+  resource_group_name = module.resource_group.name
+  ttl                 = 60
+  records             = [azurerm_public_ip.elasticcloud.ip_address]
+}
+
 #-------------------------------
 # Log Analytics
 #-------------------------------
@@ -450,7 +487,7 @@ module "aad_pod_identity" {
 #-------------------------------
 # Certficate Manager
 #-------------------------------
-module "certs" {
+module "cert_manager" {
   source     = "../../modules/cert-manager"
   depends_on = [module.kubernetes, module.aad_pod_identity]
 
@@ -463,21 +500,39 @@ module "certs" {
   resource_tags       = module.metadata.tags
 
   cert_manager_version = "v0.15.1"
+  domains              = { "${module.dns.name}" = module.dns.id }
 
   issuers = {
     staging = {
       namespace            = "cert-manager"
       cluster_issuer       = true
       email_address        = var.email_address
+      domain               = module.dns.name
       letsencrypt_endpoint = "staging"
     }
     production = {
       namespace            = "cert-manager"
       cluster_issuer       = true
       email_address        = var.email_address
+      domain               = module.dns.name
       letsencrypt_endpoint = "production"
     }
   }
+}
+
+module "certificate" {
+  source = "../../modules/cert-manager/certificate"
+
+  depends_on = [module.cert_manager]
+
+  providers = { helm = helm.aks }
+
+  certificate_name = "elasticcloud"
+  namespace        = "default"
+  secret_name      = "elastic--certificate"
+  issuer_ref_name  = module.cert_manager.issuers[var.certificate_type]
+
+  dns_names = [trim(azurerm_dns_a_record.elasticcloud.fqdn, ".")]
 }
 
 #-------------------------------
