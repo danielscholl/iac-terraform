@@ -205,11 +205,11 @@ resource "null_resource" "save-key" {
 }
 
 module "naming" {
-  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=master"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/naming-rules?ref=v1.0.1"
 }
 
 module "metadata" {
-  source = "github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.0"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/metadata?ref=v1.0.1"
 
   naming_rules = module.naming.yaml
 
@@ -227,7 +227,7 @@ module "metadata" {
 # Resource Group
 #-------------------------------
 module "resource_group" {
-  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.0"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/resource-group?ref=v1.0.1"
 
   names         = module.metadata.names
   location      = module.metadata.location
@@ -238,7 +238,7 @@ module "resource_group" {
 # Virtual Network
 #-------------------------------
 module "network" {
-  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/network?ref=v1.0.0"
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/network?ref=v1.0.1"
   depends_on = [module.resource_group]
 
   naming_rules = module.naming.yaml
@@ -303,7 +303,7 @@ resource "azurerm_public_ip" "elasticcloud" {
 }
 
 module "dns" {
-  source = "../../modules/dns-zone"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/dns-zone?ref=v1.0.1"
 
   child_domain_resource_group_name = module.resource_group.name
   child_domain_subscription_id     = data.azurerm_subscription.current.subscription_id
@@ -328,7 +328,7 @@ resource "azurerm_dns_a_record" "elasticcloud" {
 # Log Analytics
 #-------------------------------
 module "log_analytics" {
-  source     = "../../modules/log-analytics"
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/log-analytics?ref=v1.0.1"
   depends_on = [module.resource_group]
 
   naming_rules = module.naming.yaml
@@ -350,7 +350,7 @@ module "log_analytics" {
 # Azure Kubernetes Service
 #-------------------------------
 module "kubernetes" {
-  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.0"
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/aks?ref=v1.0.1"
   depends_on = [module.resource_group, module.network, module.log_analytics]
 
   names               = module.metadata.names
@@ -438,7 +438,7 @@ module "kubernetes" {
 # NGINX Ingress
 #-------------------------------
 module "nginx" {
-  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/nginx-ingress?ref=master"
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/nginx-ingress?ref=v1.0.1"
   depends_on = [module.kubernetes]
 
   providers = { helm = helm.aks }
@@ -461,8 +461,7 @@ resource "azurerm_user_assigned_identity" "appidentity" {
 }
 
 module "aad_pod_identity" {
-  source = "../../modules/aad-pod-identity"
-
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/aad-pod-identity?ref=v1.0.1"
   depends_on = [module.kubernetes]
 
   providers = { helm = helm.aks }
@@ -488,7 +487,7 @@ module "aad_pod_identity" {
 # Certficate Manager
 #-------------------------------
 module "cert_manager" {
-  source     = "../../modules/cert-manager"
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager?ref=v1.0.1"
   depends_on = [module.kubernetes, module.aad_pod_identity]
 
   providers = { helm = helm.aks }
@@ -521,8 +520,7 @@ module "cert_manager" {
 }
 
 module "certificate" {
-  source = "../../modules/cert-manager/certificate"
-
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager/certificate?ref=v1.0.1"
   depends_on = [module.cert_manager]
 
   providers = { helm = helm.aks }
@@ -539,7 +537,7 @@ module "certificate" {
 # Elastic Cloud Kubernetes
 #-------------------------------
 module "elasticcloud" {
-  source     = "../../modules/elastic-cloud"
+  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/elastic-cloud?ref=v1.0.1"
   depends_on = [module.kubernetes]
 
   providers = { helm = helm.aks }

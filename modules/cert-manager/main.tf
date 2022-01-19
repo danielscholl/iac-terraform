@@ -41,7 +41,7 @@ resource "azurerm_role_assignment" "cert_manager" {
 }
 
 module "identity" {
-  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/aad-pod-identity/identity?ref=master"
+  source = "git::https://github.com/danielscholl/iac-terraform.git//modules/aad-pod-identity/identity?ref=v1.0.1"
 
   identity_name        = azurerm_user_assigned_identity.cert_manager.name
   identity_client_id   = azurerm_user_assigned_identity.cert_manager.client_id
