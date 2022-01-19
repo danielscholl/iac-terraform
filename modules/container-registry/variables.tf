@@ -8,6 +8,20 @@ variable "name" {
   default     = null
 }
 
+variable "names" {
+  description = "Names to be applied to resources (inclusive)"
+  type = object({
+    environment = string
+    location    = string
+    product     = string
+  })
+  default = {
+    location    = "eastus2"
+    product     = "iac"
+    environment = "tf"
+  }
+}
+
 variable "resource_group_name" {
   description = "The name of an existing resource group."
   type        = string
