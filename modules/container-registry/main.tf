@@ -7,7 +7,7 @@ data "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_container_registry" "main" {
-  name                = var.name
+  name                = var.name != null ? var.name : local.name
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
   sku                 = var.sku
