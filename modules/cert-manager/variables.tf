@@ -73,10 +73,10 @@ variable "additional_yaml_config" {
 variable "issuers" {
   default = {}
   type = map(object({
-    namespace      = string # kubernetes namespace
-    cluster_issuer = bool   # setting 'true' will create a ClusterIssuer, setting 'false' will create a namespace isolated Issuer
-    email_address  = string # email address used for expiration notification
-    # domain               = string # azuredns hosted domain (must be listed in var.domains)
+    namespace            = string # kubernetes namespace
+    cluster_issuer       = bool   # setting 'true' will create a ClusterIssuer, setting 'false' will create a namespace isolated Issuer
+    email_address        = string # email address used for expiration notification
+    domain               = string # azuredns hosted domain (must be listed in var.domains)
     letsencrypt_endpoint = string # letsencrypt endpoint (https://letsencrypt.org/docs/acme-protocol-updates).  Allowable inputs are 'staging', 'production' or a full URL
   }))
 }

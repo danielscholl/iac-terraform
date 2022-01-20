@@ -89,7 +89,7 @@ resource "helm_release" "issuer" {
       secretName     = "cert-manager-issuer-${each.key}"
       subscriptionID = var.subscription_id
       resourceGroup  = var.resource_group_name
-      # dnsZone        = each.value.domain
+      dnsZone        = each.value.domain
     })
   ]
 }

@@ -384,8 +384,9 @@ module "aad_pod_identity" {
 #-------------------------------
 # Certficate Manager
 #-------------------------------
-module "cert_manager" {
-  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager?ref=v1.0.1"
+module "certs" {
+  # source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager?ref=v1.0.1"
+  source     = "../../modules/cert-manager"
   depends_on = [module.kubernetes, module.aad_pod_identity]
 
   providers = { helm = helm.aks }
@@ -416,19 +417,19 @@ module "cert_manager" {
   }
 }
 
-module "certificate" {
-  source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager/certificate?ref=v1.0.1"
-  depends_on = [module.cert_manager]
+# module "certificate" {
+#   source     = "git::https://github.com/danielscholl/iac-terraform.git//modules/cert-manager/certificate?ref=v1.0.1"
+#   depends_on = [module.certs]
 
-  providers = { helm = helm.aks }
+#   providers = { helm = helm.aks }
 
-  certificate_name = "appcluster"
-  namespace        = "default"
-  secret_name      = "app-certificate"
-  issuer_ref_name  = module.cert_manager.issuers[var.certificate_type]
+#   certificate_name = "appcluster"
+#   namespace        = "default"
+#   secret_name      = "app-certificate"
+#   issuer_ref_name  = module.certs.issuers[var.certificate_type]
 
-  dns_names = [trim(azurerm_dns_a_record.appcluster.fqdn, ".")]
-}
+#   dns_names = [trim(azurerm_dns_a_record.appcluster.fqdn, ".")]
+# }
 
 
 // After an application deployed that uses Ingress then open the NSG.
@@ -445,6 +446,21 @@ module "certificate" {
 #   resource_group_name         = module.resource_group.name
 #   network_security_group_name = module.network.subnet_nsg_names["default"]
 # }
+
+#-------------------------------
+# Application Env Debug
+#-------------------------------
+module "envdebug" {
+  source     = "./envdebug"
+  depends_on = [module.nginx]
+
+  providers = { helm = helm.aks }
+
+  name             = "env-debug"
+  namespace        = "default"
+  create_namespace = false
+  agent_pool       = "default"
+}
 
 
 #-------------------------------
